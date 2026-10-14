@@ -2015,12 +2015,12 @@ function homeCommunity(){
     if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
     ppl = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 40);
   }
-  const demo = ["🎹", "🎸", "⛪", "🎤", "🥁", "🎻", "🎷", "🙋"].map((e, i) => ({demo: e, theme: Object.keys(THEMES)[i % 6]}));
+  const demo = DEMO_PEOPLE.map(d => ({demo: d.e, theme: d.t, img: d.img, church: d.k === "igreja"}));
   const base = ppl.length ? ppl : demo, tiles = [];
   for (let i = 0; tiles.length < Math.max(48, base.length); i++) tiles.push(base[i % base.length]);
   const tile = p => {
     const acc = THEMES[p.theme] || THEMES.red;
-    if (p.demo) return `<span class="hct demo" style="--acc:${acc}"><i>${p.demo}</i></span>`;
+    if (p.demo) return p.img ? `<span class="hct demo-photo${p.church ? " sq" : ""}" style="--acc:${acc};background-image:url(&quot;${p.img}&quot;)"></span>` : `<span class="hct demo" style="--acc:${acc}"><i>${p.demo}</i></span>`;
     const u = commUrl(p.avatar_path) || commUrl(p.cover_path);
     return `<button class="hct${isChurch(p) ? " sq" : ""}" data-a="cm-profile" data-id="${esc(p.id)}" tabindex="-1" style="--acc:${acc}${u ? `;background-image:url(&quot;${esc(u)}&quot;)` : ""}">${u ? "" : `<i>${esc(initials(p.display_name || "?"))}</i>`}<span>${esc(isChurch(p) ? p.display_name : (p.display_name || "").split(" ")[0])}${commBadge(p)}</span></button>`;
   };
@@ -2032,7 +2032,7 @@ function homeCommunity(){
   return `<section class="home-comm" aria-label="Comunidade">
     <div class="hc-mosaic" aria-hidden="true">${Array.from({length: cols}, (_, k) => `<div class="mcol ${k % 2 ? "up" : "down"}">${col(k)}</div>`).join("")}</div>
     <div class="hc-over"><p class="hc-kicker">Comunidade</p><h3>Músicos, igrejas e membros</h3>
-      <p>${ppl.length ? `${n} perfi${n === 1 ? "l" : "s"} · quem cria um perfil novo aparece aqui` : "Crie seu perfil de músico, igreja ou membro e apareça aqui."}</p>${cta}</div>
+      <p>${ppl.length ? `${n} perfi${n === 1 ? "l" : "s"} · quem cria um perfil novo aparece aqui` : "Crie seu perfil de músico, igreja ou membro e apareça aqui. (Fotos ilustrativas.)"}</p>${cta}</div>
   </section>`;
 }
 function commWhere(p){ return [p.church, p.city].filter(Boolean).map(esc).join(" · "); }
@@ -2184,30 +2184,31 @@ function commStories(){
 // Comunidade para quem ainda não entrou: perfis e posts DE EXEMPLO (sem fotos de pessoas reais),
 // só para mostrar como funciona. Os dados de verdade dos membros continuam só para quem tem login.
 const DEMO_PEOPLE = [
-  {n: "Igreja da Paz", k: "igreja", t: "blue", e: "⛪", sub: "Domingo 18h · Quarta 19h30", ver: true},
-  {n: "Ana Teclado", k: "musico", t: "pink", e: "🎹", sub: "Ministério de louvor"},
-  {n: "Pedro Violão", k: "musico", t: "teal", e: "🎸", sub: "Louvor jovem"},
-  {n: "Júlia Voz", k: "musico", t: "violet", e: "🎤", sub: "Back vocal"},
-  {n: "Lucas Bateria", k: "musico", t: "gold", e: "🥁", sub: "Banda da igreja"},
-  {n: "Marta", k: "membro", t: "red", e: "🙋", sub: "Membro"},
+  {n: "Igreja da Paz", k: "igreja", t: "blue", e: "⛪", img: "img/exemplo/igreja.jpg", sub: "Domingo 18h · Quarta 19h30", ver: true},
+  {n: "Raquel Moura", k: "musico", t: "pink", e: "🎤", img: "img/exemplo/raquel.jpg", sub: "Ministra de louvor"},
+  {n: "Júlia Santos", k: "musico", t: "violet", e: "🎤", img: "img/exemplo/julia.jpg", sub: "Voz · louvor jovem"},
+  {n: "Ana Clara", k: "musico", t: "teal", e: "🎹", img: "img/exemplo/ana.jpg", sub: "Teclado"},
+  {n: "Pedro Violão", k: "musico", t: "gold", e: "🎸", sub: "Violão · banda da igreja"},
+  {n: "Bia", k: "membro", t: "red", e: "🙋", img: "img/exemplo/bia.jpg", sub: "Membro"},
+  {n: "Lucas Bateria", k: "musico", t: "blue", e: "🥁", sub: "Bateria"},
 ];
 const DEMO_POSTS = [
-  {p: 1, art: "🎹", bg: ["#E95C8C", "#5B1E40"], label: "ENSAIO DE QUINTA", cap: "Ensaio de quinta! Restitui em F# com a banda toda 🙌", song: "Restitui · F#", likes: 24, com: 5, when: "2 h"},
-  {p: 0, art: "⛪", bg: ["#4F8CFF", "#1C2A55"], label: "CULTO DA FAMÍLIA", cap: "Domingo tem culto da família às 18h. Traga alguém com você!", likes: 41, com: 9, when: "5 h"},
-  {p: 2, art: "🎸", bg: ["#46D3C3", "#12403B"], label: "CAPOTRASTE NA CASA 2", cap: "Primeira vez tocando com capotraste. O app mostrou o desenho certinho 😄", song: "Lugar Secreto · G", likes: 18, com: 3, when: "1 d"},
+  {p: 3, img: "img/exemplo/post-teclado.jpg", cap: "Ensaio de quinta: Restitui em F#, teclado no ponto 🎹", song: "Restitui · F#", likes: 24, com: 5, when: "2 h"},
+  {p: 0, img: "img/exemplo/post-culto.jpg", cap: "Tudo pronto para o culto da família, domingo às 18h. Venha e traga alguém!", likes: 41, com: 9, when: "5 h"},
+  {p: 4, img: "img/exemplo/post-ensaio.jpg", cap: "Ensaio com a banda toda, muita alegria 😂🙌", song: "Lugar Secreto · G", likes: 18, com: 3, when: "1 d"},
 ];
 function demoAvatar(d, size, sq){
-  return `<span class="cm-av${sq || d.k === "igreja" ? " sq" : ""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px;--acc:${THEMES[d.t]}">${d.e}</span>`;
+  return `<span class="cm-av${sq || d.k === "igreja" ? " sq" : ""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px;--acc:${THEMES[d.t]}">${d.img ? `<img src="${d.img}" alt="" loading="lazy">` : d.e}</span>`;
 }
 function commDemoHtml(){
   const ex = '<em class="cm-demo-tag">Exemplo</em>';
   const stories = DEMO_PEOPLE.map(d => `<button class="cm-story" data-a="cm-demo" style="--acc:${THEMES[d.t]}">${demoAvatar(d, 66)}<span>${esc(d.k === "igreja" ? d.n : d.n.split(" ")[0])}${d.ver ? commBadge({verified: true}) : ""}</span></button>`).join("");
-  const cards = DEMO_PEOPLE.slice(0, 4).map(d => `<button class="cm-card cm-demo-card" data-a="cm-demo" style="--acc:${THEMES[d.t]};background:linear-gradient(160deg,${THEMES[d.t]},#16161A 75%)">
-      ${ex}<span class="cm-demo-emoji" aria-hidden="true">${d.e}</span><span class="cm-card-tx">${demoAvatar(d, 34)}<b>${esc(d.n)}${d.ver ? commBadge({verified: true}) : ""}</b><small>${esc(d.sub)}</small></span></button>`).join("");
+  const cards = DEMO_PEOPLE.filter(d => d.img).slice(0, 5).map(d => `<button class="cm-card cm-demo-card" data-a="cm-demo" style="--acc:${THEMES[d.t]};background-image:url(&quot;${d.img}&quot;)">
+      ${ex}<span class="cm-card-tx">${demoAvatar(d, 34)}<b>${esc(d.n)}${d.ver ? commBadge({verified: true}) : ""}</b><small>${esc(d.sub)}</small></span></button>`).join("");
   const posts = DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
     return `<article class="cm-post cm-demo-post">
       <button class="cm-post-h" data-a="cm-demo">${demoAvatar(a, 38)}<span style="min-width:0"><b>${esc(a.n)}${a.ver ? commBadge({verified: true}) : ""}</b><span class="muted">${esc(a.sub)}</span></span>${ex}</button>
-      <button class="cm-post-img cm-demo-img" data-a="cm-demo" style="background:linear-gradient(150deg,${x.bg[0]},${x.bg[1]})" aria-label="Post de exemplo"><span aria-hidden="true">${x.art}</span><b>${esc(x.label)}</b></button>
+      <button class="cm-post-img" data-a="cm-demo" aria-label="Foto de exemplo"><img src="${x.img}" alt="Foto de exemplo" loading="lazy"></button>
       <div class="cm-bar">
         <button class="cm-act" data-a="cm-demo" aria-label="Comentar">${CM_ICONS.comment}<span>${x.com}</span></button>
         <button class="cm-act like" data-a="cm-demo" aria-label="Curtir">${CM_ICONS.heart}<span>${x.likes}</span></button>
@@ -2222,7 +2223,7 @@ function commDemoHtml(){
       <h2>A comunidade do louvor</h2>
       <p>Crie seu perfil de músico, de igreja ou de membro. Siga a sua igreja e os músicos, poste fotos tocando e veja o que a galera está tocando nos cultos.</p>
       <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
-    <p class="cm-demo-note">👀 Veja como funciona. Abaixo são <b>exemplos</b>: os perfis e fotos de verdade aparecem quando você entra.</p>
+    <p class="cm-demo-note">👀 Veja como funciona. Abaixo são <b>exemplos ilustrativos</b> (pessoas e fotos criadas com IA). Os perfis de verdade aparecem quando você entra.</p>
     <div class="cm-stories" role="list" aria-label="Perfis de exemplo">${stories}</div>
     <h3 class="cm-sec">Chegaram agora</h3><div class="cm-cards">${cards}</div>
     <div class="inst cm-seg" role="group" aria-label="O que ver"><button data-a="cm-demo" aria-pressed="true">Seguindo</button><button data-a="cm-demo" aria-pressed="false">Explorar</button><button data-a="cm-demo" aria-pressed="false">Pessoas</button></div>
