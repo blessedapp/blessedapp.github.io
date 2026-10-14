@@ -680,6 +680,36 @@ button{cursor:pointer}
 .set-row .icon-btn{min-width:34px;min-height:38px;padding:0}
 .set-row .set-open b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
 .set-row{gap:5px}
+/* Mensagens */
+.dm-icon{position:relative;margin-left:auto;margin-right:10px;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:#fff;display:grid;place-items:center}.dm-icon svg{width:23px;height:23px}
+.dm-icon .badge{position:absolute;top:-5px;right:-5px;margin:0}.top .dm-icon + .cm-me{margin-left:0}
+.dm-lock{font-size:13px;color:var(--muted);margin:0 0 12px;display:block;text-align:left;background:none;border:0;padding:0}
+.dms-list{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
+.dm-rows{display:grid}
+.dm-row{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:#fff;text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font:inherit}
+.dm-row-t{flex:1;min-width:0;display:grid;gap:2px}.dm-row-t .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.dm-row.un .dm-row-t .muted{color:#fff;font-weight:700}
+.dm-row-x{display:grid;justify-items:end;gap:6px}.dm-dot{width:10px;height:10px;border-radius:50%;background:#FF3B5C;display:block}
+.dm-head{position:fixed;top:0;left:0;right:0;z-index:8;max-width:720px;margin:0 auto;display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;background:rgba(12,11,14,.95);border-bottom:1px solid var(--line)}
+.dm-head .btn{min-width:44px;font-size:22px}
+.dm-who{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;color:#fff;text-align:left;font:inherit}.dm-who span{display:grid;min-width:0}.dm-who b{display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-list{position:fixed;top:calc(66px + env(safe-area-inset-top,0px));bottom:calc(72px + env(safe-area-inset-bottom,0px));left:0;right:0;max-width:720px;margin:0 auto;overflow-y:auto;padding:12px 12px 8px;display:flex;flex-direction:column;gap:4px}
+.dm-list .dm-lock{align-self:center;text-align:center;margin-top:30px}
+.dm-day{align-self:center;font-size:12px;color:var(--muted);margin:10px 0 4px}
+.dm-msg{display:flex}.dm-msg.me{justify-content:flex-end}
+.dm-b{max-width:78%;border:0;text-align:left;font:15px/1.35 var(--f-body);color:#fff;background:#2B2A31;padding:8px 12px 6px;border-radius:18px 18px 18px 6px;overflow-wrap:anywhere;display:grid;gap:2px}
+.dm-msg.me .dm-b{background:#B81E42;border-radius:18px 18px 6px 18px}
+.dm-b small{font-size:11px;opacity:.7;justify-self:end}
+.dm-form{position:fixed;bottom:0;left:0;right:0;z-index:8;max-width:720px;margin:0 auto;display:flex;gap:8px;align-items:flex-end;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(12,11,14,.97);border-top:1px solid var(--line)}
+.dm-form textarea{flex:1;min-width:0;resize:none;max-height:120px;border-radius:20px;padding:10px 14px;margin:0}
+/* Perfil: abas, marcações */
+.cm-seg.pf-tabs{display:flex;overflow-x:auto;scrollbar-width:none;margin:18px 0 12px;justify-self:stretch}.pf-tabs::-webkit-scrollbar{display:none}
+.pf-tabs button{flex:none;white-space:nowrap;padding-inline:12px}
+.pf-bl{position:relative}.pf-bl span{position:absolute;inset:0;display:grid;place-items:center;color:#fff}.pf-bl span svg{width:30px;height:30px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
+.pf-with{margin:4px 0 0;font-size:13px;color:var(--muted)}.pf-with .lnk2{font-weight:700}
+.bl-info .pf-with{color:#fff}.bl-info .pf-with .lnk2{color:#fff}
+.pf-tagpick{display:grid;gap:6px}.pf-tagpick input{width:100%;min-width:0;box-sizing:border-box}
+.pf-chip{border:1px solid var(--line);background:var(--surface);color:#fff;border-radius:99px;padding:5px 11px;font:600 13px var(--f-body)}
+.pf-bc-list{max-height:50vh;overflow-y:auto;margin-bottom:10px}
 /* Blessings */
 .bl-feed{position:fixed;top:0;bottom:0;left:max(0px,calc(50% - 260px));right:max(0px,calc(50% - 260px));overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;background:#000;z-index:5;scrollbar-width:none}
 .bl-feed::-webkit-scrollbar{display:none}
@@ -724,7 +754,6 @@ button{cursor:pointer}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-1">
-<link rel="stylesheet" href="perfil-abas.css?v=20261014-1">
 <div id="app"></div>
 <div id="sheet" class="bsheet" hidden></div>
 <div id="modal" hidden></div>
@@ -1092,6 +1121,8 @@ function render(){
   else if (state.view === "login") app.innerHTML = viewLogin();
   else if (state.view === "team") app.innerHTML = viewTeam();
   else if (state.view === "community") app.innerHTML = viewCommunity();
+  else if (state.view === "chats") app.innerHTML = viewChats();
+  else if (state.view === "chat") app.innerHTML = viewChat();
   else if (state.view === "blessings") app.innerHTML = viewBlessings();
   else if (state.view === "bl-new") app.innerHTML = viewBlessingNew();
   else if (state.view === "profile") app.innerHTML = viewProfile();
@@ -1277,7 +1308,7 @@ async function teamLoad(){
 function teamLeave(){
   bibleAskReset();
   if (TEAM.sub) { TEAM.client.removeChannel(TEAM.sub); TEAM.sub = null; }
-  TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); blReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
+  TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); blReset(); dmReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
   state.songs = lsGet("cc-local-songs", []); state.artists = lsGet("cc-local-artists", []); state.setlist = lsGet("cc-local-setlist", []);
   state.view = "library"; render(); scrollTo(0, 0);
 }
@@ -1395,7 +1426,8 @@ function tabbar(active){
   const t = (v, label) => `<button data-a="tab" data-v="${v}" ${active===v ? 'aria-current="page"' : ""}>${TAB_ICONS[v]}${label}</button>`;
   const n = pendingCount();
   const extra = !teamAvailable() ? "" : teamRole() === "admin" ? t("team", "Equipe" + (n ? ` <span class="badge" aria-label="${n} pedido${n > 1 ? "s" : ""}">${n}</span>` : "")) : store.mode === "team" ? "" : t("login", "Entrar");
-  const comm = commOn() ? t("community", "Comunidade") : "";
+  const dmn = commOn() && TEAM.user ? dmUnreadCount() : 0;
+  const comm = commOn() ? t("community", "Comunidade" + (dmn ? ` <span class="badge" aria-label="${dmn} mensage${dmn > 1 ? "ns" : "m"} não lida${dmn > 1 ? "s" : ""}">${dmn}</span>` : "")) : "";
   const bl = blOn() || (commOn() && teamRole() === "admin") ? t("blessings", "Blessings") : "";
   return `<nav class="tabbar" aria-label="Abas">${t("library","Início")}${comm}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
 }
@@ -1862,7 +1894,7 @@ const REPORT_REASONS = ["Conteúdo impróprio", "Não tem a ver com música ou l
 function commOn(){ return teamAvailable() && !!TEAM.client; }
 function commIn(){ return commOn() && !!TEAM.user && teamRole() !== "blocked"; }
 function commMissing(error){ return !!error && (error.code === "42P01" || error.code === "PGRST205" || /does not exist|schema cache/i.test(error.message || "")); }
-function commReset(){ pfReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
+function commReset(){ Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
 function commRerender(...views){ if (views.includes(state.view) || state.view === "library" || state.view === "setlist") rerenderKeepScroll(); }
 function commUrl(p){ return p ? COMM.urls[p] || "" : ""; }
 // Miniatura (~400 px) guardada ao lado da foto: a grade e os stories usam ela; a foto cheia só baixa ao abrir.
@@ -1888,7 +1920,7 @@ async function commLoadMe(){
   const f = await TEAM.client.from("follows").select("followee").eq("follower", TEAM.user.id);
   COMM.following = new Set((f.data || []).map(r => r.followee));
   commRerender("community", "profile");
-  commOpenDeep();
+  commOpenDeep(); dmEnsure();
 }
 async function commLoadPeople(){
   const {data, error} = await TEAM.client.from("community_profiles")
@@ -1932,6 +1964,7 @@ async function commAfterPosts(list){
     (sv.data || []).forEach(r => COMM.mySaves.add(r.post_id));
   }
   commSign(list.map(p => commThumb(p.image_path)));
+  await pfAfter("post", ids);
 }
 async function commLoadProfile(id){
   const [{data}, a, b] = await Promise.all([
@@ -2101,6 +2134,7 @@ function commPostCard(id){
     </div>
     <p class="cm-time">${commAgo(p.created_at)}</p>
     ${p.caption ? `<p class="cm-cap"><b>${esc(a.display_name || "")}</b> ${esc(p.caption)}</p>` : ""}
+    ${pfWith("post", id)}
     ${p.song && p.song.name ? `<p class="cm-songtag">🎵 ${esc(p.song.name)}${p.song.artist ? " · " + esc(p.song.artist) : ""}${p.song.key ? ` <span class="tag">${esc(p.song.key)}</span>` : ""}</p>` : ""}
   </article>`;
 }
@@ -2329,6 +2363,7 @@ async function blAfter(list){
   const {data} = await TEAM.client.from("blessing_likes").select("blessing_id,user_id").in("blessing_id", ids);
   ids.forEach(id => BLS.likes[id] = 0);
   (data || []).forEach(r => { BLS.likes[r.blessing_id]++; if (r.user_id === TEAM.user.id) BLS.my.add(r.blessing_id); });
+  await pfAfter("blessing", ids);
 }
 // Abre um Blessing específico (link compartilhado ou denúncia): ele vem primeiro no feed
 async function blOpen(id){
@@ -2351,13 +2386,13 @@ function blItemHtml(id, i){
     <div class="bl-side">
       <button class="bl-act" data-a="cm-profile" data-id="${esc(x.author)}" aria-label="Perfil de ${esc(a.display_name || "alguém")}">${commAvatar(a, 44)}</button>
       <button class="bl-act like" data-a="bl-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${CM_ICONS.heart}<span>${BLS.likes[id] || 0}</span></button>
-      <button class="bl-act" data-a="pf-comments" data-id="${esc(id)}" aria-label="Comentar Blessing">${CM_ICONS.comment}</button>
+      <button class="bl-act" data-a="bl-cmts" data-id="${esc(id)}" aria-label="Comentários">${CM_ICONS.comment}<span>${PF.bccount[id] || 0}</span></button>
       <button class="bl-act" data-a="bl-share" data-id="${esc(id)}" aria-label="Compartilhar">${CM_ICONS.share}</button>
       <button class="bl-act" data-a="bl-more" data-id="${esc(id)}" data-del="${canDel ? 1 : ""}" aria-label="Mais opções">${BL_ICONS.more}</button>
     </div>
     <div class="bl-info">
       <button class="bl-who" data-a="cm-profile" data-id="${esc(x.author)}"><b>${esc(a.display_name || "Alguém")}</b>${commBadge(a)}<span class="muted"> · ${commAgo(x.created_at)}</span></button>
-      ${x.caption ? `<p class="bl-cap">${esc(x.caption)}</p>` : ""}
+      ${x.caption ? `<p class="bl-cap">${esc(x.caption)}</p>` : ""}${pfWith("blessing", id)}
     </div>
   </section>`;
 }
@@ -2459,7 +2494,7 @@ function blMore(id, canDel){
   const m = $("#modal"); m.className = "modal";
   const mine = BLS.items[id] && BLS.items[id].author === TEAM.user.id;
   m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="blm-t"><h2 id="blm-t">Blessing</h2>
-    <div style="display:grid;gap:8px">${canDel ? `<button class="btn" data-a="bl-del" data-id="${esc(id)}">Apagar este vídeo</button>` : ""}${mine ? "" : `<button class="btn" data-a="cm-report" data-k="blessing" data-id="${esc(id)}">Denunciar</button>`}</div>
+    <div style="display:grid;gap:8px">${(PF.tagsOf["blessing:" + id] || []).includes(TEAM.user.id) ? `<button class="btn" data-a="pf-untag" data-k="blessing" data-id="${esc(id)}">Tirar minha marcação</button>` : ""}${canDel ? `<button class="btn" data-a="bl-del" data-id="${esc(id)}">Apagar este vídeo</button>` : ""}${mine ? "" : `<button class="btn" data-a="cm-report" data-k="blessing" data-id="${esc(id)}">Denunciar</button>`}</div>
     <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
   m.hidden = false;
 }
@@ -2476,7 +2511,6 @@ async function blDelete(id){
   closePix();
   try { await blFn({action: "delete", id}); } catch(e) { flash(e.message); return; }
   delete BLS.items[id]; BLS.list = (BLS.list || []).filter(x => x !== id);
-  pfInvalidate(); delete PF.videos[id]; delete PF.comments[id];
   if (COMM.reports) COMM.reports = COMM.reports.filter(r => !(r.target_kind === "blessing" && r.target_id === id));
   const el = document.querySelector(`.bl-item[data-id="${CSS.escape(id)}"]`);
   if (el) { const v = el.querySelector("video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); } }
@@ -2496,7 +2530,8 @@ function viewBlessingNew(){
         <p class="muted" style="font-size:13px;margin:8px 0 0">${f.dur > BL_MAX_S ? `O vídeo tem ${Math.round(f.dur)} s: vão os <b>primeiros ${BL_MAX_S} segundos</b>.` : `${Math.round(f.dur)} s`} · o app deixa ele leve (540p) antes de enviar.</p>`
         : `<label class="bl-pick"><input id="bl-file" type="file" accept="video/*" hidden>${BL_ICONS.plus}<b>Escolher vídeo</b><span class="muted">Até ${BL_MAX_S} segundos. Vídeo em pé fica melhor.</span></label>`}
       <label style="display:block;margin-top:14px"><span class="muted" style="font-size:13px">Legenda</span>
-        <textarea id="bl-cap" maxlength="300" rows="3" placeholder="Conte o que está rolando (opcional)" ${u.busy ? "disabled" : ""}>${esc(u.cap || "")}</textarea></label>
+        <textarea id="bl-cap" maxlength="300" rows="3" placeholder="Conte o que está rolando (opcional)" ${u.busy ? "disabled" : ""}>${esc(u.cap || BLS.capDraft || "")}</textarea></label>
+      ${u.busy ? "" : `<div style="margin-top:12px">${pfTagPicker()}</div>`}
       ${u.busy ? `<div class="bl-prog" role="status"><span style="width:${Math.round((u.p || 0) * 100)}%"></span></div><p class="muted" style="margin:6px 0 0">${esc(u.stage || "")} ${Math.round((u.p || 0) * 100)}%</p><p class="muted" style="font-size:13px;margin:4px 0 0">Deixe esta tela aberta até terminar.</p>` : ""}
       ${BLS.msg ? `<p class="bl-msg">${esc(BLS.msg)}</p>` : ""}
       <div class="actions" style="margin-top:14px">${f && !u.busy ? `<button class="btn primary" data-a="bl-send">Publicar</button><button class="btn ghost" data-a="bl-repick">Trocar vídeo</button>` : ""}</div>
@@ -2594,8 +2629,8 @@ async function blSend(){
     }
     const {data, error} = await TEAM.client.from("blessings").insert({author: TEAM.user.id, video_key: s.video.key, thumb_key: s.thumb.key, caption: cap || null, duration: Math.round(out.duration * 10) / 10}).select().single();
     if (error) throw new Error("O vídeo subiu, mas não consegui publicar. Tente de novo.");
-    BLS.items[data.id] = data; BLS.likes[data.id] = 0;
-    pfInvalidate();
+    BLS.items[data.id] = data; BLS.likes[data.id] = 0; PF.bccount[data.id] = 0; PF.tagsOf["blessing:" + data.id] = [];
+    await pfSaveTags("blessing", data.id); BLS.capDraft = ""; delete PF.bl[TEAM.user.id];
     BLS.list = [data.id].concat((BLS.list || []).filter(x => x !== data.id));
     blClearFile(); BLS.up = null; BLS.focus = data.id; state.view = "blessings"; render(); scrollTo(0, 0);
     flash("Blessing publicado 🙌");
@@ -2607,403 +2642,410 @@ function blClick(a, b){
   if (a === "bl-tap") blTap(b.closest(".bl-item"));
   else if (a === "bl-sound") blSetMuted(!BLS.muted);
   else if (a === "bl-like") blToggleLike(b.dataset.id, b);
-  else if (a === "bl-share") pfShareOpen("blessing", b.dataset.id);
+  else if (a === "bl-share") pfShareMenu("blessing", b.dataset.id);
+  else if (a === "bl-cmts") pfBcOpen(b.dataset.id);
   else if (a === "bl-more") blMore(b.dataset.id, !!b.dataset.del);
   else if (a === "bl-del") { if (confirm("Apagar este Blessing? Não dá para desfazer.")) blDelete(b.dataset.id); }
   else if (a === "bl-open") { closePix(); blOpen(b.dataset.id); }
   else if (a === "bl-reload") { blReset(); render(); }
-  else if (a === "bl-new") { if (!TEAM.user) { state.view = "blessings"; render(); return true; } BLS.msg = ""; state.view = "bl-new"; render(); scrollTo(0, 0); }
+  else if (a === "bl-new") { if (!TEAM.user) { state.view = "blessings"; render(); return true; } BLS.msg = ""; BLS.capDraft = ""; state.tagPick = []; state.view = "bl-new"; render(); scrollTo(0, 0); }
   else if (a === "bl-repick") { blClearFile(); BLS.msg = ""; render(); }
   else if (a === "bl-cancel") { if (BLS.up && BLS.up.busy) return true; blClearFile(); BLS.msg = ""; state.view = "blessings"; render(); scrollTo(0, 0); }
   else if (a === "bl-send") blSend();
   else return false;
   return true;
 }
-/*PROFILE-TABS-START*/
-/* Fonte das novidades do perfil, incorporada no IIFE de index.html. */
-const PF_FIELDS = "id,handle,display_name,avatar_path,cover_path,theme,verified,official,kind";
-const PF_POST_FIELDS = "id,author,image_path,caption,song,created_at";
-const PF_VIDEO_FIELDS = "id,author,video_key,thumb_key,caption,duration,created_at";
-const PF_TABS = [["photos", "Fotos"], ["videos", "Blessings"], ["tagged", "Fotos comigo"], ["shares", "Compartilhamentos"]];
-const PF = {viewer: null, generation: 0, tabs: {}, lists: {}, tags: {}, comments: {}, drafts: {}, videos: {}, panel: null, mutations: new Set()};
-function pfReset(){
-  const hadPanel = !!PF.panel;
-  pfPanelClosed(false);
-  if (hadPanel) { const modal = $("#modal"); if (modal) { modal.hidden = true; modal.innerHTML = ""; } }
-  PF.viewer = TEAM.user ? TEAM.user.id : null;
-  PF.generation++;
-  PF.tabs = {}; PF.lists = {}; PF.tags = {}; PF.comments = {}; PF.drafts = {}; PF.videos = {}; PF.mutations = new Set();
+/* ---------- Perfil: abas Fotos · Blessings · Marcações · Compartilhados; comentários nos Blessings ----------
+   Marcação: quem posta marca pessoas na própria foto/vídeo (a pessoa marcada pode se desmarcar).
+   Compartilhar: guarda no próprio perfil uma foto ou Blessing de outra pessoa (aba Compartilhados). */
+const PF = {bl: {}, tags: {}, shares: {}, tagsOf: {}, mySh: new Set(), myShLoaded: false, bcom: {}, bccount: {}, bcOpen: null, bcBusy: false, missing: false};
+const PF_BSEL = "id,author,video_key,thumb_key,caption,duration,created_at", PF_PSEL = "id,author,image_path,caption,song,created_at";
+const PF_PROF = "id,handle,display_name,avatar_path,theme,verified,official,kind";
+function pfMissing(error){ if (error && /does not exist|schema cache/i.test(error.message || "")) PF.missing = true; return !!error; }
+
+async function pfLoadMix(rows){
+  const pids = rows.filter(r => r.kind === "post" && !COMM.posts[r.target_id]).map(r => r.target_id);
+  const bids = rows.filter(r => r.kind === "blessing" && !BLS.items[r.target_id]).map(r => r.target_id);
+  if (pids.length) { const {data} = await TEAM.client.from("posts").select(PF_PSEL).in("id", pids); (data || []).forEach(p => COMM.posts[p.id] = p); await commAfterPosts(data || []); }
+  if (bids.length) { const {data} = await TEAM.client.from("blessings").select(PF_BSEL).in("id", bids); (data || []).forEach(x => BLS.items[x.id] = x); await blAfter(data || []); }
+  return rows.map(r => ({k: r.kind, id: r.target_id})).filter(x => x.k === "post" ? COMM.posts[x.id] : BLS.items[x.id]);
 }
-function pfActor(){
-  const id = TEAM.user ? TEAM.user.id : null;
-  if (PF.viewer !== id) pfReset();
-  return {id, generation: PF.generation, client: TEAM.client};
-}
-function pfCurrent(actor){ return !!actor.id && actor.id === (TEAM.user && TEAM.user.id) && actor.generation === PF.generation && commIn(); }
-function pfError(error){
-  if (commMissing(error)) return "Este recurso está sendo ativado. Tente novamente em instantes.";
-  if (error && error.code === "42501") return "Você não tem permissão para esta ação.";
-  return "Não consegui concluir agora. Confira a internet e tente novamente.";
-}
-function pfInvalidate(){ PF.lists = {}; }
-async function pfProfiles(ids, actor){
-  const missing = [...new Set(ids)].filter(id => id && !COMM.profiles[id]);
-  if (!missing.length) return;
-  const {data, error} = await actor.client.from("community_profiles").select(PF_FIELDS).in("id", missing);
-  if (error) throw error;
-  if (pfCurrent(actor)) commKeep(data || []);
-}
-async function pfOriginals(rows, actor){
-  const posts = [...new Set(rows.map(r => r.post_id).filter(Boolean))];
-  const videos = [...new Set(rows.map(r => r.blessing_id).filter(Boolean))];
-  const [p, v] = await Promise.all([
-    posts.length ? actor.client.from("posts").select(PF_POST_FIELDS).in("id", posts) : {data: []},
-    videos.length ? actor.client.from("blessings").select(PF_VIDEO_FIELDS).in("id", videos) : {data: []}
-  ]);
-  if (p.error || v.error) throw p.error || v.error;
-  if (!pfCurrent(actor)) return [];
-  const photos = p.data || [], clips = v.data || [];
-  await pfProfiles(photos.concat(clips).map(x => x.author), actor);
-  if (!pfCurrent(actor)) return [];
-  photos.forEach(x => { COMM.posts[x.id] = x; });
-  clips.forEach(x => { PF.videos[x.id] = x; });
-  commSign(photos.map(x => commThumb(x.image_path)));
-  const available = new Set(photos.concat(clips).map(x => x.id));
-  return rows.filter(r => available.has(r.post_id || r.blessing_id));
-}
-function pfProfileSection(profile, photos){
-  pfActor();
-  const tab = PF.tabs[profile.id] || "photos", key = profile.id + ":" + tab;
-  const tabs = PF_TABS.map(([value, label]) => `<button class="pf-tab" role="tab" id="pf-tab-${value}" aria-controls="pf-profile-content" aria-selected="${tab === value}" data-a="pf-tab" data-id="${esc(profile.id)}" data-v="${value}">${esc(label)}</button>`).join("");
-  let content;
-  if (tab === "photos") content = photos === undefined ? '<p class="muted">Carregando fotos…</p>' : photos.length ? commGrid(photos) : '<p class="muted">Ainda não há fotos publicadas.</p>';
-  else {
-    let entry = PF.lists[key];
-    if (!entry || (!entry.loading && !entry.error && Date.now() - entry.updated > 60000)) {
-      entry = PF.lists[key] = {rows: entry ? entry.rows : [], loading: true, limit: entry ? entry.limit : 24};
-      pfLoadList(profile.id, tab, entry);
-    }
-    content = entry.error ? `<p class="pf-status" role="status">${esc(entry.error)}</p><button class="btn" data-a="pf-retry" data-id="${esc(profile.id)}" data-v="${tab}">Tentar novamente</button>`
-      : entry.rows.length ? pfListHtml(profile.id, tab, entry.rows) : `<p class="muted">${entry.loading ? "Carregando…" : tab === "videos" ? "Ainda não há Blessings publicados." : tab === "tagged" ? "As fotos em que este perfil foi marcado aparecem aqui." : "As publicações compartilhadas por este perfil aparecem aqui."}</p>`;
-    if (entry.rows.length && entry.loading) content += '<p class="muted" role="status">Carregando…</p>';
-    else if (entry.more && !entry.error) content += `<button class="btn pf-load-more" data-a="pf-load-more" data-id="${esc(profile.id)}" data-v="${tab}">Ver mais</button>`;
+async function pfLoad(uid, tab){
+  if (tab === "blessings") {
+    const {data} = await TEAM.client.from("blessings").select(PF_BSEL).eq("author", uid).order("created_at", {ascending: false}).limit(60);
+    (data || []).forEach(x => BLS.items[x.id] = x); await blAfter(data || []);
+    PF.bl[uid] = (data || []).map(x => x.id);
+  } else {
+    const {data, error} = await TEAM.client.from(tab).select("kind,target_id,created_at").eq("user_id", uid).order("created_at", {ascending: false}).limit(90);
+    pfMissing(error);
+    PF[tab][uid] = await pfLoadMix(data || []);
+    if (tab === "shares" && uid === TEAM.user.id) (data || []).forEach(r => PF.mySh.add(r.kind + ":" + r.target_id));
   }
-  return `<section class="pf-publications" aria-label="Publicações do perfil"><div class="pf-tabs" role="tablist" aria-label="Tipos de publicação">${tabs}</div><div id="pf-profile-content" role="tabpanel" aria-labelledby="pf-tab-${tab}" aria-live="polite">${content}</div></section>`;
+  commRerender("profile");
 }
-async function pfLoadList(id, tab, entry){
-  const actor = pfActor(), key = id + ":" + tab;
-  if (!pfCurrent(actor)) return;
-  try {
-    const table = tab === "videos" ? "blessings" : tab === "tagged" ? "post_tags" : "profile_shares";
-    const fields = tab === "videos" ? PF_VIDEO_FIELDS : tab === "tagged" ? "id,post_id,tagged_user,tagged_by,created_at" : "id,user_id,post_id,blessing_id,created_at";
-    const field = tab === "videos" ? "author" : tab === "tagged" ? "tagged_user" : "user_id";
-    const {data, error} = await actor.client.from(table).select(fields).eq(field, id).order("created_at", {ascending: false}).order("id", {ascending: false}).limit(entry.limit + 1);
-    if (error) throw error;
-    if (!pfCurrent(actor) || PF.lists[key] !== entry) return;
-    const rows = (data || []).slice(0, entry.limit);
-    if (tab === "videos") {
-      await pfProfiles(rows.map(x => x.author), actor);
-      if (!pfCurrent(actor) || PF.lists[key] !== entry) return;
-      rows.forEach(x => { PF.videos[x.id] = x; });
-      entry.rows = rows;
-    } else entry.rows = await pfOriginals(rows, actor);
-    if (!pfCurrent(actor) || PF.lists[key] !== entry) return;
-    entry.more = (data || []).length > entry.limit; entry.updated = Date.now(); entry.error = "";
-  } catch (error) { if (pfCurrent(actor) && PF.lists[key] === entry) entry.error = pfError(error); }
-  finally { if (pfCurrent(actor) && PF.lists[key] === entry) { entry.loading = false; if (state.view === "profile" && state.profileId === id) rerenderKeepScroll(); } }
+// depois de carregar fotos/vídeos: quem está marcado e quantos comentários os vídeos têm
+async function pfAfter(kind, ids){
+  ids = ids.filter(i => PF.tagsOf[kind + ":" + i] === undefined);
+  if (!ids.length || PF.missing) return;
+  ids.forEach(i => PF.tagsOf[kind + ":" + i] = []);
+  const [t, c] = await Promise.all([
+    TEAM.client.from("tags").select("target_id,user_id").eq("kind", kind).in("target_id", ids),
+    kind === "blessing" ? TEAM.client.from("blessing_comments").select("blessing_id").in("blessing_id", ids) : Promise.resolve({data: []})]);
+  if (pfMissing(t.error)) return;
+  (t.data || []).forEach(r => PF.tagsOf[kind + ":" + r.target_id].push(r.user_id));
+  if (kind === "blessing") { ids.forEach(i => PF.bccount[i] = 0); (c.data || []).forEach(r => PF.bccount[r.blessing_id]++); }
+  const need = [...new Set((t.data || []).map(r => r.user_id))].filter(u => !COMM.profiles[u]);
+  if (need.length) { const {data: pr} = await TEAM.client.from("community_profiles").select(PF_PROF).in("id", need); commKeep(pr); }
 }
-function pfVideoTile(x){
-  return `<button class="pf-video-tile" data-a="pf-video" data-id="${esc(x.id)}" aria-label="Abrir Blessing${x.caption ? ": " + esc(x.caption) : ""}">${x.thumb_key ? `<img src="${esc(blUrl(x.thumb_key))}" alt="Miniatura do Blessing" loading="lazy" decoding="async">` : '<span class="pf-no-thumb">Blessing</span>'}<span class="pf-play">${BL_ICONS.play}</span>${x.duration ? `<small class="pf-duration">${Math.round(x.duration)}s</small>` : ""}</button>`;
+function pfWith(kind, id){
+  const us = PF.tagsOf[kind + ":" + id] || [];
+  if (!us.length) return "";
+  return `<p class="pf-with">👥 com ${us.map(u => `<button class="lnk2" data-a="cm-profile" data-id="${esc(u)}">${esc((COMM.profiles[u] || {}).display_name || "alguém")}</button>`).join(", ")}</p>`;
 }
-function pfListHtml(profileId, tab, rows){
-  if (tab === "videos") return `<div class="cm-grid pf-video-grid">${rows.map(pfVideoTile).join("")}</div>`;
-  if (tab === "tagged") return commGrid(rows.map(r => r.post_id)).replaceAll('data-a="cm-post"', 'data-a="pf-photo"');
-  const own = profileId === (TEAM.user && TEAM.user.id);
-  return `<div class="pf-shares">${rows.map(r => {
-    const x = r.post_id ? COMM.posts[r.post_id] : PF.videos[r.blessing_id]; if (!x) return "";
-    const a = COMM.profiles[x.author] || {}, u = r.post_id ? commGridUrl(x) : "";
-    return `<article class="pf-shared"><div class="pf-shared-media">${r.post_id ? `<button data-a="pf-photo" data-id="${esc(x.id)}" aria-label="Abrir foto compartilhada">${u ? `<img src="${esc(u)}" alt="Foto compartilhada" loading="lazy" decoding="async">` : '<span class="muted">Carregando foto…</span>'}</button>` : pfVideoTile(x)}</div><div class="pf-shared-info"><small class="muted">${r.post_id ? "Foto compartilhada" : "Blessing compartilhado"}</small><button class="lnk2" data-a="cm-profile" data-id="${esc(x.author)}">${esc(a.display_name || "Perfil original")}${commBadge(a)}</button>${x.caption ? `<p>${esc(x.caption)}</p>` : ""}${own || teamRole() === "admin" ? `<button class="lnk2" data-a="pf-share-remove" data-id="${esc(r.id)}" data-profile="${esc(profileId)}">Remover compartilhamento</button>` : ""}</div></article>`;
-  }).join("")}</div>`;
+function pfCell(x){
+  if (x.k === "post") { const u = commGridUrl(COMM.posts[x.id]); return `<button data-a="cm-post" data-id="${esc(x.id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }
+  const b = BLS.items[x.id];
+  return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span></button>`;
 }
-function pfCanTag(post){ return !!TEAM.user && (post.author === TEAM.user.id || teamRole() === "admin"); }
-function pfPhotoTagsHtml(post){
-  pfActor();
-  let entry = PF.tags[post.id];
-  if (!entry || (!entry.loading && !entry.error && Date.now() - entry.updated > 60000)) { entry = PF.tags[post.id] = {rows: entry ? entry.rows : [], loading: true}; pfLoadTags(post.id, entry); }
-  const mine = entry.rows.find(r => r.tagged_user === (TEAM.user && TEAM.user.id));
-  const people = entry.rows.map(r => { const p = COMM.profiles[r.tagged_user] || {}; return `<button class="pf-tag-person" data-a="cm-profile" data-id="${esc(r.tagged_user)}">${commAvatar(p, 26)}${esc(p.display_name || "Perfil")}</button>`; }).join("");
-  return `<section class="pf-photo-tags" aria-label="Pessoas marcadas">${people ? `<span class="muted">Nesta foto</span><div class="pf-tagged-people">${people}</div>` : ""}${entry.error ? `<p class="muted" role="status">${esc(entry.error)}</p>` : ""}<div class="actions">${pfCanTag(post) ? `<button class="btn ghost" data-a="pf-tags" data-id="${esc(post.id)}">Marcar pessoas</button>` : ""}${mine ? `<button class="btn ghost" data-a="pf-untag" data-id="${esc(mine.id)}" data-post="${esc(post.id)}">Remover minha marcação</button>` : ""}</div></section>`;
+function pfTabs(id, me, posts){
+  const tab = state.pfTab || "fotos";
+  const seg = (v, l) => `<button data-a="pf-tab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`;
+  let body;
+  if (tab === "fotos") body = posts === undefined ? '<p class="muted">Carregando…</p>' : posts.length ? commGrid(posts) : `<p class="muted">${me ? "Você ainda não postou. Que tal uma foto tocando?" : "Ainda não postou fotos."}</p>`;
+  else if (PF.missing && tab !== "blessings") body = `<p class="muted">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-perfil-abas.sql</b> no Supabase (SQL Editor → New query → Run)." : "Em breve."}</p>`;
+  else {
+    const st = tab === "blessings" ? PF.bl : PF[tab];
+    if (st[id] === undefined) { st[id] = null; pfLoad(id, tab); }
+    const v = st[id];
+    const list = v === null ? null : tab === "blessings" ? v.filter(b => BLS.items[b]).map(b => ({k: "blessing", id: b})) : v;
+    const empty = {blessings: me ? "Você ainda não postou Blessings." : "Ainda não postou Blessings.",
+      tags: me ? "Quando alguém marcar você numa foto ou Blessing, aparece aqui." : "Ninguém marcou esta pessoa ainda.",
+      shares: me ? "Numa foto ou Blessing, toque em compartilhar e escolha “No meu perfil”." : "Ainda não compartilhou nada."}[tab];
+    body = list === null ? '<p class="muted">Carregando…</p>' : list.length ? `<div class="cm-grid">${list.map(pfCell).join("")}</div>` : `<p class="muted">${empty}</p>`;
+  }
+  return `<div class="inst cm-seg pf-tabs" role="group" aria-label="O que ver no perfil">${seg("fotos", "📷 Fotos")}${blOn() ? seg("blessings", "▶ Blessings") : ""}${seg("tags", "👥 Marcações")}${seg("shares", "🔁 Compartilhados")}</div>${body}`;
 }
-async function pfLoadTags(id, entry){
-  const actor = pfActor();
-  try {
-    const {data, error} = await actor.client.from("post_tags").select("id,post_id,tagged_user,tagged_by,created_at").eq("post_id", id).order("created_at", {ascending: true});
-    if (error) throw error;
-    await pfProfiles((data || []).map(r => r.tagged_user), actor);
-    if (!pfCurrent(actor) || PF.tags[id] !== entry) return;
-    entry.rows = data || []; entry.error = ""; entry.updated = Date.now();
-  } catch (error) { if (pfCurrent(actor) && PF.tags[id] === entry) entry.error = pfError(error); }
-  finally { if (pfCurrent(actor) && PF.tags[id] === entry) { entry.loading = false; if (state.view === "post" && state.postId === id) rerenderKeepScroll(); } }
+
+/* marcar pessoas ao postar */
+function pfTagPicker(){
+  if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
+  const sel = state.tagPick || [];
+  const opts = (COMM.people || []).filter(p => p.id !== TEAM.user.id && !sel.includes(p.id)).map(p => `<option value="@${esc(p.handle)}">${esc(p.display_name)}</option>`).join("");
+  return `<div class="pf-tagpick"><span class="muted" style="font-size:13px">👥 Marcar pessoas (opcional)</span>
+    ${sel.length ? `<div class="cm-chips">${sel.map(u => `<button type="button" class="pf-chip" data-a="pf-unpick" data-id="${esc(u)}" aria-label="Tirar ${esc((COMM.profiles[u] || {}).display_name || "")}">${esc((COMM.profiles[u] || {}).display_name || "")} ✕</button>`).join("")}</div>` : ""}
+    ${sel.length < 10 ? `<input id="pf-tag-q" list="pf-tag-list" placeholder="Digite o nome ou o @ da pessoa" autocomplete="off" aria-label="Marcar pessoa"><datalist id="pf-tag-list">${opts}</datalist>` : ""}</div>`;
 }
-function pfPanelClosed(resume = true){
-  const panel = PF.panel; if (!panel) return;
-  PF.panel = null;
-  if (panel.kind === "comments") { const input = $("#pf-comment"); if (input) PF.drafts[panel.id] = input.value; }
-  if (resume && panel.video && panel.wasPlaying && panel.video.isConnected && state.view === "blessings" && pfCurrent(panel.actor)) panel.video.play().catch(() => {});
-  if (resume && panel.focus && panel.focus.isConnected) panel.focus.focus();
+function pfKeepDrafts(){ const c = $("#cm-caption"); if (c && state.cmPost) state.cmPost.caption = c.value; const b = $("#bl-cap"); if (b) BLS.capDraft = b.value; }
+function pfPick(v){
+  v = String(v || "").trim().toLowerCase().replace(/^@/, "");
+  if (!v) return;
+  const p = (COMM.people || []).find(x => x.id !== TEAM.user.id && ((x.handle || "").toLowerCase() === v || (x.display_name || "").toLowerCase() === v));
+  if (!p) { flash("Não achei essa pessoa. Escolha um nome da lista."); return; }
+  pfKeepDrafts(); state.tagPick = [...new Set((state.tagPick || []).concat(p.id))].slice(0, 10); rerenderKeepScroll();
+  const q = $("#pf-tag-q"); if (q) q.focus();
 }
-function pfOpenPanel(kind, id){
-  const actor = pfActor(); if (!pfCurrent(actor)) return null;
+async function pfSaveTags(kind, id){
+  const sel = state.tagPick || []; state.tagPick = [];
+  if (!sel.length) return;
+  const {error} = await TEAM.client.from("tags").insert(sel.map(u => ({kind, target_id: id, user_id: u, tagged_by: TEAM.user.id})));
+  if (error) { pfMissing(error); flash("Publicado, mas não consegui marcar as pessoas."); return; }
+  PF.tagsOf[kind + ":" + id] = sel.slice(); sel.forEach(u => delete PF.tags[u]);
+}
+async function pfUntagMe(kind, id){
   closePix();
-  const video = [...document.querySelectorAll(".bl-v")].find(v => !v.paused);
-  const panel = {kind, id, actor, loading: true, busy: false, error: "", focus: document.activeElement, video, wasPlaying: !!video};
-  if (video) video.pause();
-  PF.panel = panel; pfRenderPanel(true); return panel;
+  const {error} = await TEAM.client.from("tags").delete().eq("kind", kind).eq("target_id", id).eq("user_id", TEAM.user.id);
+  if (error) { flash("Não consegui agora."); return; }
+  PF.tagsOf[kind + ":" + id] = (PF.tagsOf[kind + ":" + id] || []).filter(u => u !== TEAM.user.id); delete PF.tags[TEAM.user.id];
+  flash("Sua marcação foi tirada."); if (state.view === "blessings") { const el = document.querySelector(`.bl-item[data-id="${CSS.escape(id)}"] .pf-with`); if (el) el.remove(); } else rerenderKeepScroll();
 }
-function pfPanelCurrent(panel){ return PF.panel === panel && pfCurrent(panel.actor); }
-function pfRenderPanel(first = false){
-  const panel = PF.panel; if (!panel || !pfPanelCurrent(panel)) return;
-  const m = $("#modal"), active = document.activeElement, focusId = active && active.id;
-  const pos = active && active.selectionStart;
-  const title = panel.kind === "comments" ? "Comentários do Blessing" : panel.kind === "tags" ? "Marcar pessoas" : "Compartilhar";
+
+/* compartilhar: no meu perfil ou mandar o link */
+function pfShareMenu(kind, id){
+  if (COMM.me && !PF.myShLoaded) { PF.myShLoaded = true;
+    TEAM.client.from("shares").select("kind,target_id").eq("user_id", TEAM.user.id).limit(1000).then(({data, error}) => {
+      if (pfMissing(error)) return; (data || []).forEach(r => PF.mySh.add(r.kind + ":" + r.target_id)); if ($("#sh-t")) pfShareMenu(kind, id); }); }
+  const on = PF.mySh.has(kind + ":" + id), m = $("#modal");
+  const mine = ((kind === "post" ? COMM.posts[id] : BLS.items[id]) || {}).author === TEAM.user.id;
   m.className = "modal";
-  m.innerHTML = `<div class="modal-box pf-dialog" role="dialog" aria-modal="true" aria-labelledby="pf-dialog-title"><div class="pf-dialog-head"><h2 id="pf-dialog-title">${title}</h2><button class="btn ghost" id="pf-close" data-a="pf-close" aria-label="Fechar">✕</button></div>${panel.error ? `<p class="pf-status" role="status">${esc(panel.error)}</p>` : ""}${panel.kind === "comments" ? pfCommentsPanelHtml(panel) : panel.kind === "tags" ? pfTagsPanelHtml(panel) : pfSharePanelHtml(panel)}</div>`;
+  m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="sh-t"><h2 id="sh-t">Compartilhar</h2><div style="display:grid;gap:8px">
+    ${COMM.me && !mine ? `<button class="btn ${on ? "" : "primary"}" data-a="pf-share" data-k="${kind}" data-id="${esc(id)}">${on ? "Tirar do meu perfil" : "🔁 No meu perfil"}</button>` : ""}
+    <button class="btn" data-a="pf-link" data-k="${kind}" data-id="${esc(id)}">🔗 Mandar o link (WhatsApp, Instagram…)</button></div>
+    <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
   m.hidden = false;
-  const focus = !first && focusId ? document.getElementById(focusId) : null;
-  if (focus) { focus.focus(); if (typeof pos === "number" && focus.setSelectionRange) try { focus.setSelectionRange(pos, pos); } catch (_) {} }
-  else if (first) $("#pf-close").focus();
 }
-async function pfShareOpen(kind, id){
-  const panel = pfOpenPanel("share", id); if (!panel) return;
-  panel.mediaKind = kind;
-  try {
-    const field = kind === "post" ? "post_id" : "blessing_id";
-    const {data, error} = await panel.actor.client.from("profile_shares").select("id").eq("user_id", panel.actor.id).eq(field, id).maybeSingle();
-    if (error) throw error;
-    if (pfPanelCurrent(panel)) panel.share = data || null;
-  } catch (error) { if (pfPanelCurrent(panel)) panel.error = pfError(error); }
-  finally { if (pfPanelCurrent(panel)) { panel.loading = false; pfRenderPanel(); } }
+async function pfShareToggle(kind, id){
+  const k = kind + ":" + id, on = PF.mySh.has(k); closePix();
+  const res = on ? await TEAM.client.from("shares").delete().eq("kind", kind).eq("target_id", id).eq("user_id", TEAM.user.id)
+                 : await TEAM.client.from("shares").insert({kind, target_id: id, user_id: TEAM.user.id});
+  if (res.error && !/duplicate/i.test(res.error.message || "")) { flash(pfMissing(res.error) && PF.missing ? "Compartilhar no perfil ainda não foi ligado." : "Não consegui agora."); return; }
+  if (on) PF.mySh.delete(k); else PF.mySh.add(k);
+  delete PF.shares[TEAM.user.id];
+  flash(on ? "Tirado do seu perfil." : "Compartilhado no seu perfil ✓");
 }
-function pfSharePanelHtml(panel){
-  return `<p>Compartilhe esta publicação no seu perfil ou envie o link.</p><div class="pf-share-actions">${COMM.me ? `<button class="btn primary" data-a="pf-share-save" ${panel.loading || panel.busy || panel.share === undefined ? "disabled" : ""}>${panel.loading ? "Carregando…" : panel.busy ? "Salvando…" : panel.share ? "Remover do meu perfil" : "Compartilhar no meu perfil"}</button>` : '<button class="btn primary" data-a="pf-create-profile">Criar meu perfil para compartilhar</button>'}${panel.error && panel.share === undefined ? '<button class="btn" data-a="pf-panel-retry">Tentar novamente</button>' : ""}<button class="btn" data-a="pf-share-link" ${panel.busy ? "disabled" : ""}>Enviar link</button></div>`;
+
+/* comentários nos Blessings (abre por cima do vídeo) */
+function pfBcOpen(bid){ PF.bcOpen = bid; if (PF.bcom[bid] === undefined) { PF.bcom[bid] = null; pfBcLoad(bid); } pfBcRender(bid); }
+async function pfBcLoad(bid){
+  const {data, error} = await TEAM.client.from("blessing_comments").select("id,blessing_id,author,text,created_at").eq("blessing_id", bid).order("created_at", {ascending: true}).limit(300);
+  pfMissing(error);
+  PF.bcom[bid] = error ? [] : data; PF.bccount[bid] = PF.bcom[bid].length;
+  const need = [...new Set(PF.bcom[bid].map(c => c.author))].filter(a => !COMM.profiles[a]);
+  if (need.length) { const {data: pr} = await TEAM.client.from("community_profiles").select(PF_PROF).in("id", need); commKeep(pr); }
+  pfBcRender(bid); pfBcCount(bid);
 }
-async function pfShareSave(){
-  const panel = PF.panel;
-  if (!panel || panel.kind !== "share" || panel.loading || panel.busy || panel.share === undefined || !COMM.me || !pfPanelCurrent(panel)) return;
-  panel.busy = true; panel.error = ""; pfRenderPanel();
-  const field = panel.mediaKind === "post" ? "post_id" : "blessing_id";
-  const removing = !!panel.share;
-  try {
-    const result = removing ? await panel.actor.client.from("profile_shares").delete().eq("id", panel.share.id).eq("user_id", panel.actor.id)
-      : await panel.actor.client.from("profile_shares").insert({user_id: panel.actor.id, [field]: panel.id});
-    if (result.error && !(result.error.code === "23505" && !removing)) throw result.error;
-    if (!pfCurrent(panel.actor)) return;
-    pfInvalidate();
-    if (pfPanelCurrent(panel)) { closePix(); flash(removing ? "Compartilhamento removido do seu perfil." : "Compartilhado no seu perfil."); }
-    if (state.view === "profile") rerenderKeepScroll();
-  } catch (error) { if (pfPanelCurrent(panel)) { panel.error = pfError(error); panel.busy = false; pfRenderPanel(); } }
+function pfBcRender(bid){
+  if (PF.bcOpen !== bid) return;
+  const m = $("#modal"), list = PF.bcom[bid], x = BLS.items[bid] || {}, draft = ($("#pf-bc") || {}).value || "";
+  const rows = (list || []).map(c => { const a = COMM.profiles[c.author] || {};
+    const canDel = c.author === TEAM.user.id || x.author === TEAM.user.id || teamRole() === "admin";
+    return `<div class="cm-cmt"><button class="cm-cmt-av" data-a="cm-profile" data-id="${esc(c.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 34)}</button>
+      <div class="cm-cmt-b"><p><button class="lnk2 cm-cmt-n" data-a="cm-profile" data-id="${esc(c.author)}">${esc(a.display_name || "")}</button>${commBadge(a)} <span class="muted">· ${commAgo(c.created_at)}</span></p><p class="cm-cmt-t">${esc(c.text)}</p>
+      ${canDel ? `<p class="cm-cmt-x"><button class="lnk2" data-a="pf-bc-del" data-id="${esc(c.id)}" data-b="${esc(bid)}">Apagar</button></p>` : ""}</div></div>`; }).join("");
+  m.className = "modal";
+  m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="bc-t"><h2 id="bc-t">Comentários${list && list.length ? ` <small class="muted">${list.length}</small>` : ""}</h2>
+    <div class="pf-bc-list">${list === null ? '<p class="muted">Carregando…</p>' : rows || '<p class="muted">Seja o primeiro a comentar.</p>'}</div>
+    ${PF.missing ? '<p class="muted">Os comentários dos Blessings ainda estão sendo ligados.</p>' : COMM.me ? `<form class="cm-cmt-form" id="pf-bc-form" data-b="${esc(bid)}">${commAvatar(COMM.me, 34)}<textarea id="pf-bc" maxlength="500" rows="1" placeholder="Escreva um comentário…" aria-label="Escreva um comentário">${esc(draft)}</textarea><button class="btn primary" type="submit">Enviar</button></form>` : '<p class="muted">Crie seu perfil na Comunidade para comentar.</p>'}
+    <button class="btn ghost" data-a="pix-close">Fechar</button></div>`;
+  m.hidden = false;
+  const l = m.querySelector(".pf-bc-list"); if (l) l.scrollTop = l.scrollHeight;
 }
-async function pfShareRemove(id, profileId){
-  const actor = pfActor(), key = "share:" + id;
-  if (!pfCurrent(actor) || PF.mutations.has(key) || (actor.id !== profileId && teamRole() !== "admin")) return;
-  PF.mutations.add(key);
-  try {
-    const {error} = await actor.client.from("profile_shares").delete().eq("id", id).eq("user_id", profileId);
-    if (error) throw error;
-    if (pfCurrent(actor)) { pfInvalidate(); rerenderKeepScroll(); flash("Compartilhamento removido."); }
-  } catch (error) { if (pfCurrent(actor)) flash(pfError(error)); }
-  finally { if (pfCurrent(actor)) PF.mutations.delete(key); }
+async function pfBcSend(bid){
+  const el = $("#pf-bc"), text = ((el && el.value) || "").trim().slice(0, 500);
+  if (!text || PF.bcBusy) return;
+  PF.bcBusy = true;
+  const {data, error} = await TEAM.client.from("blessing_comments").insert({blessing_id: bid, author: TEAM.user.id, text}).select("id,blessing_id,author,text,created_at").single();
+  PF.bcBusy = false;
+  if (error) { flash("Não consegui enviar o comentário. Confira a internet."); return; }
+  if (el) el.value = "";
+  (PF.bcom[bid] = PF.bcom[bid] || []).push(data); PF.bccount[bid] = PF.bcom[bid].length;
+  pfBcRender(bid); pfBcCount(bid); const f = $("#pf-bc"); if (f) f.focus();
 }
-async function pfTagsOpen(id){
-  const post = COMM.posts[id]; if (!post || !pfCanTag(post)) return;
-  const panel = pfOpenPanel("tags", id); if (!panel) return;
-  panel.selected = new Set(); panel.people = []; panel.query = ""; panel.ready = false;
-  try {
-    const [tags, people] = await Promise.all([
-      panel.actor.client.from("post_tags").select("id,post_id,tagged_user,tagged_by,created_at").eq("post_id", id),
-      panel.actor.client.from("community_profiles").select(PF_FIELDS).order("display_name", {ascending: true}).limit(500)
-    ]);
-    if (tags.error || people.error) throw tags.error || people.error;
-    if (!pfPanelCurrent(panel)) return;
-    panel.people = people.data || []; panel.selected = new Set((tags.data || []).map(x => x.tagged_user));
-    await pfProfiles((tags.data || []).map(x => x.tagged_user), panel.actor);
-    if (!pfPanelCurrent(panel)) return;
-    commKeep(panel.people);
-    const known = new Set(panel.people.map(p => p.id));
-    panel.selected.forEach(uid => { if (!known.has(uid) && COMM.profiles[uid]) panel.people.push(COMM.profiles[uid]); });
-    panel.ready = true;
-  } catch (error) { if (pfPanelCurrent(panel)) panel.error = pfError(error); }
-  finally { if (pfPanelCurrent(panel)) { panel.loading = false; pfRenderPanel(); } }
+async function pfBcDel(id, bid){
+  if (!confirm("Apagar este comentário?")) return;
+  const {error} = await TEAM.client.from("blessing_comments").delete().eq("id", id);
+  if (error) { flash("Não consegui apagar agora."); return; }
+  PF.bcom[bid] = (PF.bcom[bid] || []).filter(c => c.id !== id); PF.bccount[bid] = PF.bcom[bid].length;
+  pfBcRender(bid); pfBcCount(bid);
 }
-function pfTagsPanelHtml(panel){
-  if (panel.loading) return '<p class="muted">Carregando pessoas…</p>';
-  return `<p>Escolha quem aparece nesta foto. Cada pessoa pode remover a própria marcação.</p><label class="pf-search-label" for="pf-tag-search">Buscar pessoa</label><input id="pf-tag-search" type="search" placeholder="Nome ou @perfil" value="${esc(panel.query || "")}" autocomplete="off"><p class="muted pf-selection" role="status">${panel.selected.size} de 30 pessoas</p><div class="pf-tag-options">${(panel.people || []).map(p => `<button type="button" class="pf-tag-option" id="pf-person-${esc(p.id)}" data-a="pf-tag-toggle" data-id="${esc(p.id)}" data-search="${esc(norm((p.display_name || "") + " " + (p.handle || "")))}" aria-pressed="${panel.selected.has(p.id)}" ${panel.busy ? "disabled" : ""} ${panel.query && !norm((p.display_name || "") + " " + (p.handle || "")).includes(norm(panel.query)) ? "hidden" : ""}>${commAvatar(p, 36)}<span><b>${esc(p.display_name || "Perfil")}</b><small class="muted">@${esc(p.handle || "")}</small></span><span class="pf-check" aria-hidden="true">${panel.selected.has(p.id) ? "✓" : "＋"}</span></button>`).join("") || '<p class="muted">Nenhum perfil disponível.</p>'}</div>${panel.error && !panel.ready ? '<button class="btn" data-a="pf-panel-retry">Tentar novamente</button>' : ""}<button class="btn primary" data-a="pf-tags-save" ${panel.busy || !panel.ready ? "disabled" : ""}>${panel.busy ? "Salvando…" : "Salvar marcações"}</button>`;
-}
-async function pfTagsSave(){
-  const panel = PF.panel;
-  if (!panel || panel.kind !== "tags" || panel.loading || panel.busy || !panel.ready || !pfPanelCurrent(panel)) return;
-  panel.busy = true; panel.error = ""; pfRenderPanel();
-  try {
-    const {error} = await panel.actor.client.rpc("pf_set_post_tags", {p_post_id: panel.id, p_users: [...panel.selected]});
-    if (error) throw error;
-    if (!pfCurrent(panel.actor)) return;
-    delete PF.tags[panel.id]; pfInvalidate();
-    if (pfPanelCurrent(panel)) { closePix(); flash("Marcações salvas."); }
-    if (state.view === "post" || state.view === "profile") rerenderKeepScroll();
-  } catch (error) { if (pfPanelCurrent(panel)) { panel.error = pfError(error); panel.busy = false; pfRenderPanel(); } }
-}
-async function pfUntag(id, postId){
-  const actor = pfActor(), key = "tag:" + id;
-  if (!pfCurrent(actor) || PF.mutations.has(key)) return;
-  PF.mutations.add(key);
-  try {
-    const {error} = await actor.client.from("post_tags").delete().eq("id", id).eq("tagged_user", actor.id);
-    if (error) throw error;
-    if (pfCurrent(actor)) { delete PF.tags[postId]; pfInvalidate(); rerenderKeepScroll(); flash("Sua marcação foi removida."); }
-  } catch (error) { if (pfCurrent(actor)) flash(pfError(error)); }
-  finally { if (pfCurrent(actor)) PF.mutations.delete(key); }
-}
-function pfCommentsOpen(id){
-  const panel = pfOpenPanel("comments", id); if (!panel) return;
-  panel.limit = 50; pfLoadComments(panel);
-}
-async function pfLoadComments(panel){
-  panel.loading = true;
-  try {
-    const {data, count, error} = await panel.actor.client.from("blessing_comments").select("id,blessing_id,author,text,created_at", {count: "exact"}).eq("blessing_id", panel.id).order("created_at", {ascending: false}).order("id", {ascending: false}).limit(panel.limit);
-    if (error) throw error;
-    await pfProfiles((data || []).map(c => c.author), panel.actor);
-    if (!pfCurrent(panel.actor)) return;
-    PF.comments[panel.id] = {rows: (data || []).slice().reverse(), total: count ?? (data || []).length};
-    if (pfPanelCurrent(panel)) panel.error = "";
-  } catch (error) { if (pfPanelCurrent(panel)) panel.error = pfError(error); }
-  finally { if (pfPanelCurrent(panel)) { panel.loading = false; pfRenderPanel(); } }
-}
-function pfCommentsPanelHtml(panel){
-  const entry = PF.comments[panel.id], video = BLS.items[panel.id] || PF.videos[panel.id] || {};
-  const rows = entry ? entry.rows : [], uid = panel.actor.id;
-  const comments = rows.map(c => { const a = COMM.profiles[c.author] || {}, canDelete = c.author === uid || video.author === uid || teamRole() === "admin";
-    return `<div class="cm-cmt"><button class="cm-cmt-av" data-a="cm-profile" data-id="${esc(c.author)}" aria-label="Perfil de ${esc(a.display_name || "alguém")}">${commAvatar(a, 34)}</button><div class="cm-cmt-b"><p><button class="lnk2 cm-cmt-n" data-a="cm-profile" data-id="${esc(c.author)}">${esc(a.display_name || "Perfil")}</button>${commBadge(a)} <span class="muted">· ${commAgo(c.created_at)}</span></p><p class="cm-cmt-t">${esc(c.text)}</p>${canDelete ? `<button class="lnk2" data-a="pf-comment-delete" data-id="${esc(c.id)}" ${panel.busy ? "disabled" : ""}>Apagar</button>` : ""}</div></div>`;
-  }).join("");
-  return `<p class="muted">${entry ? entry.total + " comentário" + (entry.total === 1 ? "" : "s") : ""}</p><div class="pf-comment-list">${comments || `<p class="muted">${panel.loading ? "Carregando comentários…" : panel.error ? "" : "Seja o primeiro a comentar."}</p>`}</div>${entry && entry.total > rows.length ? `<button class="btn" data-a="pf-comments-more" ${panel.loading || panel.busy ? "disabled" : ""}>${panel.loading ? "Carregando…" : "Ver mais comentários"}</button>` : ""}${panel.error ? '<button class="btn" data-a="pf-comments-retry">Tentar novamente</button>' : ""}${COMM.me ? `<form class="cm-cmt-form pf-comment-form" id="pf-comment-form"><textarea id="pf-comment" maxlength="500" rows="2" aria-label="Seu comentário" placeholder="Escreva um comentário…">${esc(PF.drafts[panel.id] || "")}</textarea><button class="btn primary" type="submit" ${panel.busy || panel.loading ? "disabled" : ""}>${panel.busy ? "Enviando…" : "Enviar"}</button></form>` : '<button class="btn" data-a="pf-create-profile">Criar meu perfil para comentar</button>'}`;
-}
-async function pfSendComment(){
-  const panel = PF.panel;
-  if (!panel || panel.kind !== "comments" || panel.busy || panel.loading || !COMM.me || !pfPanelCurrent(panel)) return;
-  const input = $("#pf-comment"), text = ((input && input.value) || PF.drafts[panel.id] || "").trim();
-  if (!text) { flash("Escreva um comentário antes de enviar."); return; }
-  if ([...text].length > 500) { flash("Use até 500 caracteres no comentário."); return; }
-  PF.drafts[panel.id] = text; panel.busy = true; panel.error = ""; pfRenderPanel();
-  try {
-    const {error} = await panel.actor.client.from("blessing_comments").insert({blessing_id: panel.id, author: panel.actor.id, text});
-    if (error) throw error;
-    if (!pfCurrent(panel.actor)) return;
-    PF.drafts[panel.id] = ""; delete PF.comments[panel.id];
-    if (pfPanelCurrent(panel)) {
-      panel.busy = false;
-      await pfLoadComments(panel);
-      if (pfPanelCurrent(panel)) { const el = $("#pf-comment"); if (el) el.focus(); }
-    }
-  } catch (error) { if (pfPanelCurrent(panel)) { panel.busy = false; panel.error = pfError(error); pfRenderPanel(); } }
-}
-async function pfDeleteComment(id){
-  const panel = PF.panel; if (!panel || panel.kind !== "comments" || panel.busy || !pfPanelCurrent(panel)) return;
-  const entry = PF.comments[panel.id], row = entry && entry.rows.find(c => c.id === id);
-  const video = BLS.items[panel.id] || PF.videos[panel.id] || {};
-  if (!row || (row.author !== panel.actor.id && video.author !== panel.actor.id && teamRole() !== "admin")) return;
-  panel.busy = true; panel.error = ""; pfRenderPanel();
-  try {
-    const {error} = await panel.actor.client.from("blessing_comments").delete().eq("id", id).eq("blessing_id", panel.id);
-    if (error) throw error;
-    if (!pfCurrent(panel.actor)) return;
-    delete PF.comments[panel.id];
-    if (pfPanelCurrent(panel)) { panel.busy = false; await pfLoadComments(panel); }
-  } catch (error) { if (pfPanelCurrent(panel)) { panel.busy = false; panel.error = pfError(error); pfRenderPanel(); } }
-}
-async function pfOpenPhoto(id){
-  const actor = pfActor(); if (!pfCurrent(actor)) return;
-  const {data, error} = await actor.client.from("posts").select(PF_POST_FIELDS).eq("id", id).maybeSingle();
-  if (!pfCurrent(actor)) return;
-  if (error || !data) { flash(error ? pfError(error) : "Esta foto não está mais disponível."); pfInvalidate(); return; }
-  COMM.posts[id] = data;
-  commClick("cm-post", {dataset: {id}});
-  try {
-    const [likes, comments, saved] = await Promise.all([
-      actor.client.from("post_likes").select("user_id").eq("post_id", id),
-      actor.client.from("post_comments").select("id", {count: "exact", head: true}).eq("post_id", id),
-      actor.client.from("post_saves").select("post_id").eq("user_id", actor.id).eq("post_id", id).maybeSingle()
-    ]);
-    if (!pfCurrent(actor)) return;
-    if (!likes.error) {
-      COMM.likes[id] = (likes.data || []).length;
-      COMM.myLikes.delete(id); if ((likes.data || []).some(r => r.user_id === actor.id)) COMM.myLikes.add(id);
-    }
-    if (!comments.error) COMM.ccount[id] = comments.count || 0;
-    if (!saved.error) { COMM.mySaves.delete(id); if (saved.data) COMM.mySaves.add(id); }
-    if (state.view === "post" && state.postId === id) rerenderKeepScroll();
-  } catch (_) { /* A foto continua disponível; uma nova abertura tenta atualizar as interações. */ }
-}
-function pfClick(action, button){
-  const id = button.dataset.id;
-  if (action === "pf-tab") {
-    pfActor(); if (!PF_TABS.some(([v]) => v === button.dataset.v)) return true;
-    PF.tabs[id] = button.dataset.v; rerenderKeepScroll();
-    const tab = document.getElementById("pf-tab-" + button.dataset.v); if (tab) tab.focus();
-  } else if (action === "pf-load-more" || action === "pf-retry") {
-    const key = id + ":" + button.dataset.v, entry = PF.lists[key];
-    if (entry && !entry.loading) { if (action === "pf-load-more") entry.limit += 24; entry.error = ""; entry.loading = true; pfLoadList(id, button.dataset.v, entry); rerenderKeepScroll(); }
-  } else if (action === "pf-video") { closePix(); blOpen(id); }
-  else if (action === "pf-photo") pfOpenPhoto(id);
-  else if (action === "pf-comments") pfCommentsOpen(id);
-  else if (action === "pf-comments-more" || action === "pf-comments-retry") { const p = PF.panel; if (p && p.kind === "comments" && !p.loading && !p.busy) { if (action === "pf-comments-more") p.limit += 50; pfLoadComments(p); pfRenderPanel(); } }
-  else if (action === "pf-comment-delete") { if (confirm("Apagar este comentário?")) pfDeleteComment(id); }
-  else if (action === "pf-tags") pfTagsOpen(id);
-  else if (action === "pf-tag-toggle") {
-    const p = PF.panel; if (p && p.kind === "tags" && !p.busy && p.people.some(x => x.id === id)) {
-      if (p.selected.has(id)) p.selected.delete(id);
-      else if (p.selected.size < 30) p.selected.add(id);
-      else { flash("Escolha no máximo 30 pessoas."); return true; }
-      pfRenderPanel();
-    }
-  } else if (action === "pf-tags-save") pfTagsSave();
-  else if (action === "pf-untag") pfUntag(id, button.dataset.post);
-  else if (action === "pf-share-save") pfShareSave();
-  else if (action === "pf-panel-retry") { const p = PF.panel; if (p && !p.busy) { if (p.kind === "share") pfShareOpen(p.mediaKind, p.id); else if (p.kind === "tags") pfTagsOpen(p.id); } }
-  else if (action === "pf-share-remove") pfShareRemove(id, button.dataset.profile);
-  else if (action === "pf-share-link") { const p = PF.panel; if (p && p.kind === "share") { const kind = p.mediaKind, mediaId = p.id; closePix(); if (kind === "post") commShare(mediaId); else blShare(mediaId); } }
-  else if (action === "pf-create-profile") { closePix(); commClick("cm-edit", {dataset: {}}); }
-  else if (action === "pf-close") closePix();
+function pfBcCount(bid){ const s = document.querySelector(`.bl-item[data-id="${CSS.escape(bid)}"] [data-a="bl-cmts"] span`); if (s) s.textContent = PF.bccount[bid] || 0; }
+
+function pfClick(a, b){
+  if (a === "pf-tab") { state.pfTab = b.dataset.v; rerenderKeepScroll(); }
+  else if (a === "pf-unpick") { pfKeepDrafts(); state.tagPick = (state.tagPick || []).filter(u => u !== b.dataset.id); rerenderKeepScroll(); }
+  else if (a === "pf-untag") pfUntagMe(b.dataset.k, b.dataset.id);
+  else if (a === "pf-share") pfShareToggle(b.dataset.k, b.dataset.id);
+  else if (a === "pf-link") { closePix(); if (b.dataset.k === "post") commShare(b.dataset.id); else blShare(b.dataset.id); }
+  else if (a === "pf-bc-del") pfBcDel(b.dataset.id, b.dataset.b);
   else return false;
   return true;
 }
-function pfInput(target){
-  const p = PF.panel; if (!p) return false;
-  if (target.id === "pf-comment" && p.kind === "comments") { PF.drafts[p.id] = target.value; return true; }
-  if (target.id === "pf-tag-search" && p.kind === "tags") {
-    p.query = target.value;
-    document.querySelectorAll(".pf-tag-option").forEach(el => { el.hidden = !el.dataset.search.includes(norm(p.query)); });
-    return true;
-  }
-  return false;
+/* ---------- Mensagens (direct) ----------
+   Conversa de duas pessoas. As regras do banco só deixam as duas lerem (nem o administrador lê).
+   As mensagens chegam na hora pelo Realtime. Quem denuncia manda o texto junto. */
+const DM = {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
+function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
+function dmUnread(c){ return !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
+function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
+function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
+function dmReset(){ if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+async function dmLoad(){
+  const [c, r, k] = await Promise.all([
+    TEAM.client.from("conversations").select("*").order("last_at", {ascending: false}).limit(200),
+    TEAM.client.from("chat_reads").select("conversation_id,read_at").eq("user_id", TEAM.user.id),
+    TEAM.client.from("chat_blocks").select("blocked_id").eq("user_id", TEAM.user.id)]);
+  if (c.error) { DM.missing = /does not exist|schema cache/i.test(c.error.message || ""); DM.convs = []; dmRerender(); return; }
+  DM.convs = c.data || [];
+  (r.data || []).forEach(x => DM.reads[x.conversation_id] = x.read_at);
+  DM.blocks = new Set((k.data || []).map(x => x.blocked_id));
+  const need = [...new Set(DM.convs.map(dmOther))].filter(u => !COMM.profiles[u]);
+  if (need.length) { const {data} = await TEAM.client.from("community_profiles").select(PF_PROF).in("id", need); commKeep(data); }
+  dmSubscribe(); dmRerender();
 }
-function pfKeydown(event){
-  if (event.target && event.target.classList && event.target.classList.contains("pf-tab") && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
-    event.preventDefault();
-    const index = PF_TABS.findIndex(([v]) => v === event.target.dataset.v);
-    const next = event.key === "Home" ? 0 : event.key === "End" ? 3 : (index + (event.key === "ArrowRight" ? 1 : 3)) % 4;
-    pfClick("pf-tab", {dataset: {id: event.target.dataset.id, v: PF_TABS[next][0]}}); return;
-  }
-  if (event.key !== "Tab" || !PF.panel) return;
-  const box = $(".pf-dialog"); if (!box) return;
-  const elements = [...box.querySelectorAll('button:not(:disabled),textarea:not(:disabled),input:not(:disabled),a[href]')].filter(el => !el.hidden && el.getClientRects().length);
-  const first = elements[0], last = elements[elements.length - 1]; if (!first) return;
-  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+function dmSubscribe(){
+  if (DM.ch) return;
+  DM.ch = TEAM.client.channel("dm-" + TEAM.user.id)
+    .on("postgres_changes", {event: "INSERT", schema: "public", table: "messages"}, p => dmIncoming(p.new))
+    .on("postgres_changes", {event: "DELETE", schema: "public", table: "messages"}, p => { const id = p.old && p.old.id; if (!id) return; Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender(); })
+    .subscribe();
 }
+function dmIncoming(m){
+  if (!m || !DM.convs) return;
+  const list = DM.msgs[m.conversation_id];
+  if (list && !list.some(x => x.id === m.id)) list.push(m);
+  const c = DM.convs.find(x => x.id === m.conversation_id);
+  if (!c) { DM.convs = null; dmEnsure(); return; }
+  Object.assign(c, {last_at: m.created_at, last_author: m.author, last_text: String(m.text).slice(0, 120)});
+  DM.convs.sort((x, y) => x.last_at < y.last_at ? 1 : -1);
+  if (state.view === "chat" && DM.open === m.conversation_id && m.author !== TEAM.user.id) dmMarkRead(m.conversation_id);
+  dmRerender();
+}
+// redesenha sem perder o que está sendo digitado
+function dmRerender(){
+  if (!["chat", "chats", "community", "profile"].includes(state.view)) { const nav = $(".tabbar"), cur = nav && nav.querySelector('[aria-current="page"]'); if (nav) nav.outerHTML = tabbar(cur ? cur.dataset.v : ""); return; }
+  const el = $("#dm-in"), draft = el ? el.value : null, focus = el && document.activeElement === el;
+  if (state.view === "chat") { render(); dmScroll(); } else rerenderKeepScroll();
+  const n = $("#dm-in"); if (n && draft !== null) { n.value = draft; if (focus) n.focus(); }
+}
+function dmScroll(){ const l = $("#dm-list"); if (l) l.scrollTop = l.scrollHeight; }
+async function dmWith(uid){
+  if (!COMM.me) { flash("Crie seu perfil na Comunidade para mandar mensagens."); return; }
+  if (DM.convs === null) { DM.loading = true; await dmLoad(); DM.loading = false; }
+  if (DM.missing) { flash("As mensagens ainda não foram ligadas."); return; }
+  const [a, b] = [TEAM.user.id, uid].sort();
+  let c = DM.convs.find(x => x.a === a && x.b === b);
+  if (!c) {
+    const {data, error} = await TEAM.client.from("conversations").insert({a, b}).select("*").single();
+    if (error) { const r = await TEAM.client.from("conversations").select("*").eq("a", a).eq("b", b).maybeSingle(); c = r.data; }
+    else c = data;
+    if (!c) { flash("Não consegui abrir a conversa agora."); return; }
+    if (!DM.convs.some(x => x.id === c.id)) DM.convs.unshift(c);
+  }
+  dmOpen(c.id);
+}
+function dmOpen(id){
+  closePix();
+  if (state.view !== "chat") state.dmBack = state.view === "profile" ? "profile" : "chats";
+  DM.open = id; state.view = "chat";
+  if (!DM.msgs[id]) dmLoadMsgs(id);
+  dmMarkRead(id); render(); dmScroll(); dmSafeNotice(false);
+}
+async function dmLoadMsgs(id){
+  const {data} = await TEAM.client.from("messages").select("id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
+  DM.msgs[id] = (data || []).reverse();
+  if (state.view === "chat" && DM.open === id) dmRerender();
+}
+function dmMarkRead(id){
+  const now = new Date().toISOString(); DM.reads[id] = now;
+  TEAM.client.from("chat_reads").upsert({conversation_id: id, user_id: TEAM.user.id, read_at: now}).then(() => {});
+}
+async function dmSend(){
+  const el = $("#dm-in"), text = ((el && el.value) || "").trim().slice(0, 2000), id = DM.open;
+  if (!text || DM.busy) return;
+  DM.busy = true;
+  const {data, error} = await TEAM.client.from("messages").insert({conversation_id: id, author: TEAM.user.id, text}).select("id,conversation_id,author,text,created_at").single();
+  DM.busy = false;
+  if (error) { flash(navigator.onLine ? "Não foi possível enviar esta mensagem." : "Sem internet. Tente de novo."); return; }
+  if (el) el.value = "";
+  dmIncoming(data);
+  const n = $("#dm-in"); if (n) { n.value = ""; n.focus(); }
+}
+function dmTime(iso){ const d = new Date(iso); return d.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"}); }
+function dmDay(iso){ const d = new Date(iso), t = new Date(); const y = new Date(t); y.setDate(t.getDate() - 1);
+  return d.toDateString() === t.toDateString() ? "Hoje" : d.toDateString() === y.toDateString() ? "Ontem" : d.toLocaleDateString("pt-BR", {day: "2-digit", month: "short", year: d.getFullYear() === t.getFullYear() ? undefined : "numeric"}); }
+// aviso de conversa segura: aparece na primeira vez (e pelo cadeado da lista)
+function dmSafeNotice(force){
+  let seen = false; try { seen = localStorage.getItem("cc-dm-aviso") === "1"; } catch(e) {}
+  if (seen && !force) return;
+  try { localStorage.setItem("cc-dm-aviso", "1"); } catch(e) {}
+  const box = $("#modal"); box.className = "modal";
+  box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dms-t"><h2 id="dms-t">🔒 Conversa segura</h2>
+    <p>Suas mensagens são <b>privadas</b>: só você e a pessoa com quem você conversa conseguem ler. Ninguém mais da Comunidade tem acesso, e elas viajam protegidas pela internet.</p>
+    <ul class="dms-list"><li>🚫 Nunca mande senhas, códigos de confirmação nem dados do cartão.</li><li>💸 Desconfie de pedidos de dinheiro ou PIX, mesmo de quem parece conhecido.</li><li>🛡️ Se alguém te incomodar, toque em ⋯ para <b>bloquear</b>, ou toque na mensagem para <b>denunciar</b>.</li></ul>
+    <button class="btn primary" data-a="pix-close">Entendi</button></div>`;
+  box.hidden = false;
+}
+function dmIconBtn(){
+  dmEnsure();
+  const n = dmUnreadCount();
+  return `<button class="dm-icon" data-a="dm-list" aria-label="Mensagens${n ? ` (${n} não lida${n > 1 ? "s" : ""})` : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></svg>${n ? `<span class="badge">${n}</span>` : ""}</button>`;
+}
+function dmBtn(uid){ return COMM.me && uid !== TEAM.user.id ? `<button class="btn" data-a="dm-with" data-id="${esc(uid)}">✉ Mensagem</button>` : ""; }
 
-/*PROFILE-TABS-END*/
+function viewChats(){
+  const back = `<div class="top"><button class="btn ghost" data-a="tab" data-v="community">‹ Comunidade</button></div><h1 class="page-title" style="margin:0 0 6px">Mensagens</h1>`;
+  if (!commIn()) return back + '<div class="panel"><p style="margin:0">Entre com sua conta para usar as mensagens.</p></div>' + tabbar("community");
+  if (COMM.me === undefined) { commLoadMe(); return back + '<p class="muted">Carregando…</p>' + tabbar("community"); }
+  if (!COMM.me) return back + '<div class="panel"><p>Crie seu perfil na Comunidade para mandar mensagens.</p><div class="actions"><button class="btn primary" data-a="cm-edit">Criar meu perfil</button></div></div>' + tabbar("community");
+  dmEnsure();
+  const note = '<button class="dm-lock lnk2" data-a="dm-safe">🔒 Conversa segura: só você e a outra pessoa leem. <u>Saiba mais</u></button>';
+  setTimeout(() => dmSafeNotice(false));
+  if (DM.missing) return back + `<div class="panel"><p class="muted" style="margin:0">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-chat.sql</b> no Supabase." : "As mensagens estão chegando. Volte daqui a pouco."}</p></div>` + tabbar("community");
+  if (DM.convs === null) return back + note + '<p class="muted">Carregando…</p>' + tabbar("community");
+  const rows = DM.convs.map(c => { const o = dmOther(c), p = COMM.profiles[o] || {}, un = dmUnread(c);
+    return `<button class="dm-row${un ? " un" : ""}" data-a="dm-open" data-id="${esc(c.id)}">${commAvatar(p, 52)}<span class="dm-row-t"><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><span class="muted">${c.last_text ? (c.last_author === TEAM.user.id ? "Você: " : "") + esc(c.last_text) : "Conversa nova"}</span></span><span class="dm-row-x"><small class="muted">${commAgo(c.last_at)}</small>${un ? '<i class="dm-dot" aria-label="não lida"></i>' : ""}</span></button>`; }).join("");
+  return back + note + (rows ? `<div class="dm-rows">${rows}</div>` : '<div class="panel"><p style="margin:0">Nenhuma conversa ainda. Abra o perfil de alguém da Comunidade e toque em <b>✉ Mensagem</b>.</p></div>') + tabbar("community");
+}
+function viewChat(){
+  const c = (DM.convs || []).find(x => x.id === DM.open);
+  if (!c) { state.view = "chats"; return viewChats(); }
+  const o = dmOther(c), p = COMM.profiles[o] || {}, list = DM.msgs[c.id], blocked = DM.blocks.has(o);
+  let last = "", html = "";
+  (list || []).forEach(m => { const day = dmDay(m.created_at); if (day !== last) { html += `<p class="dm-day">${day}</p>`; last = day; }
+    const mine = m.author === TEAM.user.id;
+    html += `<div class="dm-msg${mine ? " me" : ""}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}</small></button></div>`; });
+  return `<div class="dm-head"><button class="btn ghost" data-a="dm-back" aria-label="Voltar">‹</button>
+      <button class="dm-who" data-a="cm-profile" data-id="${esc(o)}">${commAvatar(p, 40)}<span><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><small class="muted">@${esc(p.handle || "")}</small></span></button>
+      <button class="btn ghost" data-a="dm-menu" data-id="${esc(o)}" aria-label="Opções da conversa">⋯</button></div>
+    <div class="dm-list" id="dm-list">${list === undefined ? '<p class="muted">Carregando…</p>' : html || `<p class="dm-lock">🔒 Só você e ${esc((p.display_name || "a outra pessoa").split(" ")[0])} leem esta conversa. Diga oi! 👋</p>`}</div>
+    ${blocked ? `<div class="dm-form"><p style="margin:0;flex:1">Você bloqueou esta pessoa.</p><button class="btn" data-a="dm-block" data-id="${esc(o)}">Desbloquear</button></div>`
+      : `<form class="dm-form" id="dm-form"><textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}`;
+}
+function dmMsgMenu(id){
+  const m = Object.values(DM.msgs).flat().find(x => x.id === id); if (!m) return;
+  const mine = m.author === TEAM.user.id, box = $("#modal"); box.className = "modal";
+  box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmm-t"><h2 id="dmm-t">Mensagem</h2><div style="display:grid;gap:8px">
+    <button class="btn" data-a="dm-copy" data-id="${esc(id)}">Copiar</button>
+    ${mine ? `<button class="btn danger" data-a="dm-del" data-id="${esc(id)}">Apagar para os dois</button>` : `<button class="btn" data-a="dm-report" data-id="${esc(id)}">Denunciar</button>`}</div>
+    <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
+  box.hidden = false;
+}
+function dmConvMenu(uid){
+  const p = COMM.profiles[uid] || {}, on = DM.blocks.has(uid), box = $("#modal"); box.className = "modal";
+  box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmc-t"><h2 id="dmc-t">${esc(p.display_name || "Conversa")}</h2><div style="display:grid;gap:8px">
+    <button class="btn" data-a="cm-profile" data-id="${esc(uid)}">Ver perfil</button>
+    <button class="btn ${on ? "" : "danger"}" data-a="dm-block" data-id="${esc(uid)}">${on ? "Desbloquear" : "Bloquear (para de receber mensagens)"}</button>
+    <button class="btn" data-a="cm-report" data-k="profile" data-id="${esc(uid)}">Denunciar perfil</button></div>
+    <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
+  box.hidden = false;
+}
+async function dmBlock(uid){
+  closePix();
+  const on = DM.blocks.has(uid);
+  if (!on && !confirm("Bloquear esta pessoa? Ela não vai conseguir te mandar mensagens (e não é avisada).")) return;
+  const res = on ? await TEAM.client.from("chat_blocks").delete().eq("user_id", TEAM.user.id).eq("blocked_id", uid)
+                 : await TEAM.client.from("chat_blocks").insert({user_id: TEAM.user.id, blocked_id: uid});
+  if (res.error) { flash("Não consegui agora."); return; }
+  if (on) DM.blocks.delete(uid); else DM.blocks.add(uid);
+  flash(on ? "Desbloqueado." : "Bloqueado."); dmRerender();
+}
+async function dmDelete(id){
+  closePix();
+  const {error} = await TEAM.client.from("messages").delete().eq("id", id);
+  if (error) { flash("Não consegui apagar agora."); return; }
+  Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender();
+}
+function dmReportMenu(id){
+  const box = $("#modal");
+  box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmr-t"><h2 id="dmr-t">Denunciar mensagem</h2>
+    <p>O texto desta mensagem vai junto para o administrador olhar. O resto da conversa continua privado.</p>
+    <div style="display:grid;gap:8px">${REPORT_REASONS.map(r => `<button class="btn" data-a="dm-report-send" data-id="${esc(id)}" data-v="${esc(r)}">${esc(r)}</button>`).join("")}</div>
+    <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
+}
+async function dmReportSend(id, reason){
+  const m = Object.values(DM.msgs).flat().find(x => x.id === id); if (!m) return;
+  const {error} = await TEAM.client.from("reports").insert({target_kind: "message", target_id: m.author + "/" + m.id, reason: (reason + " · “" + m.text.slice(0, 400) + "”").slice(0, 500)});
+  const box = $("#modal");
+  box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true"><h2>${error ? "Não deu certo" : "Obrigado"}</h2><p>${error ? "Não consegui enviar agora. Tente de novo." : "Sua denúncia foi enviada. Se quiser, bloqueie a pessoa no menu ⋯ da conversa."}</p><button class="btn primary" data-a="pix-close">Fechar</button></div>`;
+}
+function dmClick(a, b){
+  if (a === "dm-list") { state.view = "chats"; render(); scrollTo(0, 0); }
+  else if (a === "dm-open") dmOpen(b.dataset.id);
+  else if (a === "dm-safe") dmSafeNotice(true);
+  else if (a === "dm-with") dmWith(b.dataset.id);
+  else if (a === "dm-back") { DM.open = null; state.view = state.dmBack === "profile" ? "profile" : "chats"; render(); scrollTo(0, 0); }
+  else if (a === "dm-msg") dmMsgMenu(b.dataset.id);
+  else if (a === "dm-menu") dmConvMenu(b.dataset.id);
+  else if (a === "dm-block") dmBlock(b.dataset.id);
+  else if (a === "dm-del") { if (confirm("Apagar esta mensagem para os dois?")) dmDelete(b.dataset.id); }
+  else if (a === "dm-copy") { const m = Object.values(DM.msgs).flat().find(x => x.id === b.dataset.id); closePix(); if (m) navigator.clipboard.writeText(m.text).then(() => flash("Copiado ✓"), () => {}); }
+  else if (a === "dm-report") dmReportMenu(b.dataset.id);
+  else if (a === "dm-report-send") dmReportSend(b.dataset.id, b.dataset.v);
+  else return false;
+  return true;
+}
+document.addEventListener("keydown", e => { if (e.target && e.target.id === "dm-in" && e.key === "Enter" && !e.shiftKey && matchMedia("(pointer:fine)").matches) { e.preventDefault(); dmSend(); } });
 function viewCommunity(){
-  const head = `<div class="top"><h1 class="page-title">Comunidade</h1>${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
+  const head = `<div class="top"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
   const wrap = inner => head + inner + tabbar("community");
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
   if (!TEAM.user) return wrap(commDemoHtml());
@@ -3048,7 +3090,7 @@ function viewProfile(){
   return `${back}<div class="cm-prof" style="--acc:${acc}">
     <div class="cm-cover"${cover ? ` style="background-image:url(&quot;${esc(cover)}&quot;)"` : ""}></div>
     <div class="cm-id">${commAvatar(p, 104)}
-      <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id)}</div></div>
+      <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id) + dmBtn(id)}</div></div>
     <h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2>
     <p class="muted" style="margin:0">@${esc(p.handle || "")}</p>
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
@@ -3075,7 +3117,7 @@ function viewProfile(){
   ${recent.length ? `<section class="panel"><h3 style="font-size:17px;margin-bottom:4px">🕘 Tocadas recentemente</h3>${recent.slice(0, 8).map(commSongLink).join("")}</section>` : ""}
   ${me ? (() => { if (COMM.savedIds === undefined) { COMM.savedIds = null; commLoadSaved(); }
       return COMM.savedIds && COMM.savedIds.length ? `<h3 class="cm-sec">🔖 Salvos <small class="muted" style="font-size:13px">só você vê</small></h3>${commGrid(COMM.savedIds)}` : ""; })() : ""}
-  ${pfProfileSection(p, posts)}
+  ${pfTabs(id, me, posts)}
   <div class="actions" style="margin-top:18px">${me ? "" : `<button class="btn ghost" data-a="cm-report" data-k="profile" data-id="${esc(id)}">Denunciar perfil</button>`}
     ${!me && teamRole() === "admin" ? `<button class="btn danger" data-a="cm-admin-del-profile" data-id="${esc(id)}">Remover perfil (admin)</button>` : ""}</div>
   ${tabbar("community")}`;
@@ -3086,9 +3128,8 @@ function viewPost(){
   if (!p) return back + '<p class="muted">Esta foto não está mais disponível.</p>' + tabbar("community");
   const mine = p.author === TEAM.user.id;
   return `${back}${commPostCard(p.id)}
-    ${pfPhotoTagsHtml(p)}
     ${commCommentsHtml(p)}
-    <div class="actions" style="margin-top:14px">${mine || teamRole() === "admin" ? `<button class="btn danger" data-a="cm-del-post" data-id="${esc(p.id)}">${mine ? "Apagar foto" : "Apagar (admin)"}</button>` : ""}
+    <div class="actions" style="margin-top:14px">${(PF.tagsOf["post:" + p.id] || []).includes(TEAM.user.id) ? `<button class="btn ghost" data-a="pf-untag" data-k="post" data-id="${esc(p.id)}">Tirar minha marcação</button>` : ""}${mine || teamRole() === "admin" ? `<button class="btn danger" data-a="cm-del-post" data-id="${esc(p.id)}">${mine ? "Apagar foto" : "Apagar (admin)"}</button>` : ""}
     ${mine ? "" : `<button class="btn ghost" data-a="cm-report" data-k="post" data-id="${esc(p.id)}">Denunciar</button>`}</div>${tabbar("community")}`;
 }
 function commSongOptions(){
@@ -3152,6 +3193,7 @@ function viewPostNew(){
     <label class="btn ${d.data ? "" : "primary"} file-btn">${d.data ? "Trocar foto" : "📷 Escolher foto"}<input id="cm-post-file" type="file" accept="image/*"></label>
     <label>Legenda<textarea id="cm-caption" maxlength="500" rows="3" placeholder="Ex.: Ensaio de domingo, tocando Restitui em F#!">${esc(d.caption || "")}</textarea></label>
     ${mySongs.length ? `<label>Música (opcional)<select id="cm-post-song"><option value="">Nenhuma</option>${mySongs.map((s, i) => `<option value="${i}" ${String(d.song) === String(i) ? "selected" : ""}>${esc(s.name)}${s.key ? " (" + esc(s.key) + ")" : ""}</option>`).join("")}</select></label>` : ""}
+    ${pfTagPicker()}
     <p class="muted" style="font-size:13px;margin:0">Só quem está logado vê. Não poste telefone, endereço nem fotos de outras pessoas sem permissão.</p>
     ${COMM.msg ? `<p class="confirm">${esc(COMM.msg)}</p>` : ""}
     <button class="btn primary big-paste" type="submit" ${COMM.busy || !d.data ? "disabled" : ""}>${COMM.busy ? "Publicando…" : "Publicar"}</button>
@@ -3230,6 +3272,7 @@ async function commPublish(){
     const {data, error} = await TEAM.client.from("posts").insert({author: TEAM.user.id, image_path: path, caption: d.caption.trim().slice(0, 500) || null, song}).select("*").single();
     if (error) throw error;
     COMM.posts[data.id] = data; COMM.likes[data.id] = 0;
+    await pfSaveTags("post", data.id);
     COMM.byAuthor[TEAM.user.id] = [data.id].concat(COMM.byAuthor[TEAM.user.id] || []);
     if (COMM.explore) COMM.explore.unshift(data.id); if (COMM.feed) COMM.feed.unshift(data.id);
     COMM.busy = false; state.cmPost = null; state.profileId = TEAM.user.id; state.view = "profile"; render(); scrollTo(0, 0);
@@ -3261,7 +3304,6 @@ async function commDeletePost(id){
   if (error) { flash("Não consegui apagar agora."); return; }
   TEAM.client.storage.from("comunidade").remove([p.image_path, commThumb(p.image_path)]);
   delete COMM.posts[id];
-  pfInvalidate(); delete PF.tags[id];
   ["feed", "explore"].forEach(k => { if (COMM[k]) COMM[k] = COMM[k].filter(x => x !== id); });
   Object.keys(COMM.byAuthor).forEach(k => COMM.byAuthor[k] = COMM.byAuthor[k].filter(x => x !== id));
   if (COMM.reports) COMM.reports = COMM.reports.filter(r => !(r.target_kind === "post" && r.target_id === id));
@@ -3305,6 +3347,8 @@ function commReportsPanel(){
   if (COMM.missing) return "";
   if (COMM.reports === null) { COMM.reports = []; commLoadReports(); }
   const rows = COMM.reports.map(r => {
+    if (r.target_kind === "message") { const [uid] = String(r.target_id).split("/");
+      return `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">Mensagem privada de ${esc((COMM.profiles[uid] || {}).display_name || "alguém")}</b><span class="muted" style="font-size:13px">${esc(r.reason || "")} · ${commAgo(r.created_at)}</span></span><button class="btn" data-a="cm-profile" data-id="${esc(uid)}">Perfil</button><button class="btn ghost" data-a="cm-report-done" data-id="${r.id}">Resolvido</button></div>`; }
     if (r.target_kind === "blessing") return `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">Vídeo (Blessing)</b><span class="muted" style="font-size:13px">${esc(r.reason || "")} · ${commAgo(r.created_at)}</span></span><button class="btn" data-a="bl-open" data-id="${esc(r.target_id)}">Ver</button><button class="btn ghost" data-a="cm-report-done" data-id="${r.id}">Resolvido</button></div>`;
     if (r.target_kind === "comment") { const [pid] = String(r.target_id).split("/");
       return `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">Comentário numa foto</b><span class="muted" style="font-size:13px">${esc(r.reason || "")} · ${commAgo(r.created_at)}</span></span><button class="btn" data-a="cm-post" data-id="${esc(pid)}">Ver</button><button class="btn ghost" data-a="cm-report-done" data-id="${r.id}">Resolvido</button></div>`; }
@@ -3335,19 +3379,19 @@ function commClick(a, b){
   if (a === "cm-demo") { commDemoInvite(); }
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tab") { state.cmTab = b.dataset.v; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
-  else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
+  else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; state.pfTab = "fotos"; delete PF.bl[b.dataset.id]; delete PF.tags[b.dataset.id]; delete PF.shares[b.dataset.id]; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
   else if (a === "cm-back") { state.view = state.cmBack && state.cmBack !== "post" && state.cmBack !== "post-new" ? state.cmBack : "community"; if (state.view === "profile") state.profileId = state.cmBackProfile || state.profileId; render(); scrollTo(0, 0); }
   else if (a === "cm-follow") commToggleFollow(b.dataset.id);
   else if (a === "cm-like") commToggleLike(b.dataset.id);
   else if (a === "cm-save") commToggleSave(b.dataset.id);
-  else if (a === "cm-share") pfShareOpen("post", b.dataset.id);
+  else if (a === "cm-share") pfShareMenu("post", b.dataset.id);
   else if (a === "cm-cmt-del") { if (confirm("Apagar este comentário?")) commDelComment(b.dataset.id, b.dataset.p); }
   else if (a === "cm-comments") {
     if (state.view !== "post" || state.postId !== b.dataset.id) { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); }
     const c = $("#comentarios"); if (c) c.scrollIntoView({block: "start"}); const t = $("#cm-comment"); if (t) t.focus();
   }
-  else if (a === "cm-new") { if (!COMM.me) { state.view = "community"; render(); return; } state.cmBack = state.view; state.cmPost = {}; COMM.msg = ""; state.view = "post-new"; render(); scrollTo(0, 0); }
+  else if (a === "cm-new") { if (!COMM.me) { state.view = "community"; render(); return; } state.cmBack = state.view; state.cmPost = {}; state.tagPick = []; COMM.msg = ""; state.view = "post-new"; render(); scrollTo(0, 0); }
   else if (a === "cm-edit") {
     const m = COMM.me || {};
     state.cmEdit = Object.assign({kind: "musico", theme: "red", instruments: [], songs: [], services: [], show_recent: true}, JSON.parse(JSON.stringify(m)));
@@ -3441,7 +3485,7 @@ function openPix(){
   m.hidden = false;
   const btn = m.querySelector("[data-a=pix-cc]"); if (btn) btn.focus();
 }
-function closePix(){ pfPanelClosed(); const m = $("#modal"); const wasAsk = BIBLE_ASK.open; BIBLE_ASK.open = false; m.hidden = true; m.innerHTML = ""; if (wasAsk && BIBLE_ASK.focus && BIBLE_ASK.focus.isConnected) BIBLE_ASK.focus.focus(); }
+function closePix(){ PF.bcOpen = null; const m = $("#modal"); const wasAsk = BIBLE_ASK.open; BIBLE_ASK.open = false; m.hidden = true; m.innerHTML = ""; if (wasAsk && BIBLE_ASK.focus && BIBLE_ASK.focus.isConnected) BIBLE_ASK.focus.focus(); }
 function copyPix(full){
   const text = full ? pixPayload() : PIX_KEY;
   const msg = $("#pix-msg"), show = t => { msg.textContent = t; msg.hidden = false; };
@@ -4715,9 +4759,10 @@ document.addEventListener("click", ev => {
   if (ev.target.id === "modal") { closePix(); return; }
   const b = ev.target.closest("[data-a]"); if (!b) return;
   const a = b.dataset.a;
-  if (a.startsWith("pf-") && pfClick(a, b)) return;
   if (a.startsWith("cm-") && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
+  if (a.startsWith("pf-") && pfClick(a, b)) return;
+  if (a.startsWith("dm-") && dmClick(a, b)) return;
   if (a.startsWith("ag-") && agClick(a, b)) return;
   if (a.startsWith("yt-mini") && miniClick(a, b)) return;
   if ((a === "study-tab" || a.startsWith("bb-")) && bibleClick(a, b)) return;
@@ -4875,7 +4920,6 @@ document.addEventListener("click", ev => {
   else if (a === "close") { state.sheet = null; renderSheet(); }
 });
 document.addEventListener("input", ev => {
-  if (pfInput(ev.target)) return;
   if (ev.target.id === "bb-ask-q") { BIBLE_ASK.question = ev.target.value; return; }
   if (ev.target.id === "cm-handle") { clearTimeout(commCheckHandle.t); const v = ev.target.value; commCheckHandle.t = setTimeout(() => commCheckHandle(v), 450); return; }
   if (ev.target.id === "cm-q") { const q = norm(ev.target.value); document.querySelectorAll(".cm-person").forEach(el => el.hidden = !!q && !el.dataset.s.includes(q)); return; }
@@ -4897,17 +4941,19 @@ document.addEventListener("paste", ev => {
   if (t) { ev.preventDefault(); clearTimeout(handlePaste.t); handlePaste(t); }
 });
 document.addEventListener("submit", ev => {
-  if (ev.target.id === "pf-comment-form") { ev.preventDefault(); pfSendComment(); return; }
   if (ev.target.id === "bb-ask-form") { ev.preventDefault(); bibleAskSend(); return; }
   if (ev.target.id === "cm-form") { ev.preventDefault(); commSaveProfile(); return; }
   if (ev.target.id === "ag-form") { ev.preventDefault(); agSaveForm(); return; }
   if (ev.target.id === "bb-search-form") { ev.preventDefault(); bibleSearch(($("#bb-q") || {}).value || ""); return; }
   if (ev.target.id === "cm-post-form") { ev.preventDefault(); commPublish(); return; }
   if (ev.target.id === "cm-comment-form") { ev.preventDefault(); commAddComment(); return; }
+  if (ev.target.id === "dm-form") { ev.preventDefault(); dmSend(); return; }
+  if (ev.target.id === "pf-bc-form") { ev.preventDefault(); pfBcSend(ev.target.dataset.b); return; }
   if (ev.target.id !== "login-form") return;
   ev.preventDefault(); teamAuth(state.loginTab === "up" ? "signup" : "in");
 });
 document.addEventListener("change", ev => {
+  if (ev.target.id === "pf-tag-q") { pfPick(ev.target.value); return; }
   if (ev.target.id === "bl-file") { if (ev.target.files && ev.target.files[0]) blPickFile(ev.target.files[0]); return; }
   if (commChange(ev.target)) return;
   if (ev.target.classList && ev.target.classList.contains("role-sel")) {
@@ -4929,7 +4975,6 @@ document.addEventListener("change", ev => {
   if (ev.target.id === "f-target") { readEditor(); state.editing.targetChosen = true; saveDraft(); }
 });
 document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !$("#modal").hidden) closePix(); });
-document.addEventListener("keydown", pfKeydown);
 document.addEventListener("keydown", ev => {
   if (ev.key !== "Tab" || !BIBLE_ASK.open) return;
   const box = $(".bb-ask"); if (!box) return;
