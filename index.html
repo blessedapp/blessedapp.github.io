@@ -2577,8 +2577,14 @@ async function blSend(){
     if (out.blob.size > 15 * 1024 * 1024) throw new Error("O vídeo ficou pesado demais. Tente um vídeo mais curto.");
     prog("Enviando…", .6);
     const s = await blFn({action: "sign", type: out.type, size: out.blob.size, thumbSize: thumb.size});
-    await blPut(s.thumb.url, thumb, "image/jpeg", () => {});
-    await blPut(s.video.url, out.blob, out.type, p => prog("Enviando…", .6 + p * .38));
+    try {
+      await blPut(s.thumb.url, thumb, "image/jpeg", () => {});
+      await blPut(s.video.url, out.blob, out.type, p => prog("Enviando…", .6 + p * .38));
+    } catch(e) {
+      // descobre se o problema é a ligação com o armazenamento (aparece para o admin consertar)
+      if (teamRole() === "admin" && navigator.onLine) { try { const c = await blFn({action: "check"}); if (c && c.why) throw new Error("Envio bloqueado. " + c.why); } catch(e2) { if (/^Envio bloqueado/.test(e2.message)) throw e2; } }
+      throw e;
+    }
     const {data, error} = await TEAM.client.from("blessings").insert({author: TEAM.user.id, video_key: s.video.key, thumb_key: s.thumb.key, caption: cap || null, duration: Math.round(out.duration * 10) / 10}).select().single();
     if (error) throw new Error("O vídeo subiu, mas não consegui publicar. Tente de novo.");
     BLS.items[data.id] = data; BLS.likes[data.id] = 0;
