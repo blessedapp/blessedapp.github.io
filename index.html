@@ -1357,7 +1357,7 @@ function tabbar(active){
   const n = pendingCount();
   const extra = !teamAvailable() ? "" : teamRole() === "admin" ? t("team", "Equipe" + (n ? ` <span class="badge" aria-label="${n} pedido${n > 1 ? "s" : ""}">${n}</span>` : "")) : store.mode === "team" ? "" : t("login", "Entrar");
   const comm = commOn() ? t("community", "Comunidade") : "";
-  return `<nav class="tabbar" aria-label="Abas">${t("library","Início")}${t("study","Estudo")}${t("setlist","Agenda")}${comm}${extra}</nav>`;
+  return `<nav class="tabbar" aria-label="Abas">${t("library","Início")}${comm}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
 }
 
 /* ---------- Estudo: Bíblia (Bíblia Livre, CC BY 4.0 BR) ----------
