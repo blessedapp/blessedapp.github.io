@@ -1392,7 +1392,7 @@ function studyTabs(){
 function viewBible(){
   const head = `<div class="top"><h1 class="page-title">Estudo</h1></div>${studyTabs()}`;
   const wrap = inner => head + inner + tabbar("study");
-  if (window.claude) return wrap('<div class="panel"><p style="margin:0">A Bíblia abre no site do Blessed (cifraecampo.github.io).</p></div>');
+  if (window.claude) return wrap('<div class="panel"><p style="margin:0">A Bíblia abre no site do Blessed (blessedapp.github.io).</p></div>');
   const {b, c} = state.bible, book = bibleBook(b) || BIBLE_BOOKS[0];
   if (state.biblePick === "books") {
     const grid = (from, to) => BIBLE_BOOKS.slice(from, to).map(x => `<button class="bb-book${x[0] === b ? " on" : ""}" data-a="bb-book" data-v="${x[0]}"><b>${esc(x[2])}</b><span>${esc(x[1])}</span></button>`).join("");
@@ -1594,7 +1594,7 @@ async function bibleStoryCanvas(themeKey){
   x.save(); x.translate(ix + s / 2, iy + s * .25); x.rotate(-8 * Math.PI / 180); x.strokeStyle = "#FF2A35"; x.lineWidth = 4; x.beginPath(); x.ellipse(0, 0, s * .22, s * .06, 0, 0, Math.PI * 2); x.stroke(); x.restore();
   x.fillStyle = "#F4E9D4"; x.font = `400 ${Math.round(s * .58)}px "Anton"`; x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillText("B", ix + s / 2, iy + s * .84); x.textAlign = "left";
   x.fillStyle = th.text; x.font = '400 54px "Anton"'; x.fillText("BLESSED", ix + s + 24, iy + 58);
-  x.fillStyle = th.sub; x.font = '700 26px "Atkinson Hyperlegible"'; x.fillText("cifraecampo.github.io", ix + s + 24, iy + 92);
+  x.fillStyle = th.sub; x.font = '700 26px "Atkinson Hyperlegible"'; x.fillText("blessedapp.github.io", ix + s + 24, iy + 92);
   return cv;
 }
 async function bibleOpenStory(themeKey){
@@ -3222,7 +3222,7 @@ function openLock(name){
 }
 /* Selo próprio "Site seguro": só afirmações verdadeiras + verificação oficial do Google (Navegação Segura).
    Não usa selos de terceiros (Norton, Site Blindado...), que exigem verificação dessas empresas. */
-const SITE_URL = "cifraecampo.github.io";
+const SITE_URL = "blessedapp.github.io";
 // Rodapé com crédito, Colabore e selo de segurança, no fim das telas
 function siteFooter(){
   return `<footer class="site-foot">
