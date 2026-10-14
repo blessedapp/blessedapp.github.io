@@ -32,7 +32,7 @@ img{max-width:100%}
 :root{
   --cream:#F4E9D4;
   --bg:#0A0A0C; --surface:#16161A; --surface2:#222228; --ink:#F3F3F5; --muted:#A4A4AE; --line:#2D2D34;
-  --felt:#E50914; --felt-soft:#3B0D10; --degree:#46D3C3; --degree-soft:#0F302C;
+  --felt:#B70CFF; --felt-soft:#340947; --degree:#46D3C3; --degree-soft:#0F302C;
   --warn:#F5B451; --warn-soft:#3A2B12; --borrow:#B99AF7; --borrow-soft:#2A2040;
   --key-w:#ECECF0; --key-b:#09090B; --key-edge:#3E3E46;
   --f-brand:"Bebas Neue", "Impact", "Arial Narrow", sans-serif;
@@ -244,7 +244,7 @@ button{cursor:pointer}
 .pattern span{font:700 14px var(--f-mono);padding:4px 10px;border-radius:99px;border:1px solid var(--line)}
 .pattern .M{background:var(--degree-soft);color:var(--degree);border-color:transparent}
 .pattern .m{background:var(--borrow-soft);color:var(--borrow);border-color:transparent}
-.pattern .d{background:var(--felt-soft);color:#ff7a80;border-color:transparent}
+.pattern .d{background:var(--felt-soft);color:#E5A7FF;border-color:transparent}
 .deg[aria-pressed="true"]{background:var(--felt);border-color:var(--felt)}
 .deg[aria-pressed="true"] .r,.deg[aria-pressed="true"] .c,.deg[aria-pressed="true"] .fn{color:#fff}
 .fam{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -323,7 +323,7 @@ button{cursor:pointer}
 .cert{display:inline-block;font:700 12px var(--f-body);padding:3px 9px;border-radius:99px}
 .cert.c-alta{background:var(--degree-soft);color:var(--degree)}
 .cert.c-media{background:var(--warn-soft);color:var(--warn)}
-.cert.c-baixa{background:var(--felt-soft);color:#ff8a8f}
+.cert.c-baixa{background:var(--felt-soft);color:#EBB9FF}
 .lnk2{border:0;background:none;color:var(--ink);text-decoration:underline;padding:0;font-size:inherit}
 
 /* instrumento + violão */
@@ -373,8 +373,8 @@ button{cursor:pointer}
 .tabbar button{position:relative}
 .team-alert{position:fixed;left:50%;transform:translateX(-50%);top:calc(96px + env(safe-area-inset-top,0px));z-index:6;border:0;background:var(--felt);color:#fff;font:600 14px var(--f-body);padding:10px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:calc(100% - 32px)}
 
-.yt-btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;padding:7px 14px;min-height:42px;background:#FF0033;color:#fff;font-weight:700;text-decoration:none}
-.yt-btn.ghost{background:transparent;border:1px solid #FF0033;color:#ff5a72}
+.yt-btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;padding:7px 14px;min-height:42px;background:#A81FFF;color:#fff;font-weight:700;text-decoration:none}
+.yt-btn.ghost{background:transparent;border:1px solid #A81FFF;color:#D383FF}
 .yt-btn[aria-pressed="true"]{background:var(--surface2);border:1px solid var(--line)}
 .yt-wrap{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;border-radius:12px;overflow:hidden;background:#000}
 .yt-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -400,7 +400,7 @@ button{cursor:pointer}
 @media (prefers-reduced-motion: reduce){ .mcol.down,.mcol.up{animation:none} }
 
 .card.locked .lock{position:absolute;top:6px;right:6px;z-index:1;font-size:14px;background:rgba(0,0,0,.6);border-radius:6px;padding:2px 5px}
-.lock-cta{margin:0 16px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#3b0d10,#1c1c22);border:1px solid #5a1a20;display:grid;gap:12px}
+.lock-cta{margin:0 16px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#340947,#1c1c22);border:1px solid #50166C;display:grid;gap:12px}
 .lock-cta b{display:block;font:800 17px var(--f-display);color:#fff;margin-bottom:4px}
 .lock-cta span{font-size:14px;color:#d8d8de}
 
@@ -421,7 +421,7 @@ button{cursor:pointer}
 .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .quiz-opts button{min-height:52px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);font:700 20px var(--f-mono)}
 .quiz-opts button.right{background:#0f5132;border-color:#2ecc71}
-.quiz-opts button.wrong{background:#5c1014;border-color:var(--felt)}
+.quiz-opts button.wrong{background:#510970;border-color:var(--felt)}
 .quiz-bar{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
 .icon{border:0;background:rgba(0,0,0,.35);color:#fff;width:42px;height:42px;border-radius:50%;display:inline-grid;place-items:center}
 .icon svg{width:22px;height:22px}
@@ -489,7 +489,7 @@ button{cursor:pointer}
 .cm-av{display:inline-grid;place-items:center;flex:none;border-radius:50%;overflow:hidden;background:var(--acc,var(--felt));color:#fff;font-weight:800;font-family:var(--f-display)}
 .cm-av img{width:100%;height:100%;object-fit:cover;display:block}
 .cm-me{border:0;background:none;padding:0;border-radius:50%}
-.cm-hero{background:radial-gradient(circle at 80% 0%,rgba(229,9,20,.28),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:10px;margin-bottom:14px}
+.cm-hero{background:radial-gradient(circle at 80% 0%,rgba(183,12,255,.28),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;gap:10px;margin-bottom:14px}
 .cm-hero h2{font-family:"Anton",var(--f-brand);font-weight:400;text-transform:uppercase;color:var(--cream);font-size:34px;line-height:1}
 .cm-hero p{margin:0;color:#d8d8de}
 .cm-kicker{color:var(--felt)!important;font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
@@ -598,7 +598,7 @@ button{cursor:pointer}
 .cm-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 6px 0}
 .cm-act{border:0;background:none;color:var(--muted);display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:99px;font:600 15px var(--f-body);min-height:40px}
 .cm-act svg{width:22px;height:22px}
-.cm-act.like[aria-pressed="true"]{color:#F91880}
+.cm-act.like[aria-pressed="true"]{color:#9033FF}
 .cm-act.save[aria-pressed="true"]{color:#1D9BF0}
 .cm-time{margin:2px 14px 0;font-size:12px;color:var(--muted)}
 .cm-comments{margin-top:6px}
@@ -613,19 +613,19 @@ button{cursor:pointer}
 .cm-cmt-form textarea{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:9px 14px;font:16px var(--f-body);resize:none;min-height:42px;max-height:140px}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:40;max-width:calc(100% - 32px);background:#F4E9D4;color:#0A0A0C;font-weight:700;font-size:14px;padding:10px 18px;border-radius:99px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .wm-top{display:flex;align-items:center;gap:9px}
-.wm-top .bl-ic{width:40px;height:40px;flex:none;border-radius:10px;box-shadow:0 0 0 1px rgba(255,42,53,.35),0 4px 14px rgba(0,0,0,.6)}
+.wm-top .bl-ic{width:40px;height:40px;flex:none;border-radius:10px;box-shadow:0 0 0 1px rgba(202,78,255,.35),0 4px 14px rgba(0,0,0,.6)}
 .hero .kicker .bl-ic{width:26px;height:26px;border-radius:6px;flex:none}
 .sf-brand{display:flex;align-items:center;gap:8px}.sf-brand .bl-ic{width:30px;height:30px;border-radius:8px}
 .study-tabs{display:flex;width:100%;margin:0 0 14px}.study-tabs button{flex:1;padding-inline:8px}
 .bb-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.bb-ai-launch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;margin-bottom:16px;border:1px solid #5A1B22;border-radius:14px;background:linear-gradient(120deg,#251015,var(--surface))}
+.bb-ai-launch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;margin-bottom:16px;border:1px solid #50176C;border-radius:14px;background:linear-gradient(120deg,#20102C,var(--surface))}
 .bb-ai-launch b{display:block;font-family:var(--f-display);font-size:16px}.bb-ai-launch span{display:block;color:var(--muted);font-size:13px;line-height:1.4;margin-top:3px}.bb-ai-launch .btn{flex:none}
 .bb-ask{width:min(100%,580px);max-height:calc(100dvh - 48px);overflow-y:auto;overscroll-behavior:contain}
 .bb-ask-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.bb-ask-head h2{font-size:23px}.bb-ask-intro{margin:0;color:var(--muted);font-size:14px}
 .bb-ask label{display:block;font-weight:700}.bb-ask textarea{display:block;width:100%;min-height:110px;resize:vertical;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:16px;line-height:1.5;margin-top:6px}
 .bb-ask-examples{display:flex;flex-wrap:wrap;gap:6px}.bb-ask-examples .btn{font-size:13px;min-height:36px;padding:6px 10px}
 .bb-ask-context{display:flex!important;align-items:flex-start;gap:8px;font-weight:400!important;font-size:14px;color:var(--muted)}.bb-ask-context input{margin-top:5px;accent-color:var(--felt)}
-.bb-ask-status{margin:0;color:var(--cream);font-size:14px}.bb-ask-status.error{color:#FFADB4}
+.bb-ask-status{margin:0;color:var(--cream);font-size:14px}.bb-ask-status.error{color:#F2D6FF}
 .bb-ask-result{border-top:1px solid var(--line);padding-top:16px}.bb-ask-result h3{font-size:16px;margin-bottom:8px}.bb-ask-answer{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;margin:0 0 14px}.bb-ask-refs{display:flex;flex-wrap:wrap;gap:6px}.bb-ask-refs .btn{color:var(--cream);font-size:14px}.bb-ask-note{font-size:12px;color:var(--muted);margin:10px 0 0}
 @media(max-width:360px){.bb-ai-launch{flex-wrap:wrap}.bb-ai-launch .btn{width:100%;justify-content:center}}
 .bb-pick{flex:1;justify-content:space-between;font-weight:800;min-width:0}
@@ -634,7 +634,7 @@ button{cursor:pointer}
 .bb-ch{font-size:var(--bfs);line-height:1.7}
 .bv{margin:0;padding:5px 8px;border-radius:10px;cursor:pointer;-webkit-user-select:none;user-select:none}
 .bv sup{color:var(--felt);font-weight:800;font-size:.62em;margin-right:5px;vertical-align:.45em}
-.bv.sel{background:rgba(229,9,20,.18);box-shadow:inset 4px 0 0 var(--felt)}
+.bv.sel{background:rgba(183,12,255,.18);box-shadow:inset 4px 0 0 var(--felt)}
 .bv-add{color:var(--muted)}
 .bb-nav{display:flex;justify-content:space-between;margin:16px 0}
 .bb-credit{font-size:12px;color:var(--muted);margin:10px 0 90px}.bb-credit a{color:var(--muted)}
@@ -680,6 +680,30 @@ button{cursor:pointer}
 .set-row .icon-btn{min-width:34px;min-height:38px;padding:0}
 .set-row .set-open b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
 .set-row{gap:5px}
+/* Topo de vidro (igual à barra de baixo), ícones de linha, aro colorido, Contato */
+.glass-top{position:sticky;top:calc(8px + env(safe-area-inset-top,0px));z-index:9;margin:0 -4px 16px;padding:9px 10px 9px 18px;border:1px solid rgba(236,214,255,.25);border-radius:24px;background:linear-gradient(120deg,rgba(100,44,145,.86),rgba(42,24,67,.93) 60%,rgba(74,38,111,.88));box-shadow:inset 0 1px 0 rgba(238,214,255,.12),0 9px 28px rgba(0,0,0,.28)}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass-top{background:linear-gradient(120deg,rgba(123,57,171,.5),rgba(55,23,80,.7) 60%,rgba(100,53,133,.5));-webkit-backdrop-filter:blur(24px) saturate(140%);backdrop-filter:blur(24px) saturate(140%)}}
+.glass-top .page-title{font-size:26px;flex:1}
+.glass-top .dm-icon{width:40px;height:40px;background:rgba(236,214,255,.08);border-color:rgba(236,214,255,.25);margin-left:auto}
+.glass-top .cm-me .cm-av{width:38px!important;height:38px!important}
+.cm-chips.pick button{display:inline-flex;align-items:center;gap:6px}.cm-chips.pick button svg{width:18px;height:18px;flex:none}
+.cm-kind{display:inline-flex;align-items:center;gap:5px}.cm-kind svg,.cm-church svg{width:14px;height:14px;flex:none;vertical-align:-2px;margin-right:4px}
+.cm-person-main>.cm-av,.cm-person .cm-av{box-shadow:0 0 0 2.5px var(--bg,#0C0B0E),0 0 0 5px var(--acc)}
+.ct-form fieldset{border:0;padding:0;margin:0}.ct-form legend{font-weight:700;margin-bottom:4px}
+.ct-ok h2{font-size:22px;margin:0 0 8px}
+.ct-row{border-top:1px solid var(--line);padding:12px 0}.ct-row:first-of-type{border-top:0}
+.ct-contact{margin:4px 0 0;font-weight:700;overflow-wrap:anywhere}.ct-text{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+/* Tocadas recentemente (bolinhas de vidro) */
+.rc-sec{margin:6px 0 14px}
+.rc-row{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 10px;scrollbar-width:none;scroll-snap-type:x mandatory}.rc-row::-webkit-scrollbar{display:none}
+.rc{flex:none;width:92px;scroll-snap-align:start;display:grid;justify-items:center;gap:3px;text-align:center;border:0;background:none;color:var(--ink);font:inherit;padding:0}
+.rc-av{width:78px;height:78px;border-radius:50%;background-size:cover;background-position:center;display:grid;place-items:center;font:700 22px var(--f-body);color:#fff;border:1px solid rgba(232,208,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 4px rgba(170,110,255,.16),0 8px 22px rgba(0,0,0,.35)}
+.rc b{font-size:13px;line-height:1.2;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
+.rc small{font-size:11px;color:var(--muted);max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Tema claro: inverte as cores da tela e devolve fotos/vídeos ao normal */
+html.light{filter:invert(1) hue-rotate(180deg);background:#0C0B0E}
+html.light :is(img,video,canvas,picture,iframe,.rc-av,.cm-cover,.bl-tile,.poster,.banner,.artist .ph,.cm-demo-img,[style*="background-image"]){filter:invert(1) hue-rotate(180deg)}
+html.light :is(.cm-cover,.bl-tile,.poster,.banner,[style*="background-image"]) :is(img,video){filter:none}
 /* Mensagens */
 .dm-icon{position:relative;margin-left:auto;margin-right:10px;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:#fff;display:grid;place-items:center}.dm-icon svg{width:23px;height:23px}
 .dm-icon .badge{position:absolute;top:-5px;right:-5px;margin:0}.top .dm-icon + .cm-me{margin-left:0}
@@ -688,7 +712,7 @@ button{cursor:pointer}
 .dm-rows{display:grid}
 .dm-row{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:#fff;text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font:inherit}
 .dm-row-t{flex:1;min-width:0;display:grid;gap:2px}.dm-row-t .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.dm-row.un .dm-row-t .muted{color:#fff;font-weight:700}
-.dm-row-x{display:grid;justify-items:end;gap:6px}.dm-dot{width:10px;height:10px;border-radius:50%;background:#FF3B5C;display:block}
+.dm-row-x{display:grid;justify-items:end;gap:6px}.dm-dot{width:10px;height:10px;border-radius:50%;background:#C561FF;display:block}
 .dm-head{position:fixed;top:0;left:0;right:0;z-index:8;max-width:720px;margin:0 auto;display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;background:rgba(12,11,14,.95);border-bottom:1px solid var(--line)}
 .dm-head .btn{min-width:44px;font-size:22px}
 .dm-who{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;color:#fff;text-align:left;font:inherit}.dm-who span{display:grid;min-width:0}.dm-who b{display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -697,7 +721,7 @@ button{cursor:pointer}
 .dm-day{align-self:center;font-size:12px;color:var(--muted);margin:10px 0 4px}
 .dm-msg{display:flex}.dm-msg.me{justify-content:flex-end}
 .dm-b{max-width:78%;border:0;text-align:left;font:15px/1.35 var(--f-body);color:#fff;background:#2B2A31;padding:8px 12px 6px;border-radius:18px 18px 18px 6px;overflow-wrap:anywhere;display:grid;gap:2px}
-.dm-msg.me .dm-b{background:#B81E42;border-radius:18px 18px 6px 18px}
+.dm-msg.me .dm-b{background:#8B10DF;border-radius:18px 18px 6px 18px}
 .dm-b small{font-size:11px;opacity:.7;justify-self:end}
 .dm-form{position:fixed;bottom:0;left:0;right:0;z-index:8;max-width:720px;margin:0 auto;display:flex;gap:8px;align-items:flex-end;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(12,11,14,.97);border-top:1px solid var(--line)}
 .dm-form textarea{flex:1;min-width:0;resize:none;max-height:120px;border-radius:20px;padding:10px 14px;margin:0}
@@ -716,7 +740,7 @@ button{cursor:pointer}
 .bl-top{position:fixed;top:0;left:max(0px,calc(50% - 260px));right:max(0px,calc(50% - 260px));z-index:7;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 22px;background:linear-gradient(rgba(0,0,0,.55),transparent);pointer-events:none}
 .bl-top>*{pointer-events:auto}.bl-top .page-title{font-size:28px;flex:1;text-shadow:0 2px 10px rgba(0,0,0,.5)}
 .bl-sound{width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}.bl-sound svg{width:22px;height:22px}
-.bl-new{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;background:var(--red,#E50914);color:#fff;font:800 14px var(--f-body);padding:9px 14px 9px 11px}.bl-new svg{width:18px;height:18px}
+.bl-new{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;background:var(--red,#B70CFF);color:#fff;font:800 14px var(--f-body);padding:9px 14px 9px 11px}.bl-new svg{width:18px;height:18px}
 .top .bl-new{margin-left:auto}
 .bl-item{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden}
 .bl-v{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
@@ -726,7 +750,7 @@ button{cursor:pointer}
 .bl-side{position:absolute;right:8px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:2;display:grid;gap:14px;justify-items:center}
 .bl-act{border:0;background:none;color:#fff;display:grid;justify-items:center;gap:2px;font:800 13px var(--f-body);padding:4px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
 .bl-act svg{width:32px;height:32px}.bl-act .cm-av{border:2px solid #fff}
-.bl-act.like[aria-pressed="true"]{color:#F91880}.bl-act.like[aria-pressed="true"] svg{fill:currentColor}
+.bl-act.like[aria-pressed="true"]{color:#9033FF}.bl-act.like[aria-pressed="true"] svg{fill:currentColor}
 .bl-info{position:absolute;left:0;right:64px;bottom:0;z-index:2;padding:40px 14px calc(100px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.65) 40%);pointer-events:none;color:#fff}
 .bl-info>*{pointer-events:auto}
 .bl-who{border:0;background:none;color:#fff;padding:0;font:700 15px var(--f-body);display:flex;align-items:center;gap:4px;text-align:left}
@@ -740,8 +764,8 @@ button{cursor:pointer}
 .bl-form textarea{width:100%;min-width:0;box-sizing:border-box;margin-top:4px}
 .bl-pick{display:grid;justify-items:center;gap:6px;padding:34px 16px;border:2px dashed var(--line);border-radius:18px;cursor:pointer;text-align:center}.bl-pick svg{width:34px;height:34px}
 .bl-prev{display:grid;place-items:center;background:#000;border-radius:16px;overflow:hidden}.bl-prev video{max-width:100%;max-height:52vh;display:block}
-.bl-prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:14px}.bl-prog span{display:block;height:100%;background:var(--red,#E50914);transition:width .3s}
-.bl-msg{color:#ff8a8a;margin:10px 0 0}
+.bl-prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:14px}.bl-prog span{display:block;height:100%;background:var(--red,#B70CFF);transition:width .3s}
+.bl-msg{color:#ECB9FF;margin:10px 0 0}
 .cm-demo-note{margin:2px 0 12px;font-size:14px;color:#d8d8de;background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:10px 12px}
 .cm-demo-tag{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cream);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:2px 8px;margin-left:auto;flex:none}
 .cm-demo-card .cm-demo-tag{position:absolute;top:8px;left:8px;z-index:1;margin:0}
@@ -753,7 +777,7 @@ button{cursor:pointer}
 @media (min-width:600px){.cm-card{width:180px}}
 </style>
 
-<link rel="stylesheet" href="tema-vidro.css?v=20261014-1">
+<link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
 <div id="app"></div>
 <div id="sheet" class="bsheet" hidden></div>
 <div id="modal" hidden></div>
@@ -1123,6 +1147,8 @@ function render(){
   else if (state.view === "community") app.innerHTML = viewCommunity();
   else if (state.view === "chats") app.innerHTML = viewChats();
   else if (state.view === "chat") app.innerHTML = viewChat();
+  else if (state.view === "contato") app.innerHTML = viewContact();
+  else if (state.view === "ajustes") app.innerHTML = viewSettings();
   else if (state.view === "blessings") app.innerHTML = viewBlessings();
   else if (state.view === "bl-new") app.innerHTML = viewBlessingNew();
   else if (state.view === "profile") app.innerHTML = viewProfile();
@@ -1388,6 +1414,7 @@ function viewTeam(){
     </section>
     ${commVerifyReqsPanel()}
     ${commReportsPanel()}
+    ${ctAdminPanel()}
     <section class="panel"><h3 style="font-size:18px;margin-bottom:6px">Passar músicas para a equipe</h3>
       <p class="muted" style="margin:0 0 10px;font-size:14px">No app do Claude (ou em outro aparelho), toque em <b>Mandar meu repertório</b> e salve o arquivo. Aqui, toque em <b>Receber</b>: as músicas, pastas e a escala vão para o repertório da equipe.</p>
       <label class="btn primary file-btn">Receber repertório na equipe<input id="f-import" type="file" accept=".json,application/json,text/plain" aria-label="Escolher arquivo de repertório"></label>
@@ -1420,12 +1447,13 @@ const TAB_ICONS = {
   study:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7.5 5v8M12 5v8M16.5 5v8"/></svg>',
   community:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.6 18.4c1.2-2 3.1-3.1 5.4-3.1s4.2 1.1 5.4 3.1"/></svg>',
   blessings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4.5" y="2.5" width="15" height="19" rx="4"/><path d="M10.2 8.8v6.4l5.3-3.2z" fill="currentColor"/></svg>',
+  contato:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg>',
   setlist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h3"/></svg>'
 };
 function tabbar(active){
   const t = (v, label) => `<button data-a="tab" data-v="${v}" ${active===v ? 'aria-current="page"' : ""}>${TAB_ICONS[v]}${label}</button>`;
   const n = pendingCount();
-  const extra = !teamAvailable() ? "" : teamRole() === "admin" ? t("team", "Equipe" + (n ? ` <span class="badge" aria-label="${n} pedido${n > 1 ? "s" : ""}">${n}</span>` : "")) : store.mode === "team" ? "" : t("login", "Entrar");
+  const extra = !teamAvailable() ? "" : teamRole() === "admin" ? t("team", "Equipe" + (n ? ` <span class="badge" aria-label="${n} pedido${n > 1 ? "s" : ""}">${n}</span>` : "")) : (TEAM.user && store.mode !== "team" ? t("login", "Conta") : "") + t("contato", "Contato");
   const dmn = commOn() && TEAM.user ? dmUnreadCount() : 0;
   const comm = commOn() ? t("community", "Comunidade" + (dmn ? ` <span class="badge" aria-label="${dmn} mensage${dmn > 1 ? "ns" : "m"} não lida${dmn > 1 ? "s" : ""}">${dmn}</span>` : "")) : "";
   const bl = blOn() || (commOn() && teamRole() === "admin") ? t("blessings", "Blessings") : "";
@@ -2232,10 +2260,10 @@ function commGrid(ids){
 }
 function commPersonCard(p){
   const s = [p.display_name, p.handle, p.church, p.city, (p.instruments || []).join(" "), isChurch(p) ? "igreja" : ""].join(" ").toLowerCase();
-  return `<div class="cm-person" data-s="${esc(s)}" style="--acc:${THEMES[p.theme] || THEMES.red}">${isChurch(p) ? '<span class="cm-kind">⛪ Igreja</span>' : isMember(p) ? '<span class="cm-kind">🙋 Membro</span>' : ""}
+  return `<div class="cm-person" data-s="${esc(s)}" style="--acc:${THEMES[p.theme] || THEMES.red}">${isChurch(p) ? `<span class="cm-kind">${PPL_ICONS.igreja}Igreja</span>` : ""}
     <button class="cm-person-main" data-a="cm-profile" data-id="${esc(p.id)}">${commAvatar(p, 64)}
       <b>${esc(p.display_name)}${commBadge(p)}</b><span class="muted">@${esc(p.handle)}</span>
-      ${p.church ? `<span class="cm-church">${isChurch(p) ? "" : "⛪ "}${esc(p.church)}</span>` : ""}${isChurch(p) && p.city ? `<span class="muted" style="font-size:12px">${esc(p.city)}</span>` : ""}
+      ${p.church ? `<span class="cm-church">${isChurch(p) ? "" : PPL_ICONS.igreja}${esc(p.church)}</span>` : ""}${isChurch(p) && p.city ? `<span class="muted" style="font-size:12px">${esc(p.city)}</span>` : ""}
       ${!isChurch(p) && (p.instruments || []).length ? `<span class="muted" style="font-size:12px">${esc(p.instruments.slice(0, 3).join(" · "))}</span>` : ""}</button>
     ${commFollowBtn(p.id)}</div>`;
 }
@@ -2723,7 +2751,7 @@ function pfTabs(id, me, posts){
       shares: me ? "Numa foto ou Blessing, toque em compartilhar e escolha “No meu perfil”." : "Ainda não compartilhou nada."}[tab];
     body = list === null ? '<p class="muted">Carregando…</p>' : list.length ? `<div class="cm-grid">${list.map(pfCell).join("")}</div>` : `<p class="muted">${empty}</p>`;
   }
-  return `<div class="inst cm-seg pf-tabs" role="group" aria-label="O que ver no perfil">${seg("fotos", "📷 Fotos")}${blOn() ? seg("blessings", "▶ Blessings") : ""}${seg("tags", "👥 Marcações")}${seg("shares", "🔁 Compartilhados")}</div>${body}`;
+  return `<div class="inst cm-seg pf-tabs" role="group" aria-label="O que ver no perfil">${seg("fotos", "Fotos")}${blOn() ? seg("blessings", "Blessings") : ""}${seg("tags", "Marcações")}${seg("shares", "Compartilhados")}</div>${body}`;
 }
 
 /* marcar pessoas ao postar */
@@ -3044,8 +3072,121 @@ function dmClick(a, b){
   return true;
 }
 document.addEventListener("keydown", e => { if (e.target && e.target.id === "dm-in" && e.key === "Enter" && !e.shiftKey && matchMedia("(pointer:fine)").matches) { e.preventDefault(); dmSend(); } });
+/* ---------- Contato: fale com os desenvolvedores ---------- */
+const PPL_ICONS = {
+  all: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3 3-4.6 5.5-4.6s4.7 1.6 5.5 4.6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.3.2 3.9 1.6 4.5 4.3"/></svg>',
+  musico: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>',
+  igreja: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v4.5M10 4.5h4"/><path d="M5.5 21v-8.5L12 7l6.5 5.5V21z"/><path d="M10 21v-4.2a2 2 0 0 1 4 0V21"/></svg>'
+};
+const CT_SUBJ = [["patrocinio", "Patrocínio"], ["parceria", "Parceria / marca"], ["apoio", "Apoiar o projeto"], ["sugestao", "Sugestão"], ["outro", "Outro assunto"]];
+function viewContact(){
+  const c = state.contact || (state.contact = {subject: "patrocinio"});
+  const head = `<div class="top glass-top"><h1 class="page-title">Contato</h1></div>`;
+  if (c.sent) return head + `<section class="panel ct-ok"><h2>🙏 Mensagem enviada!</h2><p>Obrigado por falar com a gente. Os desenvolvedores do Blessed vão ler e responder pelo contato que você deixou.</p><div class="actions"><button class="btn" data-a="ct-new">Enviar outra mensagem</button></div></section>` + tabbar("contato");
+  const name = c.name !== undefined ? c.name : (COMM.me && COMM.me.display_name) || "";
+  return head + `<section class="cm-hero ct-hero"><p class="cm-kicker">Fale com os desenvolvedores</p><h2>Vamos conversar?</h2>
+      <p>Patrocínio, parcerias com marcas, apoio ao projeto ou uma ideia para o app: sua mensagem chega direto para a equipe do Blessed.</p></section>
+    <form class="form ct-form" id="ct-form">
+      <fieldset class="cm-field"><legend>Assunto</legend><div class="cm-chips pick">${CT_SUBJ.map(([v, l]) => `<button type="button" data-a="ct-subj" data-v="${v}" aria-pressed="${c.subject === v}">${l}</button>`).join("")}</div></fieldset>
+      <label>Seu nome ou da empresa<input id="ct-name" maxlength="80" autocomplete="name" value="${esc(name)}" required></label>
+      <label>WhatsApp ou e-mail para resposta<input id="ct-contact" maxlength="120" autocomplete="email" value="${esc(c.contact || "")}" required></label>
+      <label>Mensagem<textarea id="ct-msg" maxlength="2000" rows="5" placeholder="Conte o que você tem em mente…" required>${esc(c.message || "")}</textarea></label>
+      <input id="ct-site" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;opacity:0">
+      ${c.msg ? `<p class="confirm">${esc(c.msg)}</p>` : ""}
+      <button class="btn primary big-paste" type="submit" ${c.busy ? "disabled" : ""}>${c.busy ? "Enviando…" : "Enviar mensagem"}</button>
+      <p class="muted" style="font-size:13px;margin:0">Seu contato só é visto pela equipe do Blessed e serve apenas para responder você.</p>
+    </form>
+    ${TEAM.user ? "" : `<p class="muted" style="margin-top:18px;font-size:14px">Já tem conta? <button class="lnk2" data-a="tab" data-v="login">Entrar</button></p>`}` + tabbar("contato");
+}
+function ctKeep(){ const c = state.contact || (state.contact = {}); const g = id => ($("#" + id) || {}).value; if ($("#ct-name")) { c.name = g("ct-name"); c.contact = g("ct-contact"); c.message = g("ct-msg"); } return c; }
+async function ctSend(){
+  const c = ctKeep(); if (c.busy) return;
+  if (($("#ct-site") || {}).value) { c.sent = true; render(); return; } // robô
+  const name = (c.name || "").trim(), contact = (c.contact || "").trim(), message = (c.message || "").trim();
+  c.msg = name.length < 2 ? "Escreva seu nome." : contact.length < 5 ? "Deixe um WhatsApp ou e-mail para a gente responder." : message.length < 10 ? "Escreva um pouco mais na mensagem." : !TEAM.client ? "Não consegui conectar agora. Tente mais tarde." : "";
+  if (c.msg) { render(); return; }
+  c.busy = true; render();
+  const {error} = await TEAM.client.from("contact_messages").insert({name, contact, message, subject: c.subject || "outro"});
+  c.busy = false;
+  if (error) c.msg = /muitas mensagens/i.test(error.message || "") ? "Você já mandou algumas mensagens agora há pouco. Tente de novo mais tarde." : /does not exist|schema cache/i.test(error.message || "") ? "O contato ainda está sendo ligado. Volte daqui a pouco." : "Não consegui enviar agora. Confira a internet e tente de novo.";
+  else state.contact = {sent: true, subject: c.subject};
+  render(); scrollTo(0, 0);
+}
+let CT_LIST = null;
+async function ctLoad(){ const {data, error} = await TEAM.client.from("contact_messages").select("*").eq("done", false).order("created_at", {ascending: false}).limit(100); CT_LIST = error ? [] : data; if (state.view === "team") rerenderKeepScroll(); }
+function ctAdminPanel(){
+  if (CT_LIST === null) { CT_LIST = []; ctLoad(); }
+  const lab = Object.fromEntries(CT_SUBJ);
+  const rows = CT_LIST.map(m => `<div class="ct-row"><p style="margin:0"><b>${esc(lab[m.subject] || m.subject)}</b> · ${esc(m.name)} <span class="muted">· ${commAgo(m.created_at)}</span></p>
+    <p class="ct-contact">📩 ${esc(m.contact)}</p><p class="ct-text">${esc(m.message)}</p>
+    <div class="actions" style="margin:6px 0 0"><button class="btn ghost" data-a="ct-done" data-id="${esc(m.id)}">Respondido</button></div></div>`).join("");
+  return `<section class="panel"><h3 style="font-size:18px;margin-bottom:6px">📬 Mensagens de contato${CT_LIST.length ? ` (${CT_LIST.length})` : ""}</h3>${rows || '<p class="muted" style="margin:0">Nenhuma mensagem nova.</p>'}</section>`;
+}
+function ctClick(a, b){
+  if (a === "ct-subj") { ctKeep().subject = b.dataset.v; rerenderKeepScroll(); }
+  else if (a === "ct-new") { state.contact = {subject: "patrocinio"}; render(); }
+  else if (a === "ct-done") { const id = b.dataset.id; TEAM.client.from("contact_messages").update({done: true}).eq("id", id).then(() => {}); CT_LIST = (CT_LIST || []).filter(m => m.id !== id); rerenderKeepScroll(); }
+  else return false;
+  return true;
+}
+/* ---------- Ajustes: tema claro/escuro e segurança da conta ---------- */
+function themeApply(){ let t = "escuro"; try { t = localStorage.getItem("cc-tema") || "escuro"; } catch(e) {}
+  const light = t === "claro" || (t === "auto" && matchMedia("(prefers-color-scheme: light)").matches);
+  document.documentElement.classList.toggle("light", light);
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = light ? "#F3F0F8" : "#0C0B0E"; }
+themeApply();
+try { matchMedia("(prefers-color-scheme: light)").addEventListener("change", themeApply); } catch(e) {}
+function viewSettings(){
+  let t = "escuro"; try { t = localStorage.getItem("cc-tema") || "escuro"; } catch(e) {}
+  const a = state.aj || (state.aj = {});
+  const opt = (v, l) => `<button type="button" data-a="aj-tema" data-v="${v}" aria-pressed="${t === v}">${l}</button>`;
+  return `<div class="top glass-top"><button class="btn ghost" data-a="aj-back" aria-label="Voltar">‹</button><h1 class="page-title">Ajustes</h1></div>
+    <section class="panel"><h3 style="font-size:18px;margin-bottom:8px">🎨 Aparência</h3>
+      <div class="inst cm-seg" role="group" aria-label="Tema">${opt("escuro", "🌙 Escuro")}${opt("claro", "☀️ Claro")}${opt("auto", "Automático")}</div>
+      <p class="muted" style="font-size:13px;margin:0">Automático segue o modo do seu celular.</p></section>
+    ${TEAM.user ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🔒 Segurança da conta</h3>
+      <p class="muted" style="font-size:14px;margin:0 0 10px">Conta: <b style="color:var(--ink)">${esc(aj_mask(TEAM.user.email || ""))}</b></p>
+      <form class="form" id="aj-pass" autocomplete="on">
+        <input type="email" autocomplete="username" value="${esc(TEAM.user.email || "")}" hidden>
+        <label>Nova senha<input id="aj-p1" type="password" minlength="8" autocomplete="new-password" required></label>
+        <label>Repita a nova senha<input id="aj-p2" type="password" minlength="8" autocomplete="new-password" required></label>
+        <p class="muted" style="font-size:13px;margin:0">Use pelo menos 8 caracteres, misturando letras e números. Não use a mesma senha de outros sites.</p>
+        ${a.msg ? `<p class="confirm">${esc(a.msg)}</p>` : ""}
+        <button class="btn primary" type="submit" ${a.busy ? "disabled" : ""}>${a.busy ? "Trocando…" : "Trocar senha"}</button></form>
+      <div class="actions" style="margin-top:14px"><button class="btn" data-a="aj-out">Sair da conta</button><button class="btn ghost" data-a="aj-out-all">Sair de todos os aparelhos</button></div>
+      <p class="muted" style="font-size:13px;margin:8px 0 0">Esqueceu a senha ou acha que alguém entrou na sua conta? Troque a senha aqui e toque em <b>Sair de todos os aparelhos</b>.</p></section>` : ""}
+    <section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🛡️ Dicas de segurança</h3>
+      <ul class="dms-list" style="margin:0"><li>🚫 O Blessed nunca pede sua senha por mensagem.</li><li>💸 Desconfie de pedidos de PIX ou dinheiro, mesmo de perfis conhecidos.</li><li>🙈 Não poste telefone, endereço nem documentos.</li><li>🚩 Viu algo errado? Use <b>Denunciar</b> em fotos, vídeos, comentários e mensagens.</li></ul></section>
+    ${tabbar("community")}`;
+}
+function aj_mask(e){ const [u, d] = String(e).split("@"); if (!d) return e; return u.slice(0, 2) + "•••@" + d; }
+async function ajPass(){
+  const a = state.aj || (state.aj = {}), p1 = ($("#aj-p1") || {}).value || "", p2 = ($("#aj-p2") || {}).value || "";
+  a.msg = p1.length < 8 ? "A senha precisa ter pelo menos 8 caracteres." : p1 !== p2 ? "As duas senhas não são iguais." : !/[A-Za-z]/.test(p1) || !/\d/.test(p1) ? "Misture letras e números na senha." : "";
+  if (a.msg) { render(); return; }
+  a.busy = true; render();
+  const {error} = await TEAM.client.auth.updateUser({password: p1});
+  a.busy = false;
+  a.msg = error ? (/different from the old|same/i.test(error.message || "") ? "A nova senha precisa ser diferente da atual." : /reauth|recent/i.test(error.message || "") ? "Por segurança, saia e entre de novo na conta antes de trocar a senha." : "Não consegui trocar agora. Tente de novo.") : "✓ Senha trocada!";
+  render();
+}
+function ajClick(a, b){
+  if (a === "aj-open") { state.ajBack = state.view; state.aj = {}; state.view = "ajustes"; render(); scrollTo(0, 0); }
+  else if (a === "aj-back") { state.view = state.ajBack || "community"; render(); scrollTo(0, 0); }
+  else if (a === "aj-tema") { try { localStorage.setItem("cc-tema", b.dataset.v); } catch(e) {} themeApply(); rerenderKeepScroll(); }
+  else if (a === "aj-out") { if (confirm("Sair da conta neste aparelho?")) { state.view = "community"; TEAM.client.auth.signOut().finally(teamLeave); } }
+  else if (a === "aj-out-all") { if (confirm("Sair da conta em TODOS os aparelhos (inclusive este)?")) { state.view = "community"; TEAM.client.auth.signOut({scope: "global"}).finally(teamLeave); } }
+  else return false;
+  return true;
+}
+// "Tocadas recentemente" em bolinhas de vidro com a foto do artista
+function recentBubbles(list){
+  return `<div class="rc-row">${list.map(x => { const mine = state.songs.find(y => norm(y.name) === norm(x.name) && norm(y.artist) === norm(x.artist) && !y.pending);
+    const inner = `<span class="rc-av" style="${coverStyle(x.artist, x.name)}">${artistPhoto(x.artist) ? "" : initials(x.artist || x.name)}</span><b>${esc(x.name)}</b><small>${esc(x.artist || "")}${x.key ? " · " + esc(x.key) : ""}</small>`;
+    return mine ? `<button class="rc" data-a="open" data-id="${esc(mine.id)}">${inner}</button>` : `<div class="rc">${inner}</div>`; }).join("")}</div>`;
+}
 function viewCommunity(){
-  const head = `<div class="top"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
+  const head = `<div class="top glass-top"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
   const wrap = inner => head + inner + tabbar("community");
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
   if (!TEAM.user) return wrap(commDemoHtml());
@@ -3062,10 +3203,10 @@ function viewCommunity(){
   const seg = (v, l) => `<button data-a="cm-tab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`;
   let body = "";
   if (tab === "people") {
-    const pk = state.cmKind || "all";
+    const pk = state.cmKind && state.cmKind !== "membro" ? state.cmKind : "all";
     const others = (COMM.people || []).filter(p => p.id !== TEAM.user.id && (pk === "all" || commKindOf(p) === pk)).sort((a, b) => commRank(b) - commRank(a));
     const chip = (v, l) => `<button type="button" data-a="cm-pk" data-v="${v}" aria-pressed="${pk === v}">${l}</button>`;
-    body = `<div class="cm-chips pick" style="margin:0 0 12px">${chip("all", "Todos")}${chip("musico", "🎹 Músicos")}${chip("igreja", "⛪ Igrejas")}${chip("membro", "🙋 Membros")}</div>
+    body = `<div class="cm-chips pick" style="margin:0 0 12px">${chip("all", PPL_ICONS.all + "Todos")}${chip("musico", PPL_ICONS.musico + "Músicos")}${chip("igreja", PPL_ICONS.igreja + "Igrejas")}</div>
       <input id="cm-q" class="cm-search" type="search" placeholder="Buscar por nome, igreja ou cidade" aria-label="Buscar músicos e igrejas">
       <div class="cm-people">${others.map(commPersonCard).join("") || '<p class="muted">Ainda não tem ninguém aqui. Chame os músicos da sua igreja!</p>'}</div>`;
   } else if (tab === "feed") {
@@ -3090,7 +3231,7 @@ function viewProfile(){
   return `${back}<div class="cm-prof" style="--acc:${acc}">
     <div class="cm-cover"${cover ? ` style="background-image:url(&quot;${esc(cover)}&quot;)"` : ""}></div>
     <div class="cm-id">${commAvatar(p, 104)}
-      <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id) + dmBtn(id)}</div></div>
+      <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id) + dmBtn(id)}</div></div>
     <h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2>
     <p class="muted" style="margin:0">@${esc(p.handle || "")}</p>
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
@@ -3114,7 +3255,7 @@ function viewProfile(){
   ${isChurch(p) ? (() => { if (COMM.people === null) { COMM.people = []; commLoadPeople(); } const ms = commMembersOf(p);
       return `<section class="panel"><h3 style="font-size:17px;margin-bottom:8px">🎹 Músicos desta igreja${ms.length ? ` (${ms.length})` : ""}</h3>${ms.length ? `<div class="cm-stories" style="margin:0;padding-inline:0">${ms.map(m => `<button class="cm-story" data-a="cm-profile" data-id="${esc(m.id)}" style="--acc:${THEMES[m.theme] || THEMES.red}">${commAvatar(m, 56)}<span>${esc((m.display_name || "").split(" ")[0])}${commBadge(m)}</span></button>`).join("")}</div>` : '<p class="muted" style="margin:0;font-size:14px">Quando os músicos escreverem esta igreja no perfil deles, eles aparecem aqui.</p>'}</section>`; })() : ""}
   ${songs.length ? `<section class="panel"><h3 style="font-size:17px;margin-bottom:4px">🎹 ${isChurch(p) ? "Músicas que tocamos" : "Músicas que eu toco"}</h3>${songs.map(commSongLink).join("")}</section>` : ""}
-  ${recent.length ? `<section class="panel"><h3 style="font-size:17px;margin-bottom:4px">🕘 Tocadas recentemente</h3>${recent.slice(0, 8).map(commSongLink).join("")}</section>` : ""}
+  ${recent.length ? `<section class="rc-sec"><h3 class="cm-sec" style="margin-top:0">🎧 Tocadas recentemente</h3>${recentBubbles(recent.slice(0, 10))}</section>` : ""}
   ${me ? (() => { if (COMM.savedIds === undefined) { COMM.savedIds = null; commLoadSaved(); }
       return COMM.savedIds && COMM.savedIds.length ? `<h3 class="cm-sec">🔖 Salvos <small class="muted" style="font-size:13px">só você vê</small></h3>${commGrid(COMM.savedIds)}` : ""; })() : ""}
   ${pfTabs(id, me, posts)}
@@ -4763,6 +4904,8 @@ document.addEventListener("click", ev => {
   if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("pf-") && pfClick(a, b)) return;
   if (a.startsWith("dm-") && dmClick(a, b)) return;
+  if (a.startsWith("ct-") && ctClick(a, b)) return;
+  if (a.startsWith("aj-") && ajClick(a, b)) return;
   if (a.startsWith("ag-") && agClick(a, b)) return;
   if (a.startsWith("yt-mini") && miniClick(a, b)) return;
   if ((a === "study-tab" || a.startsWith("bb-")) && bibleClick(a, b)) return;
@@ -4947,6 +5090,8 @@ document.addEventListener("submit", ev => {
   if (ev.target.id === "bb-search-form") { ev.preventDefault(); bibleSearch(($("#bb-q") || {}).value || ""); return; }
   if (ev.target.id === "cm-post-form") { ev.preventDefault(); commPublish(); return; }
   if (ev.target.id === "cm-comment-form") { ev.preventDefault(); commAddComment(); return; }
+  if (ev.target.id === "aj-pass") { ev.preventDefault(); ajPass(); return; }
+  if (ev.target.id === "ct-form") { ev.preventDefault(); ctSend(); return; }
   if (ev.target.id === "dm-form") { ev.preventDefault(); dmSend(); return; }
   if (ev.target.id === "pf-bc-form") { ev.preventDefault(); pfBcSend(ev.target.dataset.b); return; }
   if (ev.target.id !== "login-form") return;
