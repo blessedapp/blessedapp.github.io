@@ -1107,7 +1107,7 @@ const state = {
   artists: lsGet("cc-artists-cache", null) || lsGet("cc-local-artists", []),
   currentArtist:null, artistEditing:null, searchOpen:false, from:"library", backupMsg:"",
   study:{key:"C", chord:0, deg:0, quiz:null, score:0, total:0},
-  instrument: lsGet("cc-inst", "teclado"), mode: lsGet("cc-mode", "cifra"),
+  instrument: lsGet("cc-inst", "teclado"), mode: "letra",
   wheelOpen: lsGet("cc-wheel", true), wheelSel:null, wheelAll:false, follow:null,
   infoOpen: lsGet("cc-info", true), recent: lsGet("cc-recent", []), infoDocs: lsGet("cc-info-cache", {}),
   confirmClear:false,
@@ -3859,7 +3859,7 @@ function saveYt(clear){
 }
 function modeSwitch(){
   const b = (v, label) => `<button data-a="mode" data-v="${v}" aria-pressed="${state.mode === v}">${label}</button>`;
-  return `<div class="inst" role="group" aria-label="Mostrar">${b("cifra","Cifra")}${b("letra","Letra")}</div>`;
+  return `<div class="inst" role="group" aria-label="Mostrar">${b("letra","Letra")}${b("cifra","Cifra")}</div>`;
 }
 function lyricsPanel(A){
   const out = []; let blank = false, sec = null; // título de seção só aparece se tiver letra embaixo (ex.: Intro só com acordes some)
@@ -3884,6 +3884,7 @@ function openPdfChoice(){
     <p>${esc(song.name)}${song.artist ? " · " + esc(song.artist) : ""}</p>
     <div class="pdf-opts">
       <button class="btn primary" data-a="pdf-letra">Só a letra</button>
+      <button class="btn primary" data-a="pdf-letra2">Letra lado a lado (1 página)</button>
       <button class="btn primary" data-a="pdf-cifra">Cifra em ${esc(tom)}${A.capo ? " (capo " + A.capo + ")" : ""}${state.simple ? ", simplificada" : ""}</button>
     </div>
     <p class="muted" style="font-size:13px">A cifra sai no tom e do jeito que está na tela. Para mudar, feche, ajuste o tom ou o Simplificado e exporte de novo.</p>
@@ -3928,13 +3929,35 @@ async function exportPdf(kind){
   doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(90);
   const sub = [song.artist, kind === "cifra" ? "Tom: " + tom + (A.capo ? " (capotraste na casa " + A.capo + ", formas de " + keyLabel(A.KT.tonic, A.KT.mode) + ")" : "") : ""].filter(Boolean).join("  ·  ");
   if (sub) { doc.text(pdfSafe(sub), M, y); y += 14; }
-  doc.setDrawColor(229, 9, 20); doc.setLineWidth(2); doc.line(M, y, M + 60, y); y += 22;
+  doc.setDrawColor(150, 60, 220); doc.setLineWidth(2); doc.line(M, y, M + 60, y); y += 22;
 
-  const lines = songPdfLines(A, kind);
-  if (kind === "letra") {
+  const lines = songPdfLines(A, kind === "letra2" ? "letra" : kind);
+  if (kind === "letra2") {
+    // duas colunas: diminui a letra até tudo caber numa página
+    const gap = 26, colW = (maxW - gap) / 2, top = y, bottom = H - M - 18;
+    const plan = fs => { const lh = fs * 1.35, items = []; let blank = false;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(fs);
+      for (const l of lines) {
+        if (l.t === "sec") { items.push({sec: l.s.toUpperCase(), h: lh + 4}); blank = false; continue; }
+        if (!l.s) { if (!blank) items.push({h: lh * .45}); blank = true; continue; }
+        blank = false; for (const part of doc.splitTextToSize(pdfSafe(l.s), colW)) items.push({t: part, h: lh});
+      }
+      let col = 0, yy = top;
+      for (let i = 0; i < items.length; i++) { const it = items[i], need = it.sec && items[i+1] ? it.h + items[i+1].h : it.h;
+        if (yy + need > bottom) { if (col === 1) return null; col = 1; yy = top; if (!it.t && !it.sec) { it.skip = true; continue; } }
+        it.x = M + col * (colW + gap); it.y = yy; yy += it.h; }
+      return items; };
+    let fsz = 13, items = plan(fsz);
+    while (!items && fsz > 6) { fsz -= .5; items = plan(fsz); }
+    if (!items) { fsz = 6; items = plan(6) || []; }
+    doc.setDrawColor(225); doc.setLineWidth(.6); doc.line(M + colW + gap / 2, top - 6, M + colW + gap / 2, bottom - 4);
+    for (const it of items) { if (it.skip || it.x === undefined) continue;
+      if (it.sec) { doc.setFont("helvetica", "bold"); doc.setFontSize(Math.max(7, fsz * .78)); doc.setTextColor(118, 38, 186); doc.text(pdfSafe(it.sec), it.x, it.y + 2); }
+      else if (it.t) { doc.setFont("helvetica", "normal"); doc.setFontSize(fsz); doc.setTextColor(20); doc.text(it.t, it.x, it.y); } }
+  } else if (kind === "letra") {
     const fs = 13, lh = 18; let blank = false;
     for (const l of lines) {
-      if (l.t === "sec") { if (y > H - M - 40) newPage(); y += 6; doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(176, 0, 16); doc.text(pdfSafe(l.s.toUpperCase()), M, y); y += 16; blank = false; continue; }
+      if (l.t === "sec") { if (y > H - M - 40) newPage(); y += 6; doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(118, 38, 186); doc.text(pdfSafe(l.s.toUpperCase()), M, y); y += 16; blank = false; continue; }
       if (!l.s) { if (!blank) y += 8; blank = true; continue; }
       blank = false;
       doc.setFont("helvetica", "normal"); doc.setFontSize(fs); doc.setTextColor(20);
@@ -3946,16 +3969,16 @@ async function exportPdf(kind){
     lines.forEach((l, i) => {
       const keepWithNext = l.t === "ch" && lines[i+1] && lines[i+1].t === "ly";
       if (y + (keepWithNext ? 2*lh : lh) > H - M - 20) newPage();
-      if (l.t === "sec") { y += 4; doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(176, 0, 16); doc.text(pdfSafe(l.s.toUpperCase()), M, y); y += lh + 2; return; }
+      if (l.t === "sec") { y += 4; doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(118, 38, 186); doc.text(pdfSafe(l.s.toUpperCase()), M, y); y += lh + 2; return; }
       doc.setFont("courier", l.t === "ch" ? "bold" : "normal"); doc.setFontSize(fs);
-      if (l.t === "ch") doc.setTextColor(176, 0, 16); else doc.setTextColor(20);
+      if (l.t === "ch") doc.setTextColor(118, 38, 186); else doc.setTextColor(20);
       if (l.s.trim()) doc.text(pdfSafe(l.s), M, y);
       y += l.s.trim() ? lh : lh * 0.6;
     });
   }
   footer();
   const blob = doc.output("blob");
-  const name = slug(song.name) + (kind === "letra" ? "-letra" : "-cifra-" + slug(tom)) + ".pdf";
+  const name = slug(song.name) + (kind === "letra" ? "-letra" : kind === "letra2" ? "-letra-1-pagina" : "-cifra-" + slug(tom)) + ".pdf";
   let dl = null;
   try { dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch(e) {}
   if (dl) {
@@ -4898,7 +4921,7 @@ document.addEventListener("click", ev => {
     const ps = songsAll().find(x => x.id === b.dataset.id);
     if (ps && ps.pending) { openPending(ps); return; }
   }
-  if (a === "open") { if (!b.dataset.id) return; if (state.view !== "song") state.from = state.view === "artist" ? "artist" : "library"; const keepFollow = !!state.follow && state.view === "song"; state.ytHidden = false; state.currentId = b.dataset.id; state.recent = [b.dataset.id].concat(state.recent.filter(x => x !== b.dataset.id)).slice(0, 15); lsSet("cc-recent", state.recent); state.view = "song"; state.sheet = null; state.notice = ""; state.wheelSel = null; state.follow = null; render(); if (keepFollow && refs.length) { state.follow = {idx:0}; render(); } scrollTo(0,0); commTrackPlay(b.dataset.id); }
+  if (a === "open") { if (!b.dataset.id) return; if (state.view !== "song") state.from = state.view === "artist" ? "artist" : "library"; const keepFollow = !!state.follow && state.view === "song"; state.ytHidden = false; if (state.view !== "song" || state.currentId !== b.dataset.id) state.mode = "letra"; state.currentId = b.dataset.id; state.recent = [b.dataset.id].concat(state.recent.filter(x => x !== b.dataset.id)).slice(0, 15); lsSet("cc-recent", state.recent); state.view = "song"; state.sheet = null; state.notice = ""; state.wheelSel = null; state.follow = null; render(); if (keepFollow && refs.length) { state.follow = {idx:0}; render(); } scrollTo(0,0); commTrackPlay(b.dataset.id); }
   else if (a === "back") { state.view = state.from === "artist" && state.currentArtist ? "artist" : "library"; state.sheet = null; render(); scrollTo(0,0); }
   else if (a === "tab") { state.view = b.dataset.v; state.sheet = null; state.searchOpen = false; state.q = ""; state.confirmClear = false; render(); scrollTo(0,0); }
   else if (a === "export") exportRepertoire();
@@ -5006,6 +5029,7 @@ document.addEventListener("click", ev => {
   else if (a === "mode") { state.mode = b.dataset.v; lsSet("cc-mode", state.mode); state.follow = null; state.sheet = null; rerenderKeepScroll(); }
   else if (a === "pdf") openPdfChoice();
   else if (a === "pdf-letra") exportPdf("letra");
+  else if (a === "pdf-letra2") exportPdf("letra2");
   else if (a === "pdf-cifra") exportPdf("cifra");
   else if (a === "pix-copy") copyPix(false);
   else if (a === "pix-cc") copyPix(true);
