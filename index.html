@@ -700,11 +700,6 @@ button{cursor:pointer}
 .rc-av{width:78px;height:78px;border-radius:50%;background-size:cover;background-position:center;display:grid;place-items:center;font:700 22px var(--f-body);color:#fff;border:1px solid rgba(232,208,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 4px rgba(170,110,255,.16),0 8px 22px rgba(0,0,0,.35)}
 .rc b{font-size:13px;line-height:1.2;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
 .rc small{font-size:11px;color:var(--muted);max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Tema claro: inverte as cores da tela e devolve fotos/vídeos ao normal */
-html.light{filter:invert(1) hue-rotate(180deg);background:#000;--bg:#000;--surface:#0E0E10;--surface2:#17171A;--line:rgba(236,221,249,.13)}
-html.light body{background-color:#000;background-image:none}
-html.light :is(img,video,canvas,picture,iframe,.rc-av,.cm-cover,.bl-tile,.poster,.banner,.artist .ph,.cm-demo-img,[style*="background-image"]){filter:invert(1) hue-rotate(180deg)}
-html.light :is(.cm-cover,.bl-tile,.poster,.banner,[style*="background-image"]) :is(img,video){filter:none}
 /* Mensagens */
 .dm-icon{position:relative;margin-left:auto;margin-right:10px;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:#fff;display:grid;place-items:center}.dm-icon svg{width:23px;height:23px}
 .dm-icon .badge{position:absolute;top:-5px;right:-5px;margin:0}.top .dm-icon + .cm-me{margin-left:0}
@@ -3131,20 +3126,10 @@ function ctClick(a, b){
   return true;
 }
 /* ---------- Ajustes: tema claro/escuro e segurança da conta ---------- */
-function themeApply(){ let t = "escuro"; try { t = localStorage.getItem("cc-tema") || "escuro"; } catch(e) {}
-  const light = t === "claro" || (t === "auto" && matchMedia("(prefers-color-scheme: light)").matches);
-  document.documentElement.classList.toggle("light", light);
-  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = light ? "#F3F0F8" : "#0C0B0E"; }
-themeApply();
-try { matchMedia("(prefers-color-scheme: light)").addEventListener("change", themeApply); } catch(e) {}
+try { localStorage.removeItem("cc-tema"); } catch(e) {}
 function viewSettings(){
-  let t = "escuro"; try { t = localStorage.getItem("cc-tema") || "escuro"; } catch(e) {}
   const a = state.aj || (state.aj = {});
-  const opt = (v, l) => `<button type="button" data-a="aj-tema" data-v="${v}" aria-pressed="${t === v}">${l}</button>`;
   return `<div class="top glass-top"><button class="btn ghost" data-a="aj-back" aria-label="Voltar">‹</button><h1 class="page-title">Ajustes</h1></div>
-    <section class="panel"><h3 style="font-size:18px;margin-bottom:8px">🎨 Aparência</h3>
-      <div class="inst cm-seg" role="group" aria-label="Tema">${opt("escuro", "🌙 Escuro")}${opt("claro", "☀️ Claro")}${opt("auto", "Automático")}</div>
-      <p class="muted" style="font-size:13px;margin:0">Automático segue o modo do seu celular.</p></section>
     ${TEAM.user ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🔒 Segurança da conta</h3>
       <p class="muted" style="font-size:14px;margin:0 0 10px">Conta: <b style="color:var(--ink)">${esc(aj_mask(TEAM.user.email || ""))}</b></p>
       <form class="form" id="aj-pass" autocomplete="on">
@@ -3174,7 +3159,6 @@ async function ajPass(){
 function ajClick(a, b){
   if (a === "aj-open") { state.ajBack = state.view; state.aj = {}; state.view = "ajustes"; render(); scrollTo(0, 0); }
   else if (a === "aj-back") { state.view = state.ajBack || "community"; render(); scrollTo(0, 0); }
-  else if (a === "aj-tema") { try { localStorage.setItem("cc-tema", b.dataset.v); } catch(e) {} themeApply(); rerenderKeepScroll(); }
   else if (a === "aj-out") { if (confirm("Sair da conta neste aparelho?")) { state.view = "community"; TEAM.client.auth.signOut().finally(teamLeave); } }
   else if (a === "aj-out-all") { if (confirm("Sair da conta em TODOS os aparelhos (inclusive este)?")) { state.view = "community"; TEAM.client.auth.signOut({scope: "global"}).finally(teamLeave); } }
   else return false;
