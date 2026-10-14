@@ -678,6 +678,13 @@ button{cursor:pointer}
 .set-row .icon-btn{min-width:34px;min-height:38px;padding:0}
 .set-row .set-open b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
 .set-row{gap:5px}
+.cm-demo-note{margin:2px 0 12px;font-size:14px;color:#d8d8de;background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:10px 12px}
+.cm-demo-tag{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cream);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:2px 8px;margin-left:auto;flex:none}
+.cm-demo-card .cm-demo-tag{position:absolute;top:8px;left:8px;z-index:1;margin:0}
+.cm-demo-emoji{position:absolute;top:28%;left:0;right:0;text-align:center;font-size:52px;z-index:1}
+.cm-demo-img{aspect-ratio:4/3;display:grid;place-items:center;align-content:center;gap:10px;color:#fff}
+.cm-demo-img span{font-size:72px;line-height:1}.cm-demo-img b{font:400 26px "Anton",var(--f-brand);letter-spacing:.04em}
+.cm-demo-end{margin-top:6px}
 .cm-preview{width:100%;border-radius:16px;max-height:60vh;object-fit:contain;background:#000}
 @media (min-width:600px){.cm-card{width:180px}}
 </style>
@@ -2174,15 +2181,68 @@ function commStories(){
   return (me || ring ? `<div class="cm-stories" role="list" aria-label="Músicos da comunidade">${me}${ring}</div>` : "")
     + (cards ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-cards">${cards}</div>` : "");
 }
+// Comunidade para quem ainda não entrou: perfis e posts DE EXEMPLO (sem fotos de pessoas reais),
+// só para mostrar como funciona. Os dados de verdade dos membros continuam só para quem tem login.
+const DEMO_PEOPLE = [
+  {n: "Igreja da Paz", k: "igreja", t: "blue", e: "⛪", sub: "Domingo 18h · Quarta 19h30", ver: true},
+  {n: "Ana Teclado", k: "musico", t: "pink", e: "🎹", sub: "Ministério de louvor"},
+  {n: "Pedro Violão", k: "musico", t: "teal", e: "🎸", sub: "Louvor jovem"},
+  {n: "Júlia Voz", k: "musico", t: "violet", e: "🎤", sub: "Back vocal"},
+  {n: "Lucas Bateria", k: "musico", t: "gold", e: "🥁", sub: "Banda da igreja"},
+  {n: "Marta", k: "membro", t: "red", e: "🙋", sub: "Membro"},
+];
+const DEMO_POSTS = [
+  {p: 1, art: "🎹", bg: ["#E95C8C", "#5B1E40"], label: "ENSAIO DE QUINTA", cap: "Ensaio de quinta! Restitui em F# com a banda toda 🙌", song: "Restitui · F#", likes: 24, com: 5, when: "2 h"},
+  {p: 0, art: "⛪", bg: ["#4F8CFF", "#1C2A55"], label: "CULTO DA FAMÍLIA", cap: "Domingo tem culto da família às 18h. Traga alguém com você!", likes: 41, com: 9, when: "5 h"},
+  {p: 2, art: "🎸", bg: ["#46D3C3", "#12403B"], label: "CAPOTRASTE NA CASA 2", cap: "Primeira vez tocando com capotraste. O app mostrou o desenho certinho 😄", song: "Lugar Secreto · G", likes: 18, com: 3, when: "1 d"},
+];
+function demoAvatar(d, size, sq){
+  return `<span class="cm-av${sq || d.k === "igreja" ? " sq" : ""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px;--acc:${THEMES[d.t]}">${d.e}</span>`;
+}
+function commDemoHtml(){
+  const ex = '<em class="cm-demo-tag">Exemplo</em>';
+  const stories = DEMO_PEOPLE.map(d => `<button class="cm-story" data-a="cm-demo" style="--acc:${THEMES[d.t]}">${demoAvatar(d, 66)}<span>${esc(d.k === "igreja" ? d.n : d.n.split(" ")[0])}${d.ver ? commBadge({verified: true}) : ""}</span></button>`).join("");
+  const cards = DEMO_PEOPLE.slice(0, 4).map(d => `<button class="cm-card cm-demo-card" data-a="cm-demo" style="--acc:${THEMES[d.t]};background:linear-gradient(160deg,${THEMES[d.t]},#16161A 75%)">
+      ${ex}<span class="cm-demo-emoji" aria-hidden="true">${d.e}</span><span class="cm-card-tx">${demoAvatar(d, 34)}<b>${esc(d.n)}${d.ver ? commBadge({verified: true}) : ""}</b><small>${esc(d.sub)}</small></span></button>`).join("");
+  const posts = DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
+    return `<article class="cm-post cm-demo-post">
+      <button class="cm-post-h" data-a="cm-demo">${demoAvatar(a, 38)}<span style="min-width:0"><b>${esc(a.n)}${a.ver ? commBadge({verified: true}) : ""}</b><span class="muted">${esc(a.sub)}</span></span>${ex}</button>
+      <button class="cm-post-img cm-demo-img" data-a="cm-demo" style="background:linear-gradient(150deg,${x.bg[0]},${x.bg[1]})" aria-label="Post de exemplo"><span aria-hidden="true">${x.art}</span><b>${esc(x.label)}</b></button>
+      <div class="cm-bar">
+        <button class="cm-act" data-a="cm-demo" aria-label="Comentar">${CM_ICONS.comment}<span>${x.com}</span></button>
+        <button class="cm-act like" data-a="cm-demo" aria-label="Curtir">${CM_ICONS.heart}<span>${x.likes}</span></button>
+        <button class="cm-act save" data-a="cm-demo" aria-label="Salvar">${CM_ICONS.save}</button>
+        <button class="cm-act" data-a="cm-demo" aria-label="Compartilhar">${CM_ICONS.share}</button>
+      </div>
+      <p class="cm-time">${x.when}</p>
+      <p class="cm-cap"><b>${esc(a.n)}</b> ${esc(x.cap)}</p>
+      ${x.song ? `<p class="cm-songtag">🎵 ${esc(x.song)}</p>` : ""}
+    </article>`; }).join("");
+  return `<section class="cm-hero"><p class="cm-kicker">Músicos, igrejas e membros</p>
+      <h2>A comunidade do louvor</h2>
+      <p>Crie seu perfil de músico, de igreja ou de membro. Siga a sua igreja e os músicos, poste fotos tocando e veja o que a galera está tocando nos cultos.</p>
+      <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
+    <p class="cm-demo-note">👀 Veja como funciona. Abaixo são <b>exemplos</b>: os perfis e fotos de verdade aparecem quando você entra.</p>
+    <div class="cm-stories" role="list" aria-label="Perfis de exemplo">${stories}</div>
+    <h3 class="cm-sec">Chegaram agora</h3><div class="cm-cards">${cards}</div>
+    <div class="inst cm-seg" role="group" aria-label="O que ver"><button data-a="cm-demo" aria-pressed="true">Seguindo</button><button data-a="cm-demo" aria-pressed="false">Explorar</button><button data-a="cm-demo" aria-pressed="false">Pessoas</button></div>
+    ${posts}
+    <div class="panel cm-demo-end"><p style="margin:0 0 10px"><b>Gostou?</b> Crie sua conta grátis: monte seu perfil, siga sua igreja e poste suas fotos tocando.</p>
+      <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div>
+      <p class="muted" style="font-size:13px;margin:10px 0 0">Para proteger os membros, as fotos e perfis de verdade só aparecem para quem entra com login.</p></div>`;
+}
+function commDemoInvite(){
+  const m = $("#modal"); m.className = "modal";
+  m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dm-t"><h2 id="dm-t">Entre na comunidade</h2>
+    <p>Isso é um exemplo. Crie sua conta grátis para seguir pessoas e igrejas, curtir, comentar e postar suas fotos.</p>
+    <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button><button class="btn ghost" data-a="pix-close">Agora não</button></div></div>`;
+  m.hidden = false;
+}
 function viewCommunity(){
   const head = `<div class="top"><h1 class="page-title">Comunidade</h1>${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
   const wrap = inner => head + inner + tabbar("community");
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
-  if (!TEAM.user) return wrap(`<section class="cm-hero"><p class="cm-kicker">Músicos, igrejas e membros</p>
-      <h2>A comunidade do louvor</h2>
-      <p>Crie seu perfil de músico, de igreja ou de membro. Siga a sua igreja e os músicos, poste fotos tocando e veja o que a galera está tocando nos cultos.</p>
-      <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div>
-      <p class="muted" style="font-size:13px;margin:0">Só quem entra com login vê a comunidade.</p></section>`);
+  if (!TEAM.user) return wrap(commDemoHtml());
   if (teamRole() === "blocked") return wrap(`<div class="panel"><p>O acesso desta conta não foi liberado.</p></div>`);
   if (COMM.me === undefined) { commLoadMe(); return wrap('<p class="muted">Carregando…</p>'); }
   if (COMM.missing) return wrap(`<div class="panel"><h3 style="font-size:18px">A comunidade está sendo preparada</h3><p class="muted">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-comunidade.sql</b> no Supabase (SQL Editor → New query → Run)." : "Volte daqui a pouco."}</p></div>`);
@@ -2506,7 +2566,8 @@ function commTrackPlay(songId){
   commTrackPlay.t = setTimeout(() => TEAM.client.from("community_profiles").update({recent: list}).eq("id", TEAM.user.id).then(() => {}), 3000);
 }
 function commClick(a, b){
-  if (a === "cm-login") { state.loginTab = b.dataset.v; state.afterLogin = "community"; state.view = "login"; render(); scrollTo(0, 0); }
+  if (a === "cm-demo") { commDemoInvite(); }
+  else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tab") { state.cmTab = b.dataset.v; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
