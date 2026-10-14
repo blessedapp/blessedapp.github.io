@@ -2342,11 +2342,11 @@ function commDemoInvite(){
   m.hidden = false;
 }
 /* ---------- Blessings: vídeos curtos da Comunidade ----------
-   O vídeo é comprimido no próprio celular (até 30 s, 540p, ~1 Mbps: uns 3 a 4 MB) e vai direto para o Cloudflare R2
+   O vídeo é comprimido no próprio celular (até 30 s, 720p, ~2,2 Mbps: uns 8 MB) e vai direto para o Cloudflare R2
    por um link temporário que a função "blessings" do Supabase assina. No feed só baixa o vídeo que está na tela
    (o próximo baixa só o começo); com "economia de dados" ligada, o vídeo só toca quando a pessoa toca nele. */
 const BLS = {list: null, items: {}, likes: {}, my: new Set(), more: true, loading: false, muted: true, up: null, file: null, msg: "", focus: null};
-const BL_MAX_S = 30, BL_SIDE = 540, BL_VBPS = 1000000;
+const BL_MAX_S = 30, BL_SIDE = 720, BL_VBPS = 2200000;
 function blBase(){ return String((window.CC_SUPABASE && window.CC_SUPABASE.blessings) || "").replace(/\/$/, ""); }
 function blOn(){ return commOn() && !!blBase(); }
 function blUrl(key){ return key ? blBase() + "/" + key.split("/").map(encodeURIComponent).join("/") : ""; }
@@ -2551,7 +2551,7 @@ function viewBlessingNew(){
   return `<div class="top">${back}<h1 class="page-title" style="font-size:28px">Novo Blessing</h1></div>
     <section class="panel bl-form">
       ${f ? `<div class="bl-prev"><video id="bl-prev" src="${esc(f.url)}" playsinline muted loop autoplay></video></div>
-        <p class="muted" style="font-size:13px;margin:8px 0 0">${f.dur > BL_MAX_S ? `O vídeo tem ${Math.round(f.dur)} s: vão os <b>primeiros ${BL_MAX_S} segundos</b>.` : `${Math.round(f.dur)} s`} · o app deixa ele leve (540p) antes de enviar.</p>`
+        <p class="muted" style="font-size:13px;margin:8px 0 0">${f.dur > BL_MAX_S ? `O vídeo tem ${Math.round(f.dur)} s: vão os <b>primeiros ${BL_MAX_S} segundos</b>.` : `${Math.round(f.dur)} s`} · o app deixa ele leve (720p) antes de enviar.</p>`
         : `<label class="bl-pick"><input id="bl-file" type="file" accept="video/*" hidden>${BL_ICONS.plus}<b>Escolher vídeo</b><span class="muted">Até ${BL_MAX_S} segundos. Vídeo em pé fica melhor.</span></label>`}
       <label style="display:block;margin-top:14px"><span class="muted" style="font-size:13px">Legenda</span>
         <textarea id="bl-cap" maxlength="300" rows="3" placeholder="Conte o que está rolando (opcional)" ${u.busy ? "disabled" : ""}>${esc(u.cap || BLS.capDraft || "")}</textarea></label>
