@@ -2186,16 +2186,20 @@ function commStories(){
 const DEMO_PEOPLE = [
   {n: "Igreja da Paz", k: "igreja", t: "blue", e: "⛪", img: "img/exemplo/igreja.jpg", sub: "Domingo 18h · Quarta 19h30", ver: true},
   {n: "Raquel Moura", k: "musico", t: "pink", e: "🎤", img: "img/exemplo/raquel.jpg", sub: "Ministra de louvor"},
+  {n: "Pedro Alves", k: "musico", t: "gold", e: "🎸", img: "img/exemplo/pedro.jpg", sub: "Guitarra e voz"},
   {n: "Júlia Santos", k: "musico", t: "violet", e: "🎤", img: "img/exemplo/julia.jpg", sub: "Voz · louvor jovem"},
+  {n: "Lucas Rocha", k: "musico", t: "blue", e: "🎛️", img: "img/exemplo/lucas.jpg", sub: "Técnico de som"},
   {n: "Ana Clara", k: "musico", t: "teal", e: "🎹", img: "img/exemplo/ana.jpg", sub: "Teclado"},
-  {n: "Pedro Violão", k: "musico", t: "gold", e: "🎸", sub: "Violão · banda da igreja"},
+  {n: "Débora Lima", k: "musico", t: "red", e: "🎙️", img: "img/exemplo/debora.jpg", sub: "Voz"},
+  {n: "Carol Mendes", k: "musico", t: "violet", e: "💡", img: "img/exemplo/carol.jpg", sub: "Iluminação"},
+  {n: "Camila", k: "membro", t: "pink", e: "🙋", img: "img/exemplo/camila.jpg", sub: "Membro"},
   {n: "Bia", k: "membro", t: "red", e: "🙋", img: "img/exemplo/bia.jpg", sub: "Membro"},
-  {n: "Lucas Bateria", k: "musico", t: "blue", e: "🥁", sub: "Bateria"},
 ];
 const DEMO_POSTS = [
-  {p: 3, img: "img/exemplo/post-teclado.jpg", cap: "Ensaio de quinta: Restitui em F#, teclado no ponto 🎹", song: "Restitui · F#", likes: 24, com: 5, when: "2 h"},
+  {p: 5, img: "img/exemplo/post-teclado.jpg", cap: "Ensaio de quinta: Restitui em F#, teclado no ponto 🎹", song: "Restitui · F#", likes: 24, com: 5, when: "2 h"},
+  {p: 6, img: "img/exemplo/post-estudio.jpg", cap: "Gravando a voz da nova música 🎙️ Logo vocês vão ouvir!", likes: 57, com: 12, when: "4 h"},
   {p: 0, img: "img/exemplo/post-culto.jpg", cap: "Tudo pronto para o culto da família, domingo às 18h. Venha e traga alguém!", likes: 41, com: 9, when: "5 h"},
-  {p: 4, img: "img/exemplo/post-ensaio.jpg", cap: "Ensaio com a banda toda, muita alegria 😂🙌", song: "Lugar Secreto · G", likes: 18, com: 3, when: "1 d"},
+  {p: 2, img: "img/exemplo/post-ensaio.jpg", cap: "Ensaio com a banda toda, muita alegria 😂🙌", song: "Lugar Secreto · G", likes: 18, com: 3, when: "1 d"},
 ];
 function demoAvatar(d, size, sq){
   return `<span class="cm-av${sq || d.k === "igreja" ? " sq" : ""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px;--acc:${THEMES[d.t]}">${d.img ? `<img src="${d.img}" alt="" loading="lazy">` : d.e}</span>`;
