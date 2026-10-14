@@ -1245,12 +1245,13 @@ function teamDelete(id){
 const AUTH_ERR = {
   "Invalid login credentials": "E-mail ou senha errados.",
   "User already registered": "Esse e-mail já tem conta. Toque em Entrar.",
-  "Email not confirmed": "Este e-mail ainda não foi confirmado.",
+  "Email not confirmed": "Falta confirmar o seu e-mail: abra a mensagem que enviamos e toque no link.",
 };
-function authErr(e){ const m = (e && e.message) || ""; return AUTH_ERR[m] || (/password/i.test(m) ? "A senha precisa ter pelo menos 6 caracteres." : /email/i.test(m) ? "Confira o e-mail digitado." : "Não deu certo agora. Confira a internet e tente de novo."); }
+function authErr(e){ const m = (e && e.message) || ""; return AUTH_ERR[m] || (/password/i.test(m) ? "A senha precisa ter pelo menos 8 caracteres." : /email/i.test(m) ? "Confira o e-mail digitado." : "Não deu certo agora. Confira a internet e tente de novo."); }
 async function teamAuth(kind){
   const email = ($("#l-email").value || "").trim(), pass = $("#l-pass").value || "", name = (($("#l-name") || {}).value || "").trim();
   if (!email || !pass) { TEAM.msg = "Preencha e-mail e senha."; render(); return; }
+  if (kind === "signup" && pass.length < 8) { TEAM.msg = "A senha precisa ter pelo menos 8 caracteres."; render(); return; }
   if (kind === "signup" && !name) { TEAM.msg = "Escreva seu nome, para o administrador saber quem é."; render(); return; }
   TEAM.busy = true; TEAM.msg = ""; render();
   try {
@@ -1259,7 +1260,7 @@ async function teamAuth(kind){
       : await TEAM.client.auth.signInWithPassword({email, password: pass});
     if (res.error) throw res.error;
     const user = res.data.user || (res.data.session && res.data.session.user);
-    if (!res.data.session) { TEAM.msg = "Conta criada. Agora toque em Entrar."; state.loginTab = "in"; }
+    if (!res.data.session) { TEAM.msg = "Conta criada! Enviamos um link para o seu e-mail. Abra a mensagem, toque no link para confirmar e depois entre aqui."; state.loginTab = "in"; }
     else await teamEnter(user);
   } catch(e) { TEAM.msg = authErr(e); }
   TEAM.busy = false; render(); scrollTo(0, 0);
@@ -1282,7 +1283,7 @@ function viewLogin(){
     <form class="form" id="login-form" autocomplete="on">
       ${tab === "up" ? '<label>Seu nome<input id="l-name" autocomplete="name" placeholder="Ex.: João do teclado"></label>' : ""}
       <label>E-mail<input id="l-email" type="email" autocomplete="email" inputmode="email" placeholder="seuemail@gmail.com"></label>
-      <label>Senha<input id="l-pass" type="password" autocomplete="${tab === "up" ? "new-password" : "current-password"}" placeholder="mínimo 6 caracteres"></label>
+      <label>Senha<input id="l-pass" type="password" autocomplete="${tab === "up" ? "new-password" : "current-password"}" placeholder="mínimo 8 caracteres"></label>
       ${TEAM.msg ? `<p class="confirm">${esc(TEAM.msg)}</p>` : ""}
       <button class="btn primary big-paste" type="submit" ${TEAM.busy ? "disabled" : ""}>${TEAM.busy ? "Aguarde…" : tab === "up" ? "Criar minha conta" : "Entrar"}</button>
     </form>

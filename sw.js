@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610141753";
+const CACHE = "cifra-campo-202610141809";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const FILES = ["./", "index.html", "tema-vidro.css?v=20261014-1", "manifest.json", "info.json", "img/icon-192.png", "img/icon-512.png", "img/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
