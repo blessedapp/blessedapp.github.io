@@ -2637,7 +2637,7 @@ async function exportRepertoire(){
     // versão site (fora do Claude): no celular abre a tela de compartilhar (WhatsApp); senão baixa o arquivo
     if (window.claude) { setBackupMsg("Este aparelho não deixou salvar arquivos por aqui. Tente exportar pelo app aberto no computador."); return; }
     try {
-      const file = new File([data], `repertorio-cifra-e-campo-${stamp}.json`, {type: "application/json"});
+      const file = new File([data], `repertorio-blessed-${stamp}.json`, {type: "application/json"});
       if (navigator.canShare && navigator.canShare({files: [file]})) {
         await navigator.share({files: [file], title: "Repertório Blessed", text: "Meu repertório do Blessed. Abra o app e toque em Receber repertório."});
         setBackupMsg("Repertório enviado ✓"); return;
@@ -2645,13 +2645,13 @@ async function exportRepertoire(){
     } catch(e) { if (e && e.name === "AbortError") return; }
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([data], {type:"application/json"}));
-    a.download = `repertorio-cifra-e-campo-${stamp}.json`;
+    a.download = `repertorio-blessed-${stamp}.json`;
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
     setBackupMsg(`Arquivo pronto ✓ ${state.songs.length} músicas e ${state.artists.length} pastas.`);
     return;
   }
   try {
-    await dl.save({filename:`repertorio-cifra-e-campo-${stamp}.json`, data});
+    await dl.save({filename:`repertorio-blessed-${stamp}.json`, data});
     setBackupMsg(`Arquivo pronto ✓ ${state.songs.length} músicas e ${state.artists.length} pastas. Mande pelo WhatsApp para o outro celular.`);
   } catch(e) {
     if (e && e.code === "declined") return;
