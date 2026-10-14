@@ -3159,7 +3159,7 @@ async function ajPass(){
 function ajClick(a, b){
   if (a === "aj-open") { state.ajBack = state.view; state.aj = {}; state.view = "ajustes"; render(); scrollTo(0, 0); }
   else if (a === "aj-back") { state.view = state.ajBack || "community"; render(); scrollTo(0, 0); }
-  else if (a === "aj-out") { if (confirm("Sair da conta neste aparelho?")) { state.view = "community"; TEAM.client.auth.signOut().finally(teamLeave); } }
+  else if (a === "aj-out") { if (confirm("Sair desta conta? Depois você pode entrar com outra.")) TEAM.client.auth.signOut().finally(() => { teamLeave(); state.loginTab = "in"; state.view = "login"; render(); scrollTo(0, 0); }); }
   else if (a === "aj-out-all") { if (confirm("Sair da conta em TODOS os aparelhos (inclusive este)?")) { state.view = "community"; TEAM.client.auth.signOut({scope: "global"}).finally(teamLeave); } }
   else return false;
   return true;
@@ -3244,7 +3244,7 @@ function viewProfile(){
   ${me ? (() => { if (COMM.savedIds === undefined) { COMM.savedIds = null; commLoadSaved(); }
       return COMM.savedIds && COMM.savedIds.length ? `<h3 class="cm-sec">🔖 Salvos <small class="muted" style="font-size:13px">só você vê</small></h3>${commGrid(COMM.savedIds)}` : ""; })() : ""}
   ${pfTabs(id, me, posts)}
-  <div class="actions" style="margin-top:18px">${me ? "" : `<button class="btn ghost" data-a="cm-report" data-k="profile" data-id="${esc(id)}">Denunciar perfil</button>`}
+  <div class="actions" style="margin-top:18px">${me ? `<button class="btn" data-a="aj-out">↩ Sair / entrar com outra conta</button>` : ""}${me ? "" : `<button class="btn ghost" data-a="cm-report" data-k="profile" data-id="${esc(id)}">Denunciar perfil</button>`}
     ${!me && teamRole() === "admin" ? `<button class="btn danger" data-a="cm-admin-del-profile" data-id="${esc(id)}">Remover perfil (admin)</button>` : ""}</div>
   ${tabbar("community")}`;
 }
