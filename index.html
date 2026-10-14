@@ -22,7 +22,7 @@ img{max-width:100%}
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1"};</script>
+<script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev"};</script>
 <title>Blessed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Atkinson+Hyperlegible:wght@400;700&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;700&display=swap">
@@ -220,7 +220,9 @@ button{cursor:pointer}
 
 /* barra de abas */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:12;background:rgba(10,10,12,.96);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
-.tabbar button{flex:1;max-width:160px;border:0;background:none;color:var(--muted);display:grid;justify-items:center;gap:2px;font:700 11px var(--f-body);padding:4px}
+.tabbar button{flex:1;min-width:0;max-width:160px;border:0;background:none;color:var(--muted);display:grid;justify-items:center;gap:2px;font:700 11px var(--f-body);padding:4px 2px;white-space:nowrap}
+/* com 6 abas no celular, letra um pouco menor para caber */
+@media (max-width:420px){.tabbar button:first-child:nth-last-child(6),.tabbar button:first-child:nth-last-child(6)~button{font-size:9.5px;letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;padding-inline:0}}
 .tabbar button svg{width:24px;height:24px}
 .tabbar button[aria-current="page"]{color:#fff}
 
@@ -678,6 +680,38 @@ button{cursor:pointer}
 .set-row .icon-btn{min-width:34px;min-height:38px;padding:0}
 .set-row .set-open b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
 .set-row{gap:5px}
+/* Blessings */
+.bl-feed{position:fixed;top:0;bottom:0;left:max(0px,calc(50% - 260px));right:max(0px,calc(50% - 260px));overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;background:#000;z-index:5;scrollbar-width:none}
+.bl-feed::-webkit-scrollbar{display:none}
+.bl-top{position:fixed;top:0;left:max(0px,calc(50% - 260px));right:max(0px,calc(50% - 260px));z-index:7;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 22px;background:linear-gradient(rgba(0,0,0,.55),transparent);pointer-events:none}
+.bl-top>*{pointer-events:auto}.bl-top .page-title{font-size:28px;flex:1;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.bl-sound{width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}.bl-sound svg{width:22px;height:22px}
+.bl-new{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;background:var(--red,#E50914);color:#fff;font:800 14px var(--f-body);padding:9px 14px 9px 11px}.bl-new svg{width:18px;height:18px}
+.top .bl-new{margin-left:auto}
+.bl-item{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden}
+.bl-v{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+@media (max-aspect-ratio:3/4){.bl-v{object-fit:cover}}
+.bl-tap{position:absolute;inset:0;z-index:1;border:0;background:none;padding:0;display:grid;place-items:center}
+.bl-play{width:74px;height:74px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;display:grid;place-items:center}.bl-play[hidden]{display:none}.bl-play svg{width:38px;height:38px;margin-left:4px}
+.bl-side{position:absolute;right:8px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:2;display:grid;gap:14px;justify-items:center}
+.bl-act{border:0;background:none;color:#fff;display:grid;justify-items:center;gap:2px;font:800 13px var(--f-body);padding:4px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
+.bl-act svg{width:32px;height:32px}.bl-act .cm-av{border:2px solid #fff}
+.bl-act.like[aria-pressed="true"]{color:#F91880}.bl-act.like[aria-pressed="true"] svg{fill:currentColor}
+.bl-info{position:absolute;left:0;right:64px;bottom:0;z-index:2;padding:40px 14px calc(100px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.65) 40%);pointer-events:none;color:#fff}
+.bl-info>*{pointer-events:auto}
+.bl-who{border:0;background:none;color:#fff;padding:0;font:700 15px var(--f-body);display:flex;align-items:center;gap:4px;text-align:left}
+.bl-cap{margin:6px 0 0;font-size:14px;line-height:1.35;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bl-end{height:100%;padding-bottom:90px;box-sizing:border-box;scroll-snap-align:start;display:grid;place-items:center;background:#000}
+.bl-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.bl-tile{position:relative;aspect-ratio:9/16;border:0;border-radius:16px;overflow:hidden;background:#222 center/cover;color:#fff;display:flex;align-items:flex-end;padding:10px;text-align:left;font:700 14px var(--f-body)}
+.bl-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.7))}
+.bl-tile b{position:relative;z-index:1}.bl-tile .cm-demo-tag{position:absolute;top:8px;left:8px;z-index:1;margin:0}
+.bl-tile-play{position:absolute;inset:0;display:grid;place-items:center;z-index:1}.bl-tile-play svg{width:46px;height:46px;opacity:.9;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.bl-form textarea{width:100%;min-width:0;box-sizing:border-box;margin-top:4px}
+.bl-pick{display:grid;justify-items:center;gap:6px;padding:34px 16px;border:2px dashed var(--line);border-radius:18px;cursor:pointer;text-align:center}.bl-pick svg{width:34px;height:34px}
+.bl-prev{display:grid;place-items:center;background:#000;border-radius:16px;overflow:hidden}.bl-prev video{max-width:100%;max-height:52vh;display:block}
+.bl-prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:14px}.bl-prog span{display:block;height:100%;background:var(--red,#E50914);transition:width .3s}
+.bl-msg{color:#ff8a8a;margin:10px 0 0}
 .cm-demo-note{margin:2px 0 12px;font-size:14px;color:#d8d8de;background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:10px 12px}
 .cm-demo-tag{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cream);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:2px 8px;margin-left:auto;flex:none}
 .cm-demo-card .cm-demo-tag{position:absolute;top:8px;left:8px;z-index:1;margin:0}
@@ -1057,6 +1091,8 @@ function render(){
   else if (state.view === "login") app.innerHTML = viewLogin();
   else if (state.view === "team") app.innerHTML = viewTeam();
   else if (state.view === "community") app.innerHTML = viewCommunity();
+  else if (state.view === "blessings") app.innerHTML = viewBlessings();
+  else if (state.view === "bl-new") app.innerHTML = viewBlessingNew();
   else if (state.view === "profile") app.innerHTML = viewProfile();
   else if (state.view === "profile-edit") app.innerHTML = viewProfileEdit();
   else if (state.view === "post") app.innerHTML = viewPost();
@@ -1066,6 +1102,7 @@ function render(){
   else if (state.view === "song") app.innerHTML = viewSong();
   else if (state.view === "editor") { app.innerHTML = viewEditor(); updateDetect(); }
   renderSheet();
+  if (state.view === "blessings") blSetup(); else { document.body.classList.remove("bl-on"); if (blObs) { blObs.disconnect(); blObs = null; } }
 }
 
 /* ---------- capas ---------- */
@@ -1214,7 +1251,7 @@ async function teamEnter(user){
   TEAM.profile = prof || {role: "pending", email: user.email};
   COMM.me = undefined; commLoadMe();
   const after = state.afterLogin; state.afterLogin = null;
-  if (!["member", "editor", "admin"].includes(TEAM.profile.role)) { state.view = (after === "community" || state.view === "community") ? "community" : "login"; return; }
+  if (!["member", "editor", "admin"].includes(TEAM.profile.role)) { state.view = (after === "blessings" || state.view === "blessings") ? "blessings" : (after === "community" || state.view === "community") ? "community" : "login"; return; }
   store.mode = "team";
   await teamLoad();
   if (!TEAM.sub) TEAM.sub = TEAM.client.channel("items-live")
@@ -1222,7 +1259,7 @@ async function teamEnter(user){
       clearTimeout(TEAM.t);
       TEAM.t = setTimeout(async () => { await teamLoad(); if (state.view !== "editor" && state.view !== "artist-edit") rerenderKeepScroll(); }, 500);
     }).subscribe();
-  if (state.view === "login") state.view = after === "community" ? "community" : after === "bible" ? "study" : "library";
+  if (state.view === "login") state.view = after === "community" ? "community" : after === "blessings" ? "blessings" : after === "bible" ? "study" : "library";
   if (TEAM.profile.role === "admin") loadTeamUsers();
 }
 async function teamLoad(){
@@ -1239,7 +1276,7 @@ async function teamLoad(){
 function teamLeave(){
   bibleAskReset();
   if (TEAM.sub) { TEAM.client.removeChannel(TEAM.sub); TEAM.sub = null; }
-  TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
+  TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); blReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
   state.songs = lsGet("cc-local-songs", []); state.artists = lsGet("cc-local-artists", []); state.setlist = lsGet("cc-local-setlist", []);
   state.view = "library"; render(); scrollTo(0, 0);
 }
@@ -1350,6 +1387,7 @@ const TAB_ICONS = {
   library:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>',
   study:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7.5 5v8M12 5v8M16.5 5v8"/></svg>',
   community:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.6 18.4c1.2-2 3.1-3.1 5.4-3.1s4.2 1.1 5.4 3.1"/></svg>',
+  blessings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4.5" y="2.5" width="15" height="19" rx="4"/><path d="M10.2 8.8v6.4l5.3-3.2z" fill="currentColor"/></svg>',
   setlist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h3"/></svg>'
 };
 function tabbar(active){
@@ -1357,7 +1395,8 @@ function tabbar(active){
   const n = pendingCount();
   const extra = !teamAvailable() ? "" : teamRole() === "admin" ? t("team", "Equipe" + (n ? ` <span class="badge" aria-label="${n} pedido${n > 1 ? "s" : ""}">${n}</span>` : "")) : store.mode === "team" ? "" : t("login", "Entrar");
   const comm = commOn() ? t("community", "Comunidade") : "";
-  return `<nav class="tabbar" aria-label="Abas">${t("library","Início")}${comm}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
+  const bl = blOn() || (commOn() && teamRole() === "admin") ? t("blessings", "Blessings") : "";
+  return `<nav class="tabbar" aria-label="Abas">${t("library","Início")}${comm}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
 }
 
 /* ---------- Estudo: Bíblia (Bíblia Livre, CC BY 4.0 BR) ----------
@@ -2243,6 +2282,329 @@ function commDemoInvite(){
     <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button><button class="btn ghost" data-a="pix-close">Agora não</button></div></div>`;
   m.hidden = false;
 }
+/* ---------- Blessings: vídeos curtos da Comunidade ----------
+   O vídeo é comprimido no próprio celular (até 30 s, 540p, ~1 Mbps: uns 3 a 4 MB) e vai direto para o Cloudflare R2
+   por um link temporário que a função "blessings" do Supabase assina. No feed só baixa o vídeo que está na tela
+   (o próximo baixa só o começo); com "economia de dados" ligada, o vídeo só toca quando a pessoa toca nele. */
+const BLS = {list: null, items: {}, likes: {}, my: new Set(), more: true, loading: false, muted: true, up: null, file: null, msg: "", focus: null};
+const BL_MAX_S = 30, BL_SIDE = 540, BL_VBPS = 1000000;
+function blBase(){ return String((window.CC_SUPABASE && window.CC_SUPABASE.blessings) || "").replace(/\/$/, ""); }
+function blOn(){ return commOn() && !!blBase(); }
+function blUrl(key){ return key ? blBase() + "/" + key.split("/").map(encodeURIComponent).join("/") : ""; }
+function blSaveData(){ const c = navigator.connection; return !!(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ""))); }
+function blReset(){ Object.assign(BLS, {list: null, items: {}, likes: {}, my: new Set(), more: true, loading: false}); }
+const BL_ICONS = {
+  sound: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 010 6M18 6.5a7.5 7.5 0 010 11"/></svg>',
+  mute: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>',
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>'
+};
+
+async function blLoad(){
+  if (BLS.loading || !BLS.more) return;
+  BLS.loading = true;
+  const from = (BLS.list || []).length;
+  const {data, error} = await TEAM.client.from("blessings").select("id,author,video_key,thumb_key,caption,duration,created_at")
+    .order("created_at", {ascending: false}).range(from, from + 9);
+  BLS.loading = false;
+  if (error) { BLS.list = BLS.list || []; BLS.more = false; BLS.err = /does not exist|schema cache/i.test(error.message || "") ? "missing" : "net"; blRefresh(true); return; }
+  BLS.err = "";
+  if (data.length < 10) BLS.more = false;
+  await blAfter(data);
+  data.forEach(x => BLS.items[x.id] = x);
+  const have = new Set(BLS.list || []);
+  BLS.list = (BLS.list || []).concat(data.map(x => x.id).filter(id => !have.has(id)));
+  blRefresh(from === 0);
+}
+async function blAfter(list){
+  const authors = [...new Set(list.map(x => x.author))].filter(a => !COMM.profiles[a]);
+  if (authors.length) {
+    const {data} = await TEAM.client.from("community_profiles").select("id,handle,display_name,church,city,instruments,avatar_path,cover_path,theme,created_at,verified,official,kind").in("id", authors);
+    commKeep(data);
+  }
+  const ids = list.map(x => x.id);
+  if (!ids.length) return;
+  const {data} = await TEAM.client.from("blessing_likes").select("blessing_id,user_id").in("blessing_id", ids);
+  ids.forEach(id => BLS.likes[id] = 0);
+  (data || []).forEach(r => { BLS.likes[r.blessing_id]++; if (r.user_id === TEAM.user.id) BLS.my.add(r.blessing_id); });
+}
+// Abre um Blessing específico (link compartilhado ou denúncia): ele vem primeiro no feed
+async function blOpen(id){
+  state.view = "blessings"; BLS.focus = id;
+  if (!BLS.items[id]) {
+    const {data} = await TEAM.client.from("blessings").select("id,author,video_key,thumb_key,caption,duration,created_at").eq("id", id).maybeSingle();
+    if (!data) { flash("Esse Blessing não está mais disponível."); BLS.focus = null; }
+    else { await blAfter([data]); BLS.items[id] = data; }
+  }
+  if (BLS.items[id]) BLS.list = [id].concat((BLS.list || []).filter(x => x !== id));
+  render(); scrollTo(0, 0);
+}
+
+function blItemHtml(id, i){
+  const x = BLS.items[id], a = COMM.profiles[x.author] || {}, liked = BLS.my.has(id), mine = x.author === TEAM.user.id;
+  const canDel = mine || teamRole() === "admin";
+  return `<section class="bl-item" data-id="${esc(id)}" aria-label="Blessing de ${esc(a.display_name || "alguém")}">
+    <video class="bl-v" playsinline loop ${BLS.muted ? "muted" : ""} preload="none" poster="${esc(blUrl(x.thumb_key))}" data-src="${esc(blUrl(x.video_key))}"></video>
+    <button class="bl-tap" data-a="bl-tap" aria-label="Tocar ou pausar"><span class="bl-play" hidden>${BL_ICONS.play}</span></button>
+    <div class="bl-side">
+      <button class="bl-act" data-a="cm-profile" data-id="${esc(x.author)}" aria-label="Perfil de ${esc(a.display_name || "alguém")}">${commAvatar(a, 44)}</button>
+      <button class="bl-act like" data-a="bl-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${CM_ICONS.heart}<span>${BLS.likes[id] || 0}</span></button>
+      <button class="bl-act" data-a="bl-share" data-id="${esc(id)}" aria-label="Compartilhar">${CM_ICONS.share}</button>
+      <button class="bl-act" data-a="bl-more" data-id="${esc(id)}" data-del="${canDel ? 1 : ""}" aria-label="Mais opções">${BL_ICONS.more}</button>
+    </div>
+    <div class="bl-info">
+      <button class="bl-who" data-a="cm-profile" data-id="${esc(x.author)}"><b>${esc(a.display_name || "Alguém")}</b>${commBadge(a)}<span class="muted"> · ${commAgo(x.created_at)}</span></button>
+      ${x.caption ? `<p class="bl-cap">${esc(x.caption)}</p>` : ""}
+    </div>
+  </section>`;
+}
+function blTeaser(){
+  const tiles = DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
+    return `<button class="bl-tile" data-a="cm-demo" style="background-image:url('${esc(x.img)}')"><em class="cm-demo-tag">Exemplo</em><span class="bl-tile-play">${BL_ICONS.play}</span><b>${esc(a.n)}</b></button>`; }).join("");
+  return `<section class="cm-hero"><p class="cm-kicker">Vídeos curtos de louvor</p><h2>Blessings</h2>
+      <p>Trechos de ensaio, solos, momentos do culto e testemunhos em vídeos de até 30 segundos. Leves para o seu plano de dados: o app comprime antes de enviar.</p>
+      <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
+    <p class="cm-demo-note">👀 Exemplos de como fica. Os vídeos de verdade aparecem quando você entra.</p>
+    <div class="bl-tiles">${tiles}</div>`;
+}
+function viewBlessings(){
+  const head = (extra) => `<div class="top"><h1 class="page-title">Blessings</h1>${extra || ""}</div>`;
+  const page = inner => inner + tabbar("blessings");
+  if (!commOn()) { state.view = "library"; return viewLibrary(); }
+  if (!TEAM.user) return page(head() + blTeaser());
+  if (teamRole() === "blocked") return page(head() + `<div class="panel"><p>O acesso desta conta não foi liberado.</p></div>`);
+  if (!blBase()) return page(head() + `<div class="panel"><h3 style="font-size:18px">Os Blessings estão chegando</h3><p class="muted">${teamRole() === "admin" ? "Falta ligar o armazenamento dos vídeos (Cloudflare R2) e colocar o endereço público dele no <b>supabase-config.json</b> como <b>\"blessings\"</b>." : "Volte daqui a pouco."}</p></div>`);
+  if (COMM.me === undefined) commLoadMe();
+  if (state.deepBlessing) { const id = state.deepBlessing; state.deepBlessing = null; setTimeout(() => blOpen(id)); return page(head() + '<p class="muted">Carregando…</p>'); }
+  if (BLS.list === null) { BLS.list = []; blLoad(); return page(head() + '<p class="muted">Carregando…</p>'); }
+  if (BLS.err === "missing") return page(head() + `<div class="panel"><h3 style="font-size:18px">Os Blessings estão sendo preparados</h3><p class="muted">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-blessings.sql</b> no Supabase (SQL Editor → New query → Run)." : "Volte daqui a pouco."}</p></div>`);
+  const post = `<button class="bl-new" data-a="bl-new" aria-label="Postar um Blessing">${BL_ICONS.plus}<span>Postar</span></button>`;
+  if (!BLS.list.length) return page(head(post) + `<div class="panel"><p style="margin:0 0 10px">${BLS.err === "net" ? "Não consegui carregar agora. Confira a internet." : "Ainda não tem nenhum Blessing. Que tal ser a primeira pessoa a postar?"}</p><div class="actions"><button class="btn primary" data-a="bl-new">Postar um Blessing</button>${BLS.err ? '<button class="btn" data-a="bl-reload">Tentar de novo</button>' : ""}</div></div>`);
+  return page(`<div class="bl-feed" id="bl-feed">
+      <div class="bl-top"><h1 class="page-title">Blessings</h1><button class="bl-sound" data-a="bl-sound" aria-label="${BLS.muted ? "Ligar som" : "Tirar som"}">${BLS.muted ? BL_ICONS.mute : BL_ICONS.sound}</button>${post}</div>
+      ${BLS.list.map(blItemHtml).join("")}
+      ${BLS.more ? '<div class="bl-end" id="bl-end"><p class="muted">Carregando mais…</p></div>' : '<div class="bl-end"><p class="muted">Você viu todos os Blessings 🙌</p></div>'}
+    </div>`);
+}
+
+// Liga o vídeo que está na tela e desliga os outros
+let blObs = null, blEndObs = null;
+function blSetup(){
+  if (blObs) blObs.disconnect(); if (blEndObs) blEndObs.disconnect();
+  const feed = $("#bl-feed"); if (!feed) return;
+  document.body.classList.add("bl-on");
+  const items = [...feed.querySelectorAll(".bl-item")];
+  blObs = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target.querySelector("video");
+    if (e.isIntersecting && e.intersectionRatio > .6) {
+      if (!v.src) v.src = v.dataset.src;
+      v.preload = "auto";
+      if (!blSaveData() || v.dataset.go) v.play().then(() => blPlayIcon(e.target, false)).catch(() => blPlayIcon(e.target, true)); else blPlayIcon(e.target, true);
+      const next = e.target.nextElementSibling && e.target.nextElementSibling.querySelector("video");
+      if (next && !next.src && !blSaveData()) { next.preload = "metadata"; next.src = next.dataset.src; }
+    } else if (!v.paused) v.pause();
+  }), {root: feed, threshold: [0, .6]});
+  items.forEach(el => blObs.observe(el));
+  const end = $("#bl-end");
+  if (end) { blEndObs = new IntersectionObserver(es => { if (es[0].isIntersecting) blLoad(); }, {root: feed, rootMargin: "0px 0px 100% 0px"}); blEndObs.observe(end); }
+  if (BLS.focus) { const el = feed.querySelector(`.bl-item[data-id="${CSS.escape(BLS.focus)}"]`); if (el) el.scrollIntoView(); BLS.focus = null; }
+}
+function blPlayIcon(item, show){ const p = item.querySelector(".bl-play"); if (p) p.hidden = !show; }
+// Atualiza a tela sem perder a posição do feed nem reiniciar o vídeo que está tocando
+function blRefresh(full){
+  if (state.view !== "blessings") return;
+  const feed = $("#bl-feed");
+  if (!feed || full) { render(); return; }
+  const ids = new Set([...feed.querySelectorAll(".bl-item")].map(el => el.dataset.id));
+  const add = BLS.list.filter(id => !ids.has(id)).map(blItemHtml).join("");
+  const end = $("#bl-end");
+  if (end) end.insertAdjacentHTML("beforebegin", add);
+  if (!BLS.more && end) end.innerHTML = '<p class="muted">Você viu todos os Blessings 🙌</p>', end.removeAttribute("id");
+  blSetup();
+}
+function blTap(item){
+  const v = item.querySelector("video"); if (!v) return;
+  if (!v.src) v.src = v.dataset.src;
+  v.dataset.go = "1";
+  if (v.paused) { if (BLS.muted && !blSaveData()) blSetMuted(false); v.play().then(() => blPlayIcon(item, false)).catch(() => {}); }
+  else if (BLS.muted) blSetMuted(false);
+  else { v.pause(); blPlayIcon(item, true); }
+}
+function blSetMuted(m){
+  BLS.muted = m;
+  document.querySelectorAll(".bl-v").forEach(v => v.muted = m);
+  const b = $(".bl-sound"); if (b) { b.innerHTML = m ? BL_ICONS.mute : BL_ICONS.sound; b.setAttribute("aria-label", m ? "Ligar som" : "Tirar som"); }
+}
+async function blToggleLike(id, btn){
+  if (!COMM.me) { flash("Crie seu perfil na Comunidade para curtir."); return; }
+  const on = BLS.my.has(id);
+  if (on) BLS.my.delete(id); else BLS.my.add(id);
+  BLS.likes[id] = Math.max(0, (BLS.likes[id] || 0) + (on ? -1 : 1));
+  if (btn) { btn.setAttribute("aria-pressed", String(!on)); btn.querySelector("span").textContent = BLS.likes[id]; }
+  const res = on ? await TEAM.client.from("blessing_likes").delete().eq("blessing_id", id).eq("user_id", TEAM.user.id)
+                 : await TEAM.client.from("blessing_likes").insert({blessing_id: id, user_id: TEAM.user.id});
+  if (res.error) flash("Não consegui curtir agora.");
+}
+async function blShare(id){
+  const x = BLS.items[id], a = x ? COMM.profiles[x.author] || {} : {};
+  const url = location.origin + location.pathname + "?blessing=" + encodeURIComponent(id);
+  const text = (a.display_name ? a.display_name + " no Blessed" : "Blessing no Blessed") + (x && x.caption ? ": " + x.caption.slice(0, 80) : "");
+  try { if (navigator.share) { await navigator.share({title: "Blessed", text, url}); return; } } catch(e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(url); flash("Link copiado ✓ Cole no WhatsApp ou onde quiser."); } catch(e) { flash("Copie este link: " + url); }
+}
+function blMore(id, canDel){
+  const m = $("#modal"); m.className = "modal";
+  const mine = BLS.items[id] && BLS.items[id].author === TEAM.user.id;
+  m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="blm-t"><h2 id="blm-t">Blessing</h2>
+    <div style="display:grid;gap:8px">${canDel ? `<button class="btn" data-a="bl-del" data-id="${esc(id)}">Apagar este vídeo</button>` : ""}${mine ? "" : `<button class="btn" data-a="cm-report" data-k="blessing" data-id="${esc(id)}">Denunciar</button>`}</div>
+    <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
+  m.hidden = false;
+}
+async function blFn(body){
+  const {data, error} = await TEAM.client.auth.getSession();
+  if (error || !data || !data.session) throw new Error("Sua sessão terminou. Entre novamente.");
+  const r = await fetch(window.CC_SUPABASE.url + "/functions/v1/blessings", {method: "POST",
+    headers: {"Content-Type": "application/json", apikey: window.CC_SUPABASE.key, Authorization: "Bearer " + data.session.access_token}, body: JSON.stringify(body)});
+  const out = await r.json().catch(() => null);
+  if (!r.ok) throw new Error(out && typeof out.error === "string" ? out.error : r.status === 404 ? "Os Blessings ainda não foram ativados." : "Não consegui agora. Tente de novo.");
+  return out;
+}
+async function blDelete(id){
+  closePix();
+  try { await blFn({action: "delete", id}); } catch(e) { flash(e.message); return; }
+  delete BLS.items[id]; BLS.list = (BLS.list || []).filter(x => x !== id);
+  if (COMM.reports) COMM.reports = COMM.reports.filter(r => !(r.target_kind === "blessing" && r.target_id === id));
+  const el = document.querySelector(`.bl-item[data-id="${CSS.escape(id)}"]`);
+  if (el) { const v = el.querySelector("video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); } }
+  if (state.view === "blessings") render();
+  flash("Blessing apagado.");
+}
+
+/* ----- Postar ----- */
+function viewBlessingNew(){
+  if (!commIn()) { state.view = "blessings"; return viewBlessings(); }
+  const u = BLS.up || {}, f = BLS.file;
+  const back = `<button class="btn ghost" data-a="bl-cancel" ${u.busy ? "disabled" : ""}>‹ Voltar</button>`;
+  if (!COMM.me) return `<div class="top">${back}</div><div class="panel"><p>Para postar Blessings, crie primeiro o seu perfil na Comunidade.</p><div class="actions"><button class="btn primary" data-a="cm-edit">Criar meu perfil</button></div></div>${tabbar("blessings")}`;
+  return `<div class="top">${back}<h1 class="page-title" style="font-size:28px">Novo Blessing</h1></div>
+    <section class="panel bl-form">
+      ${f ? `<div class="bl-prev"><video id="bl-prev" src="${esc(f.url)}" playsinline muted loop autoplay></video></div>
+        <p class="muted" style="font-size:13px;margin:8px 0 0">${f.dur > BL_MAX_S ? `O vídeo tem ${Math.round(f.dur)} s: vão os <b>primeiros ${BL_MAX_S} segundos</b>.` : `${Math.round(f.dur)} s`} · o app deixa ele leve (540p) antes de enviar.</p>`
+        : `<label class="bl-pick"><input id="bl-file" type="file" accept="video/*" hidden>${BL_ICONS.plus}<b>Escolher vídeo</b><span class="muted">Até ${BL_MAX_S} segundos. Vídeo em pé fica melhor.</span></label>`}
+      <label style="display:block;margin-top:14px"><span class="muted" style="font-size:13px">Legenda</span>
+        <textarea id="bl-cap" maxlength="300" rows="3" placeholder="Conte o que está rolando (opcional)" ${u.busy ? "disabled" : ""}>${esc(u.cap || "")}</textarea></label>
+      ${u.busy ? `<div class="bl-prog" role="status"><span style="width:${Math.round((u.p || 0) * 100)}%"></span></div><p class="muted" style="margin:6px 0 0">${esc(u.stage || "")} ${Math.round((u.p || 0) * 100)}%</p><p class="muted" style="font-size:13px;margin:4px 0 0">Deixe esta tela aberta até terminar.</p>` : ""}
+      ${BLS.msg ? `<p class="bl-msg">${esc(BLS.msg)}</p>` : ""}
+      <div class="actions" style="margin-top:14px">${f && !u.busy ? `<button class="btn primary" data-a="bl-send">Publicar</button><button class="btn ghost" data-a="bl-repick">Trocar vídeo</button>` : ""}</div>
+      <p class="muted" style="font-size:12px;margin:10px 0 0">Poste só vídeos seus ou que você tem permissão para usar. Até 5 por dia.</p>
+    </section>${tabbar("blessings")}`;
+}
+function blPickFile(file){
+  BLS.msg = "";
+  if (!file || !/^video\//.test(file.type || "video/")) { BLS.msg = "Escolha um arquivo de vídeo."; render(); return; }
+  if (file.size > 400 * 1024 * 1024) { BLS.msg = "Esse vídeo é grande demais para o celular comprimir. Escolha um mais curto."; render(); return; }
+  const url = URL.createObjectURL(file), v = document.createElement("video");
+  v.preload = "metadata"; v.muted = true; v.src = url;
+  v.onloadedmetadata = () => { BLS.file = {file, url, dur: v.duration || 0, w: v.videoWidth, h: v.videoHeight}; render(); };
+  v.onerror = () => { URL.revokeObjectURL(url); BLS.msg = "Não consegui abrir esse vídeo. Tente outro (MP4 ou MOV)."; render(); };
+}
+function blClearFile(){ if (BLS.file) URL.revokeObjectURL(BLS.file.url); BLS.file = null; }
+function blMime(){
+  if (!window.MediaRecorder) return "";
+  return ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find(t => MediaRecorder.isTypeSupported(t)) || "";
+}
+// Regrava o vídeo menor dentro do próprio celular (canvas + MediaRecorder). Leva o mesmo tempo do vídeo.
+function blCompress(f, ac, onProg){
+  return new Promise((ok, fail) => {
+    const mime = blMime();
+    if (!mime) { fail(new Error("Este navegador não consegue preparar vídeos. Atualize o navegador ou use o Chrome/Safari mais novo.")); return; }
+    const dur = Math.min(f.dur || BL_MAX_S, BL_MAX_S);
+    const k = Math.min(1, BL_SIDE / Math.max(1, Math.min(f.w, f.h)));
+    const w = Math.max(2, Math.round(f.w * k / 2) * 2), h = Math.max(2, Math.round(f.h * k / 2) * 2);
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+    const ctx = cv.getContext("2d");
+    const v = document.createElement("video"); v.src = f.url; v.playsInline = true; v.muted = false; v.volume = 1;
+    const stream = cv.captureStream(30);
+    try { const src = ac.createMediaElementSource(v), dst = ac.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(t => stream.addTrack(t)); } catch(e) {}
+    const rec = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: BL_VBPS, audioBitsPerSecond: 64000});
+    const parts = []; let thumb = null, done = false;
+    rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+    rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); v.pause(); v.removeAttribute("src"); v.load();
+      const type = mime.split(";")[0]; ok({blob: new Blob(parts, {type}), type, thumb, duration: dur}); };
+    const finish = () => { if (done) return; done = true; if (rec.state !== "inactive") rec.stop(); };
+    const draw = () => {
+      if (done) return;
+      ctx.drawImage(v, 0, 0, w, h);
+      if (!thumb && v.currentTime >= Math.min(.6, dur / 2)) { thumb = "pending"; cv.toBlob(b => thumb = b, "image/jpeg", .72); }
+      onProg(Math.min(1, v.currentTime / dur));
+      if (v.currentTime >= dur || v.ended) { finish(); return; }
+      if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(draw); else requestAnimationFrame(draw);
+    };
+    v.onended = finish;
+    v.onerror = () => { done = true; try { rec.stop(); } catch(e) {} fail(new Error("Não consegui ler esse vídeo. Tente outro.")); };
+    v.play().then(() => { rec.start(1000); draw(); }).catch(() => {
+      // sem permissão para tocar com som: grava sem o áudio
+      v.muted = true; v.play().then(() => { rec.start(1000); draw(); }).catch(() => fail(new Error("Não consegui abrir esse vídeo. Tente outro.")));
+    });
+  });
+}
+function blPut(url, blob, type, onProg){
+  return new Promise((ok, fail) => {
+    const x = new XMLHttpRequest();
+    x.open("PUT", url); x.setRequestHeader("Content-Type", type);
+    x.upload.onprogress = e => { if (e.lengthComputable) onProg(e.loaded / e.total); };
+    x.onload = () => x.status >= 200 && x.status < 300 ? ok() : fail(new Error("O envio falhou (" + x.status + "). Tente de novo."));
+    x.onerror = () => fail(new Error("O envio falhou. Confira a internet e tente de novo."));
+    x.send(blob);
+  });
+}
+async function blSend(){
+  const f = BLS.file; if (!f || (BLS.up && BLS.up.busy)) return;
+  const cap = ($("#bl-cap") ? $("#bl-cap").value : "").trim().slice(0, 300);
+  // o áudio precisa ser ligado aqui, no toque do botão
+  let ac = null; try { ac = new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch(e) {}
+  BLS.msg = ""; BLS.up = {busy: true, stage: "Deixando o vídeo leve…", p: 0, cap};
+  const prog = (stage, p) => { BLS.up.stage = stage; BLS.up.p = p; const bar = $(".bl-prog span"), tx = $(".bl-prog + p");
+    if (bar && tx) { bar.style.width = Math.round(p * 100) + "%"; tx.textContent = stage + " " + Math.round(p * 100) + "%"; } else if (state.view === "bl-new") rerenderKeepScroll(); };
+  render();
+  try {
+    if (!navigator.onLine) throw new Error("Conecte-se à internet para postar.");
+    const out = await blCompress(f, ac || {createMediaElementSource(){ throw 0; }}, p => prog("Deixando o vídeo leve…", p * .6));
+    let thumb = out.thumb;
+    for (let i = 0; i < 20 && (!thumb || thumb === "pending"); i++) await new Promise(r => setTimeout(r, 100));
+    if (!thumb || thumb === "pending") throw new Error("Não consegui criar a capa do vídeo. Tente de novo.");
+    if (out.blob.size > 15 * 1024 * 1024) throw new Error("O vídeo ficou pesado demais. Tente um vídeo mais curto.");
+    prog("Enviando…", .6);
+    const s = await blFn({action: "sign", type: out.type, size: out.blob.size, thumbSize: thumb.size});
+    await blPut(s.thumb.url, thumb, "image/jpeg", () => {});
+    await blPut(s.video.url, out.blob, out.type, p => prog("Enviando…", .6 + p * .38));
+    const {data, error} = await TEAM.client.from("blessings").insert({author: TEAM.user.id, video_key: s.video.key, thumb_key: s.thumb.key, caption: cap || null, duration: Math.round(out.duration * 10) / 10}).select().single();
+    if (error) throw new Error("O vídeo subiu, mas não consegui publicar. Tente de novo.");
+    BLS.items[data.id] = data; BLS.likes[data.id] = 0;
+    BLS.list = [data.id].concat((BLS.list || []).filter(x => x !== data.id));
+    blClearFile(); BLS.up = null; BLS.focus = data.id; state.view = "blessings"; render(); scrollTo(0, 0);
+    flash("Blessing publicado 🙌");
+  } catch(e) {
+    BLS.up = null; BLS.msg = e && e.message ? e.message : "Não deu certo. Tente de novo."; render();
+  } finally { if (ac && ac.close) ac.close().catch(() => {}); }
+}
+function blClick(a, b){
+  if (a === "bl-tap") blTap(b.closest(".bl-item"));
+  else if (a === "bl-sound") blSetMuted(!BLS.muted);
+  else if (a === "bl-like") blToggleLike(b.dataset.id, b);
+  else if (a === "bl-share") blShare(b.dataset.id);
+  else if (a === "bl-more") blMore(b.dataset.id, !!b.dataset.del);
+  else if (a === "bl-del") { if (confirm("Apagar este Blessing? Não dá para desfazer.")) blDelete(b.dataset.id); }
+  else if (a === "bl-open") { closePix(); blOpen(b.dataset.id); }
+  else if (a === "bl-reload") { blReset(); render(); }
+  else if (a === "bl-new") { if (!TEAM.user) { state.view = "blessings"; render(); return true; } BLS.msg = ""; state.view = "bl-new"; render(); scrollTo(0, 0); }
+  else if (a === "bl-repick") { blClearFile(); BLS.msg = ""; render(); }
+  else if (a === "bl-cancel") { if (BLS.up && BLS.up.busy) return true; blClearFile(); BLS.msg = ""; state.view = "blessings"; render(); scrollTo(0, 0); }
+  else if (a === "bl-send") blSend();
+  else return false;
+  return true;
+}
 function viewCommunity(){
   const head = `<div class="top"><h1 class="page-title">Comunidade</h1>${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
   const wrap = inner => head + inner + tabbar("community");
@@ -2522,7 +2884,7 @@ async function commDeleteProfile(id){
 function commOpenReport(kind, id){
   const m = $("#modal"); m.className = "modal";
   m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="rp-t"><h2 id="rp-t">Denunciar</h2>
-    <p>Por que ${kind === "post" ? "esta foto" : kind === "comment" ? "este comentário" : "este perfil"} não deveria estar aqui? O administrador vai olhar.</p>
+    <p>Por que ${kind === "post" ? "esta foto" : kind === "comment" ? "este comentário" : kind === "blessing" ? "este vídeo" : "este perfil"} não deveria estar aqui? O administrador vai olhar.</p>
     <div style="display:grid;gap:8px">${REPORT_REASONS.map(r => `<button class="btn" data-a="cm-report-send" data-k="${kind}" data-id="${esc(id)}" data-v="${esc(r)}">${esc(r)}</button>`).join("")}</div>
     <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
   m.hidden = false;
@@ -2545,6 +2907,7 @@ function commReportsPanel(){
   if (COMM.missing) return "";
   if (COMM.reports === null) { COMM.reports = []; commLoadReports(); }
   const rows = COMM.reports.map(r => {
+    if (r.target_kind === "blessing") return `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">Vídeo (Blessing)</b><span class="muted" style="font-size:13px">${esc(r.reason || "")} · ${commAgo(r.created_at)}</span></span><button class="btn" data-a="bl-open" data-id="${esc(r.target_id)}">Ver</button><button class="btn ghost" data-a="cm-report-done" data-id="${r.id}">Resolvido</button></div>`;
     if (r.target_kind === "comment") { const [pid] = String(r.target_id).split("/");
       return `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">Comentário numa foto</b><span class="muted" style="font-size:13px">${esc(r.reason || "")} · ${commAgo(r.created_at)}</span></span><button class="btn" data-a="cm-post" data-id="${esc(pid)}">Ver</button><button class="btn ghost" data-a="cm-report-done" data-id="${r.id}">Resolvido</button></div>`; }
     const what = r.target_kind === "post" ? (COMM.posts[r.target_id] ? `Foto de ${esc((COMM.profiles[COMM.posts[r.target_id].author] || {}).display_name || "alguém")}` : "Foto (já apagada)")
@@ -2572,7 +2935,7 @@ function commTrackPlay(songId){
 }
 function commClick(a, b){
   if (a === "cm-demo") { commDemoInvite(); }
-  else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = "community"; state.view = "login"; render(); scrollTo(0, 0); }
+  else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tab") { state.cmTab = b.dataset.v; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
@@ -3955,6 +4318,7 @@ document.addEventListener("click", ev => {
   const b = ev.target.closest("[data-a]"); if (!b) return;
   const a = b.dataset.a;
   if (a.startsWith("cm-") && commClick(a, b)) return;
+  if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("ag-") && agClick(a, b)) return;
   if (a.startsWith("yt-mini") && miniClick(a, b)) return;
   if ((a === "study-tab" || a.startsWith("bb-")) && bibleClick(a, b)) return;
@@ -4143,6 +4507,7 @@ document.addEventListener("submit", ev => {
   ev.preventDefault(); teamAuth(state.loginTab === "up" ? "signup" : "in");
 });
 document.addEventListener("change", ev => {
+  if (ev.target.id === "bl-file") { if (ev.target.files && ev.target.files[0]) blPickFile(ev.target.files[0]); return; }
   if (commChange(ev.target)) return;
   if (ev.target.classList && ev.target.classList.contains("role-sel")) {
     TEAM.client.from("profiles").update({role: ev.target.value}).eq("id", ev.target.dataset.uid).then(({error}) => { if (error) flash("Não consegui mudar agora."); loadTeamUsers(); });
@@ -4176,6 +4541,7 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 
 const draft = lsGet("cc-draft", null);
 if (draft && draft.id) { state.editing = Object.assign({isNew:true, name:"", artist:"", text:"", origTonic:"G", origMode:"major", targetTonic:"G"}, draft); state.view = "editor"; }
+{ const q = new URLSearchParams(location.search).get("blessing"); if (q && /^[0-9a-f-]{36}$/i.test(q)) { state.deepBlessing = q; state.view = "blessings"; try { history.replaceState(null, "", location.pathname); } catch(e) {} } }
 { const q = new URLSearchParams(location.search).get("foto"); if (q && /^[0-9a-f-]{36}$/i.test(q)) { state.deepPost = q; state.view = "community"; try { history.replaceState(null, "", location.pathname); } catch(e) {} } }
 render();
 initStore();
