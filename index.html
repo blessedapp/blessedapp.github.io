@@ -1285,7 +1285,8 @@ function applyOverrides(list){ const ov = lsGet("cc-ov", {}); return list.map(x 
 async function teamInit(){
   if (!teamAvailable()) return;
   TEAM.client = window.supabase.createClient(window.CC_SUPABASE.url, window.CC_SUPABASE.key);
-  TEAM.client.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT" && TEAM.user) teamLeave(); });
+  TEAM.client.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT" && TEAM.user) teamLeave();
+    if (ev === "PASSWORD_RECOVERY") setTimeout(() => { state.ajBack = "community"; state.aj = {msg: "Você entrou pelo link do e-mail. Crie sua senha nova abaixo."}; state.view = "ajustes"; render(); scrollTo(0, 0); }, 600); });
   try {
     const {data} = await TEAM.client.auth.getSession();
     if (data && data.session) await teamEnter(data.session.user);
@@ -1385,6 +1386,7 @@ function viewLogin(){
       ${TEAM.msg ? `<p class="confirm">${esc(TEAM.msg)}</p>` : ""}
       <button class="btn primary big-paste" type="submit" ${TEAM.busy ? "disabled" : ""}>${TEAM.busy ? "Aguarde…" : tab === "up" ? "Criar minha conta" : "Entrar"}</button>
     </form>
+    ${tab === "up" ? "" : '<p style="margin:12px 0 0"><button class="lnk2" data-a="aj-forgot">Esqueci minha senha</button></p>'}
     ${tab === "up" ? '<p class="muted" style="font-size:13px">Com a conta você já entra na Comunidade. As cifras da equipe abrem depois que o administrador aprovar.</p>' : ""}
     <div style="margin-top:14px">${safeBadge()}</div>`);
 }
@@ -3157,7 +3159,14 @@ async function ajPass(){
   render();
 }
 function ajClick(a, b){
-  if (a === "aj-open") { state.ajBack = state.view; state.aj = {}; state.view = "ajustes"; render(); scrollTo(0, 0); }
+  if (a === "aj-forgot") {
+    const email = (($("#l-email") || {}).value || "").trim();
+    if (!/^[^@s]+@[^@s]+.[^@s]+$/.test(email)) { TEAM.msg = "Escreva seu e-mail no campo acima e toque de novo em Esqueci minha senha."; render(); return true; }
+    TEAM.client.auth.resetPasswordForEmail(email, {redirectTo: location.origin + location.pathname}).then(({error}) => {
+      TEAM.msg = error ? (/rate|seconds/i.test(error.message || "") ? "Espere um minuto e tente de novo." : "Não consegui mandar agora. Tente de novo.") : "Se esse e-mail tem conta, mandamos um link para ele. Abra o e-mail (veja também o spam), toque no link e crie a senha nova.";
+      render(); });
+  }
+  else if (a === "aj-open") { state.ajBack = state.view; state.aj = {}; state.view = "ajustes"; render(); scrollTo(0, 0); }
   else if (a === "aj-back") { state.view = state.ajBack || "community"; render(); scrollTo(0, 0); }
   else if (a === "aj-out") { if (confirm("Sair desta conta? Depois você pode entrar com outra.")) TEAM.client.auth.signOut().finally(() => { teamLeave(); state.loginTab = "in"; state.view = "login"; render(); scrollTo(0, 0); }); }
   else if (a === "aj-out-all") { if (confirm("Sair da conta em TODOS os aparelhos (inclusive este)?")) { state.view = "community"; TEAM.client.auth.signOut({scope: "global"}).finally(teamLeave); } }
