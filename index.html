@@ -2582,7 +2582,11 @@ async function blSend(){
       await blPut(s.video.url, out.blob, out.type, p => prog("Enviando…", .6 + p * .38));
     } catch(e) {
       // descobre se o problema é a ligação com o armazenamento (aparece para o admin consertar)
-      if (teamRole() === "admin" && navigator.onLine) { try { const c = await blFn({action: "check"}); if (c && c.why) throw new Error("Envio bloqueado. " + c.why); } catch(e2) { if (/^Envio bloqueado/.test(e2.message)) throw e2; } }
+      if (navigator.onLine) {
+        let c = null;
+        try { c = await blFn({action: "check"}); } catch(e2) { c = {why: /desconhecida/i.test(e2.message) ? "A função blessings no Supabase ainda é a versão antiga (cole o código novo e clique em Deploy)." : "Conferência: " + e2.message}; }
+        if (c && c.why) throw new Error("Envio bloqueado. " + c.why);
+      }
       throw e;
     }
     const {data, error} = await TEAM.client.from("blessings").insert({author: TEAM.user.id, video_key: s.video.key, thumb_key: s.thumb.key, caption: cap || null, duration: Math.round(out.duration * 10) / 10}).select().single();
