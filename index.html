@@ -701,7 +701,8 @@ button{cursor:pointer}
 .rc b{font-size:13px;line-height:1.2;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
 .rc small{font-size:11px;color:var(--muted);max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Tema claro: inverte as cores da tela e devolve fotos/vídeos ao normal */
-html.light{filter:invert(1) hue-rotate(180deg);background:#0C0B0E}
+html.light{filter:invert(1) hue-rotate(180deg);background:#000;--bg:#000;--surface:#0E0E10;--surface2:#17171A;--line:rgba(236,221,249,.13)}
+html.light body{background-color:#000;background-image:none}
 html.light :is(img,video,canvas,picture,iframe,.rc-av,.cm-cover,.bl-tile,.poster,.banner,.artist .ph,.cm-demo-img,[style*="background-image"]){filter:invert(1) hue-rotate(180deg)}
 html.light :is(.cm-cover,.bl-tile,.poster,.banner,[style*="background-image"]) :is(img,video){filter:none}
 /* Mensagens */
