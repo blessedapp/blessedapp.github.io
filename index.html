@@ -700,6 +700,10 @@ button{cursor:pointer}
 .rc-av{width:78px;height:78px;border-radius:50%;background-size:cover;background-position:center;display:grid;place-items:center;font:700 22px var(--f-body);color:#fff;border:1px solid rgba(232,208,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 4px rgba(170,110,255,.16),0 8px 22px rgba(0,0,0,.35)}
 .rc b{font-size:13px;line-height:1.2;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
 .rc small{font-size:11px;color:var(--muted);max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Posts de texto */
+.cm-post-text{display:block;width:100%;text-align:left;border:1px solid var(--glass-edge,var(--line));background:var(--glass-surface,var(--surface));border-radius:18px;padding:18px 18px 20px;color:var(--ink);font:500 19px/1.45 var(--f-body);white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:var(--glass-highlight,none)}
+.cm-grid-tx{display:grid;place-items:center;padding:8px;background:linear-gradient(150deg,rgba(150,70,230,.55),rgba(40,20,60,.92))!important;color:#fff;font:600 12px/1.3 var(--f-body);text-align:center;overflow:hidden}
+.cm-grid-tx span{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
 /* Mensagens */
 .dm-icon{position:relative;margin-left:auto;margin-right:10px;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:#fff;display:grid;place-items:center}.dm-icon svg{width:23px;height:23px}
 .dm-icon .badge{position:absolute;top:-5px;right:-5px;margin:0}.top .dm-icon + .cm-me{margin-left:0}
@@ -2155,11 +2159,11 @@ function commSongLink(s){
 }
 function commPostCard(id){
   const p = COMM.posts[id]; if (!p) return "";
-  const a = COMM.profiles[p.author] || {}, u = commUrl(p.image_path), liked = COMM.myLikes.has(id);
-  if (!u) commSign([p.image_path]);
+  const a = COMM.profiles[p.author] || {}, tx = !p.image_path, u = tx ? "" : commUrl(p.image_path), liked = COMM.myLikes.has(id);
+  if (!u && !tx) commSign([p.image_path]);
   return `<article class="cm-post">
     <button class="cm-post-h" data-a="cm-profile" data-id="${esc(p.author)}">${commAvatar(a, 38)}<span style="min-width:0"><b>${esc(a.display_name || "")}${commBadge(a)}</b><span class="muted">${commWhere(a) || "@" + esc(a.handle || "")}</span></span></button>
-    <button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>
+    ${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}">${esc(p.caption || "")}</button>` : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}
     <div class="cm-bar">
       <button class="cm-act" data-a="cm-comments" data-id="${esc(id)}" aria-label="Comentar">${CM_ICONS.comment}<span>${COMM.ccount[id] || 0}</span></button>
       <button class="cm-act like" data-a="cm-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${liked ? CM_ICONS.heartOn : CM_ICONS.heart}<span>${COMM.likes[id] || 0}</span></button>
@@ -2167,7 +2171,7 @@ function commPostCard(id){
       <button class="cm-act" data-a="cm-share" data-id="${esc(id)}" aria-label="Compartilhar">${CM_ICONS.share}</button>
     </div>
     <p class="cm-time">${commAgo(p.created_at)}</p>
-    ${p.caption ? `<p class="cm-cap"><b>${esc(a.display_name || "")}</b> ${esc(p.caption)}</p>` : ""}
+    ${p.caption && !tx ? `<p class="cm-cap"><b>${esc(a.display_name || "")}</b> ${esc(p.caption)}</p>` : ""}
     ${pfWith("post", id)}
     ${p.song && p.song.name ? `<p class="cm-songtag">🎵 ${esc(p.song.name)}${p.song.artist ? " · " + esc(p.song.artist) : ""}${p.song.key ? ` <span class="tag">${esc(p.song.key)}</span>` : ""}</p>` : ""}
   </article>`;
@@ -2255,14 +2259,14 @@ function commOpenDeep(){
   });
 }
 function commGridUrl(p){
-  if (!p) return "";
+  if (!p || !p.image_path) return "";
   const th = commThumb(p.image_path);
   if (COMM.urls[th]) return COMM.urls[th];
   if (COMM_NOFILE.has(th)) { if (!COMM.urls[p.image_path]) commSign([p.image_path]); return commUrl(p.image_path); }
   commSign([th]); return "";
 }
 function commGrid(ids){
-  return `<div class="cm-grid">${ids.map(id => { const p = COMM.posts[id], u = commGridUrl(p); return `<button data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }).join("")}</div>`;
+  return `<div class="cm-grid">${ids.map(id => { const p = COMM.posts[id], u = commGridUrl(p); if (p && !p.image_path) return `<button class="cm-grid-tx" data-a="cm-post" data-id="${esc(id)}"><span>${esc((p.caption || "").slice(0, 120))}</span></button>`; return `<button data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }).join("")}</div>`;
 }
 function commPersonCard(p){
   const s = [p.display_name, p.handle, p.church, p.city, (p.instruments || []).join(" "), isChurch(p) ? "igreja" : ""].join(" ").toLowerCase();
@@ -2737,6 +2741,7 @@ function pfWith(kind, id){
   return `<p class="pf-with">👥 com ${us.map(u => `<button class="lnk2" data-a="cm-profile" data-id="${esc(u)}">${esc((COMM.profiles[u] || {}).display_name || "alguém")}</button>`).join(", ")}</p>`;
 }
 function pfCell(x){
+  if (x.k === "post" && COMM.posts[x.id] && !COMM.posts[x.id].image_path) { const p = COMM.posts[x.id]; return `<button class="cm-grid-tx" data-a="cm-post" data-id="${esc(x.id)}"><span>${esc((p.caption || "").slice(0, 120))}</span></button>`; }
   if (x.k === "post") { const u = commGridUrl(COMM.posts[x.id]); return `<button data-a="cm-post" data-id="${esc(x.id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }
   const b = BLS.items[x.id];
   return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span></button>`;
@@ -3217,7 +3222,7 @@ function viewCommunity(){
   } else {
     body = COMM.explore.length ? commGrid(COMM.explore) + (COMM.explore.length >= (COMM.exploreLimit || 24) ? '<button class="btn cm-more" data-a="cm-more">Ver mais fotos</button>' : "") : '<p class="muted">Ninguém postou ainda. Seja o primeiro!</p>';
   }
-  return wrap(`${tab === "people" ? "" : commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar foto</button>
+  return wrap(`${tab === "people" ? "" : commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
     <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`);
 }
 function viewProfile(){
@@ -3272,7 +3277,7 @@ function viewPost(){
   const mine = p.author === TEAM.user.id;
   return `${back}${commPostCard(p.id)}
     ${commCommentsHtml(p)}
-    <div class="actions" style="margin-top:14px">${(PF.tagsOf["post:" + p.id] || []).includes(TEAM.user.id) ? `<button class="btn ghost" data-a="pf-untag" data-k="post" data-id="${esc(p.id)}">Tirar minha marcação</button>` : ""}${mine || teamRole() === "admin" ? `<button class="btn danger" data-a="cm-del-post" data-id="${esc(p.id)}">${mine ? "Apagar foto" : "Apagar (admin)"}</button>` : ""}
+    <div class="actions" style="margin-top:14px">${(PF.tagsOf["post:" + p.id] || []).includes(TEAM.user.id) ? `<button class="btn ghost" data-a="pf-untag" data-k="post" data-id="${esc(p.id)}">Tirar minha marcação</button>` : ""}${mine || teamRole() === "admin" ? `<button class="btn danger" data-a="cm-del-post" data-id="${esc(p.id)}">${mine ? "Apagar post" : "Apagar (admin)"}</button>` : ""}
     ${mine ? "" : `<button class="btn ghost" data-a="cm-report" data-k="post" data-id="${esc(p.id)}">Denunciar</button>`}</div>${tabbar("community")}`;
 }
 function commSongOptions(){
@@ -3330,16 +3335,17 @@ function viewProfileEdit(){
 function viewPostNew(){
   const d = state.cmPost || {};
   const mySongs = (COMM.me && COMM.me.songs) || [];
-  return `<div class="top"><button class="btn ghost" data-a="cm-back">‹ Voltar</button><h1 style="font-size:20px">Nova foto</h1></div>
+  const tx = d.kind === "texto";
+  return `<div class="top"><button class="btn ghost" data-a="cm-back">‹ Voltar</button><h1 style="font-size:20px">Novo post</h1></div>
+  <div class="inst cm-seg" role="group" aria-label="Tipo de post"><button type="button" data-a="cm-pkind" data-v="foto" aria-pressed="${!tx}">📷 Foto</button><button type="button" data-a="cm-pkind" data-v="texto" aria-pressed="${tx}">✍️ Texto</button></div>
   <form class="form" id="cm-post-form">
-    ${d.data ? `<img class="cm-preview" src="${esc(d.data)}" alt="Foto escolhida">` : ""}
-    <label class="btn ${d.data ? "" : "primary"} file-btn">${d.data ? "Trocar foto" : "📷 Escolher foto"}<input id="cm-post-file" type="file" accept="image/*"></label>
-    <label>Legenda<textarea id="cm-caption" maxlength="500" rows="3" placeholder="Ex.: Ensaio de domingo, tocando Restitui em F#!">${esc(d.caption || "")}</textarea></label>
+    ${tx ? "" : (d.data ? `<img class="cm-preview" src="${esc(d.data)}" alt="Foto escolhida">` : "") + `<label class="btn ${d.data ? "" : "primary"} file-btn">${d.data ? "Trocar foto" : "📷 Escolher foto"}<input id="cm-post-file" type="file" accept="image/*"></label>`}
+    <label>${tx ? "Seu texto" : "Legenda"}<textarea id="cm-caption" maxlength="500" rows="${tx ? 6 : 3}" placeholder="${tx ? "O que Deus colocou no seu coração hoje? Um versículo, um testemunho, um pedido de oração…" : "Ex.: Ensaio de domingo, tocando Restitui em F#!"}">${esc(d.caption || "")}</textarea></label>
     ${mySongs.length ? `<label>Música (opcional)<select id="cm-post-song"><option value="">Nenhuma</option>${mySongs.map((s, i) => `<option value="${i}" ${String(d.song) === String(i) ? "selected" : ""}>${esc(s.name)}${s.key ? " (" + esc(s.key) + ")" : ""}</option>`).join("")}</select></label>` : ""}
     ${pfTagPicker()}
     <p class="muted" style="font-size:13px;margin:0">Só quem está logado vê. Não poste telefone, endereço nem fotos de outras pessoas sem permissão.</p>
     ${COMM.msg ? `<p class="confirm">${esc(COMM.msg)}</p>` : ""}
-    <button class="btn primary big-paste" type="submit" ${COMM.busy || !d.data ? "disabled" : ""}>${COMM.busy ? "Publicando…" : "Publicar"}</button>
+    <button class="btn primary big-paste" type="submit" ${COMM.busy || (!tx && !d.data) ? "disabled" : ""}>${COMM.busy ? "Publicando…" : "Publicar"}</button>
   </form>${tabbar("community")}`;
 }
 // Foto reduzida no aparelho antes de enviar (pesa pouco e não manda a foto original com localização)
@@ -3405,13 +3411,15 @@ async function commSaveProfile(){
   }
 }
 async function commPublish(){
-  const d = state.cmPost || {}; if (!d.data || COMM.busy) return;
-  d.caption = ($("#cm-caption") || {}).value || ""; const si = ($("#cm-post-song") || {}).value;
+  const d = state.cmPost || {}; if (COMM.busy) return;
+  d.caption = ($("#cm-caption") || {}).value || "";
+  if (d.kind === "texto" && !d.caption.trim()) { COMM.msg = "Escreva alguma coisa para postar."; render(); return; }
+  if (d.kind !== "texto" && !d.data) return; const si = ($("#cm-post-song") || {}).value;
   const song = si !== undefined && si !== "" ? (COMM.me.songs || [])[+si] || null : null;
   COMM.busy = true; COMM.msg = ""; render();
   try {
-    const path = await commUpload(d.data, "post");
-    try { const tb = await commResize(await (await fetch(d.data)).blob(), 400, 40000); await commUpload(tb, "", commThumb(path)); } catch(e) {}
+    const path = d.kind === "texto" ? null : await commUpload(d.data, "post");
+    if (path) try { const tb = await commResize(await (await fetch(d.data)).blob(), 400, 40000); await commUpload(tb, "", commThumb(path)); } catch(e) {}
     const {data, error} = await TEAM.client.from("posts").insert({author: TEAM.user.id, image_path: path, caption: d.caption.trim().slice(0, 500) || null, song}).select("*").single();
     if (error) throw error;
     COMM.posts[data.id] = data; COMM.likes[data.id] = 0;
@@ -3445,7 +3453,7 @@ async function commDeletePost(id){
   const p = COMM.posts[id]; if (!p) return;
   const {error} = await TEAM.client.from("posts").delete().eq("id", id);
   if (error) { flash("Não consegui apagar agora."); return; }
-  TEAM.client.storage.from("comunidade").remove([p.image_path, commThumb(p.image_path)]);
+  if (p.image_path) TEAM.client.storage.from("comunidade").remove([p.image_path, commThumb(p.image_path)]);
   delete COMM.posts[id];
   ["feed", "explore"].forEach(k => { if (COMM[k]) COMM[k] = COMM[k].filter(x => x !== id); });
   Object.keys(COMM.byAuthor).forEach(k => COMM.byAuthor[k] = COMM.byAuthor[k].filter(x => x !== id));
@@ -3521,6 +3529,7 @@ function commTrackPlay(songId){
 function commClick(a, b){
   if (a === "cm-demo") { commDemoInvite(); }
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
+  else if (a === "cm-pkind") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.kind = b.dataset.v; COMM.msg = ""; render(); }
   else if (a === "cm-tab") { state.cmTab = b.dataset.v; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; state.pfTab = "fotos"; delete PF.bl[b.dataset.id]; delete PF.tags[b.dataset.id]; delete PF.shares[b.dataset.id]; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
