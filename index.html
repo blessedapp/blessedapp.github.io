@@ -902,6 +902,8 @@ body.dm-screen-shake{animation:dm-screen-shake .6s ease-in-out;overflow-x:clip}
 @media(prefers-reduced-motion:reduce){body.dm-screen-shake{animation:none}}
 @media(max-width:360px){.cm-identity-summary .cm-counts{flex-basis:100%}.dm-form{gap:5px;padding-inline:7px}.dm-form>.btn{padding-inline:10px}}
 
+.ntf-settings h3{font-size:19px}.ntf-settings h4{margin:20px 0 5px}.ntf-volume{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;color:var(--muted);font-size:14px}.ntf-volume select{width:auto;min-width:110px;margin:0;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--ink);font:inherit}.ntf-guide{border-left:3px solid #ac65d4;padding:10px 12px;background:#9b59bd14;font-size:14px}
+#blessed-install{position:fixed;left:12px;right:12px;bottom:calc(95px + env(safe-area-inset-bottom,0px));z-index:90;max-width:550px;margin:auto;display:flex;gap:10px;align-items:center;padding:15px;border:1px solid #aa75c7;border-radius:20px;background:#271631f5;box-shadow:0 10px 40px #0008}#blessed-install>span{display:grid;gap:5px;flex:1;min-width:0}#blessed-install b{font-size:15px}#blessed-install small{font-size:12px;color:#d9c5e5}.ntf-install-close{align-self:flex-start;background:none;border:0;color:#fff;padding:4px;font-size:16px}#blessed-install .btn{padding:10px;font-size:13px}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -911,6 +913,42 @@ body.dm-screen-shake{animation:dm-screen-shake .6s ease-in-out;overflow-x:clip}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+<script type="text/plain" id="blessed-push-worker">
+// BLESSED-PUSH-WORKER: dados do aparelho sobrevivem à atualização do cache do app.
+function pushOwner(value,write=false){return new Promise((resolve,reject)=>{
+ const request=indexedDB.open('blessed-push-device',1);request.onupgradeneeded=()=>request.result.createObjectStore('state');request.onerror=()=>reject(new Error('storage'));
+ request.onsuccess=()=>{const db=request.result,tx=db.transaction('state',write?'readwrite':'readonly'),store=tx.objectStore('state'),op=write?store.put(value,'owner'):store.get('owner');let result;op.onsuccess=()=>{result=op.result;};tx.oncomplete=()=>{db.close();resolve(result);};tx.onerror=()=>{db.close();reject(new Error('storage'));};};
+});}
+function pushSafeURL(value){try{const u=new URL(value,self.location.origin);if(u.origin!==self.location.origin||u.pathname!=='/')return '/';const entries=[...u.searchParams];if(entries.length!==1)return '/';const [kind,id]=entries[0];return ['conversation','foto','blessing','story'].includes(kind)&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)?u.pathname+u.search:'/';}catch{return '/';}}
+self.addEventListener('message',e=>{
+ if(e.data?.type==='BLESSED_PUSH_OWNER'||e.data?.type==='BLESSED_PUSH_LOGOUT'){
+  const owner=e.data.type==='BLESSED_PUSH_LOGOUT'?null:e.data.owner;
+  if(owner!==null&&!/^[a-f0-9-]{36}$/i.test(owner||'')){e.ports?.[0]?.postMessage({ok:false});return;}
+  e.waitUntil(pushOwner(owner,true).then(()=>e.ports?.[0]?.postMessage({ok:true})).catch(()=>e.ports?.[0]?.postMessage({ok:false})));
+ }
+});
+self.addEventListener('push',e=>{
+ e.waitUntil((async()=>{
+  let data;try{data=e.data?.json();}catch{}const owner=await pushOwner().catch(()=>null);
+  const known=owner&&owner===data?.account,notification=known?data:{};
+  await self.registration.showNotification(String(notification.title||'Blessed').slice(0,140),{
+   body:String(notification.body||'Abra o Blessed para ver seus avisos.').slice(0,200),
+   icon:'/img/icon-192.png',badge:'/img/icon-192.png',tag:known?String(data.tag||data.id).slice(0,100):'blessed',
+   data:{url:known?pushSafeURL(data.url):'/',account:known?owner:null},
+   renotify:false,silent:!known
+  });
+ })());
+});
+self.addEventListener('notificationclick',e=>{
+ e.notification.close();e.waitUntil((async()=>{
+  const data=e.notification.data||{},owner=await pushOwner().catch(()=>null),url=owner&&owner===data.account?pushSafeURL(data.url):'/';
+  const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  const client=windows.find(c=>new URL(c.url).origin===self.location.origin);
+  if(client){await client.focus();client.postMessage({type:'BLESSED_PUSH_OPEN',url,account:owner});}
+  else await self.clients.openWindow(url);
+ })());
+});
+</script>
 <script>
 (function(){
 "use strict";
@@ -1461,7 +1499,7 @@ async function teamLoad(){
   state.songs = applyOverrides(songs); state.artists = artists; state.setlist = setlist;
 }
 function teamLeave(){
-  bibleAskReset();
+  bibleAskReset();ntfReset();
   if (TEAM.sub) { TEAM.client.removeChannel(TEAM.sub); TEAM.sub = null; }
   TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); blReset(); dmReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
   state.songs = lsGet("cc-local-songs", []); state.artists = lsGet("cc-local-artists", []); state.setlist = lsGet("cc-local-setlist", []);
@@ -1607,7 +1645,7 @@ function isStandalone(){ return (window.matchMedia && matchMedia("(display-mode:
 function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
 function inAppBrowser(){ return /FBAN|FBAV|Instagram|WhatsApp|Line\/|; wv\)/i.test(navigator.userAgent); }
 function installBanner(){
-  if (window.claude || isStandalone()) return "";
+  if (window.claude || isStandalone() || INSTALL.visible) return "";
   const until = lsGet("cc-install-later", 0); if (until && Date.now() < until) return "";
   const later = '<button class="btn ghost" data-a="install-later">Agora não</button>';
   if (inAppBrowser()) return `<div class="install" role="region" aria-label="Instalar o app"><div class="install-ic">📲</div><div class="install-tx"><b>Instale o Blessed</b><span>Abra este link no ${isIOS() ? "<b>Safari</b>" : "<b>Chrome</b>"}: toque nos <b>⋯</b> ou em <b>⬆️</b> e escolha "Abrir no navegador".</span></div>${later}</div>`;
@@ -2554,7 +2592,7 @@ async function stHeart(){
   const p=ST.panel;if(!p||p.kind!=='viewer'||!ST.interactions||p.heartBusy||p.reactionLoading||!stPanelCurrent(p))return;
   const x=ST.rows.find(s=>s.id===p.ids[p.index]);if(!x||x.author===p.actor.owner||Date.parse(x.expires_at)<=stClock())return;
   const request=p.request,enabled=!p.reactions?.liked;p.heartBusy=true;p.reactionError='';stSocialRender(p);
-  try{const {error}=await p.actor.client.rpc('story_heart',{target:x.id,enabled});if(error)throw error;if(!stSocialCurrent(p,request))return;p.reactions={...p.reactions,liked:enabled};}
+  try{const {error}=await p.actor.client.rpc('story_heart',{target:x.id,enabled});if(error)throw error;if(!stSocialCurrent(p,request))return;p.reactions={...p.reactions,liked:enabled};if(enabled)ntfSound('like');}
   catch(_){if(stSocialCurrent(p,request))p.reactionError='Não consegui salvar sua curtida. Tente novamente.';}
   finally{if(stSocialCurrent(p,request)){p.heartBusy=false;stSocialRender(p);}}
 }
@@ -2890,7 +2928,7 @@ async function commLoadMe(){
   const f = await TEAM.client.from("follows").select("followee").eq("follower", TEAM.user.id);
   COMM.following = new Set((f.data || []).map(r => r.followee));
   commRerender("community", "profile");
-  commOpenDeep(); dmEnsure();
+  commOpenDeep(); dmEnsure();ntfInit();if(state.pushStory){const id=state.pushStory;state.pushStory=null;ntfOpenURL('/?story='+id);}
 }
 async function commLoadPeople(){
   const {data, error} = await TEAM.client.from("community_profiles")
@@ -3495,7 +3533,7 @@ async function blToggleLike(id, btn){
   if (btn) { btn.setAttribute("aria-pressed", String(!on)); btn.querySelector("span").textContent = BLS.likes[id]; }
   const res = on ? await TEAM.client.from("blessing_likes").delete().eq("blessing_id", id).eq("user_id", TEAM.user.id)
                  : await TEAM.client.from("blessing_likes").insert({blessing_id: id, user_id: TEAM.user.id});
-  if (res.error) flash("Não consegui curtir agora.");
+  if (res.error) flash("Não consegui curtir agora.");else if(!on)ntfSound('like');
 }
 async function blShare(id){
   const x = BLS.items[id], a = x ? COMM.profiles[x.author] || {} : {};
@@ -3881,6 +3919,7 @@ async function dmLoad(incoming=null){
   if (need.length) { const {data} = await client.from("community_profiles").select(PF_PROF).in("id", need); if(!current())return; commKeep(data); }
   if(!current())return;
   dmSubscribe(); dmRerender();
+  if(state.deepConversation){const target=state.deepConversation;state.deepConversation=null;if(DM.convs.some(c=>c.id===target))dmOpen(target);}
   try{
     const ready=await client.rpc('dm_attention_ready');if(!current())return;
     DM.attentionReady=ready.data===true&&!ready.error;
@@ -3906,7 +3945,7 @@ function dmIncoming(m){
   if (list && !list.some(x => x.id === m.id)) list.push(m);
   const c = DM.convs.find(x => x.id === m.conversation_id);
   if (!c) { const generation=DM.generation; dmLoad(m).then(()=>{if(DM.generation===generation&&DM.convs?.some(c=>c.id===m.conversation_id))dmIncoming(m);}); return; }
-  dmAttentionReceive(m,true);
+  dmAttentionReceive(m,true);ntfMessage(m);
   Object.assign(c, {last_at: m.created_at, last_author: m.author, last_text: String(m.text).slice(0, 120)});
   DM.convs.sort((x, y) => x.last_at < y.last_at ? 1 : -1);
   if (state.view === "chat" && DM.open === m.conversation_id && m.author !== TEAM.user.id) dmMarkRead(m.conversation_id);
@@ -3962,7 +4001,7 @@ async function dmSend(){
   DM.busy = false;
   if (error) { flash(navigator.onLine ? "Não foi possível enviar esta mensagem." : "Sem internet. Tente de novo."); return; }
   if (el) el.value = "";
-  dmIncoming(data);
+  dmIncoming(data);ntfSound('sent');
   const n = $("#dm-in"); if (n) { n.value = ""; n.focus(); }
 }
 function dmTime(iso){ const d = new Date(iso); return d.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"}); }
@@ -4006,7 +4045,7 @@ function dmAttentionReceive(m,animate){
   DM.attentionSeen.add(m.id);if(DM.attentionSeen.size>300)DM.attentionSeen.delete(DM.attentionSeen.values().next().value);
   DM.attention={id:m.id,author:m.author,conversation_id:m.conversation_id,created_at:m.created_at};
   if(animate&&!document.hidden&&Date.now()-Date.parse(m.created_at)<30000&&Date.parse(m.created_at)<=Date.now()+5000&&Date.now()-DM.shakeAt>=10000){
-    DM.shakeAt=Date.now();
+    DM.shakeAt=Date.now();ntfSound('attention');
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
       document.body.classList.remove('dm-screen-shake');void document.body.offsetWidth;document.body.classList.add('dm-screen-shake');
       clearTimeout(DM.shakeTimer);DM.shakeTimer=setTimeout(()=>document.body.classList.remove('dm-screen-shake'),650);
@@ -4024,7 +4063,7 @@ async function dmAttentionSend(){
     const {data,error}=await client.from('messages').insert({conversation_id:id,author:owner,text:DM_ATTENTION_TEXT}).select('id,conversation_id,author,text,created_at').single();
     if(DM.generation!==generation||TEAM.user?.id!==owner)return;
     if(error||!data){flash(error?.code==='23514'?'Aguarde um pouco antes de chamar novamente.':'Não consegui chamar agora. Confira se a conversa está disponível.');return;}
-    DM.attentionSent[id]=Date.now();dmIncoming(data);flash('Chamado enviado. A tela balança se a pessoa estiver com o Blessed aberto.');
+    DM.attentionSent[id]=Date.now();dmIncoming(data);ntfSound('sent');flash('Chamado enviado. A tela balança se a pessoa estiver com o Blessed aberto.');
   }catch(_){if(DM.generation===generation)flash('Sem conexão. Tente novamente.');}
   finally{if(DM.generation===generation){DM.attentionBusy=false;dmRerender();}}
 }
@@ -4185,11 +4224,144 @@ function ctClick(a, b){
   else return false;
   return true;
 }
+/* BLESSED-NOTIFICATIONS-START: sons sintetizados no aparelho, sem downloads. */
+const NTF={context:null,nodes:new Set(),last:{},seen:new Set(),owner:null,generation:0,channel:null,busy:false,enabled:false,status:'',publicKey:'',sounds:lsGet('blessed-sounds',true)!==false,volume:Math.max(.1,Math.min(1,Number(lsGet('blessed-sound-volume',.5))||.5))};
+function ntfUnlock(){
+  if(!NTF.sounds)return;
+  try{if(!NTF.context||NTF.context.state==='closed')NTF.context=new (window.AudioContext||window.webkitAudioContext)();if(NTF.context.state==='suspended')NTF.context.resume().catch(()=>{});}catch(_){}
+}
+document.addEventListener('pointerdown',ntfUnlock,{capture:true,passive:true});
+document.addEventListener('keydown',e=>{if(e.isTrusted)ntfUnlock();},{capture:true});
+function ntfSound(kind){
+  if(!NTF.sounds||document.hidden||!NTF.context||NTF.context.state!=='running')return;
+  const now=Date.now(),last=NTF.last[kind]||0;if(now-last<(kind==='like'?150:500))return;NTF.last[kind]=now;
+  const notes={like:[[880,0,.08],[1320,.055,.12]],message:[[740,0,.12],[988,.11,.16]],attention:[[392,0,.13],[523,.1,.13],[659,.2,.14],[523,.31,.19]],sent:[[587,0,.07],[784,.06,.1]]}[kind]||[];
+  try{const ctx=NTF.context;for(const [hz,delay,duration] of notes){const osc=ctx.createOscillator(),gain=ctx.createGain(),start=ctx.currentTime+delay;osc.type='sine';osc.frequency.setValueAtTime(hz,start);gain.gain.setValueAtTime(0,start);gain.gain.linearRampToValueAtTime(.10*NTF.volume,start+.012);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);osc.connect(gain);gain.connect(ctx.destination);NTF.nodes.add(osc);osc.onended=()=>{osc.disconnect();gain.disconnect();NTF.nodes.delete(osc);};osc.start(start);osc.stop(start+duration+.02);}}catch(_){}
+}
+function ntfStopSound(){for(const node of NTF.nodes){try{node.stop();}catch(_){}}NTF.nodes.clear();}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)ntfStopSound();});
+function ntfMessage(m){
+  if(!TEAM.user||m.author===TEAM.user.id||m.text===DM_ATTENTION_TEXT||NTF.seen.has(m.id)||DM.blocks.has(m.author))return;
+  NTF.seen.add(m.id);if(NTF.seen.size>300)NTF.seen.delete(NTF.seen.values().next().value);
+  const age=Date.now()-Date.parse(m.created_at);if(age>=-5000&&age<30000)ntfSound('message');
+}
+function ntfReset(){
+  NTF.generation++;NTF.busy=false;NTF.configChecked=false;NTF.publicKey='';const generation=NTF.generation;lsSet('blessed-push-owner','');if(NTF.channel&&TEAM.client)TEAM.client.removeChannel(NTF.channel);NTF.channel=null;NTF.owner=null;NTF.enabled=false;NTF.status='';NTF.seen.clear();NTF.last={};ntfStopSound();
+  if(NTF.context){NTF.context.close().catch(()=>{});NTF.context=null;}
+  // O worker remove a identificação local antes de processar novos avisos.
+  if('serviceWorker' in navigator)navigator.serviceWorker.getRegistration().then(async reg=>{if(NTF.generation!==generation)return;reg?.active?.postMessage({type:'BLESSED_PUSH_LOGOUT'});const sub=await reg?.pushManager?.getSubscription();if(sub&&NTF.generation===generation)await sub.unsubscribe();}).catch(()=>{});
+}
+function ntfIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+function ntfStandalone(){return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}
+function ntfSettings(){
+  if(TEAM.user&&!NTF.configChecked)queueMicrotask(ntfConfig);
+  const supported='Notification' in window&&'serviceWorker' in navigator&&'PushManager' in window;
+  const ios=ntfIOS()&&!ntfStandalone(),denied=supported&&Notification.permission==='denied';
+  return `<section class="panel ntf-settings"><h3>Sons e notificações</h3><p class="muted">Sons leves para curtidas, mensagens e chamados, gerados no seu aparelho.</p><div class="actions"><button class="btn" data-a="ntf-sounds" aria-pressed="${NTF.sounds}">Sons no app: ${NTF.sounds?'ligados':'desligados'}</button><button class="btn ghost" data-a="ntf-test">Ouvir chamado</button></div><label class="ntf-volume">Volume dos efeitos<select id="ntf-volume" aria-label="Volume dos efeitos">${[[.25,'Baixo'],[.5,'Médio'],[.75,'Alto']].map(([n,label])=>`<option value="${n}" ${NTF.volume===n?'selected':''}>${label}</option>`).join('')}</select></label>${TEAM.user?`<h4>Avisos com o app fechado</h4><p class="muted">Mensagens, chamados e curtidas podem aparecer nas notificações do aparelho. O som desses avisos segue os ajustes do sistema.</p>${ios?'<p class="ntf-guide">No iPhone: abra no Safari → Compartilhar → Adicionar à Tela de Início. Abra o Blessed pelo ícone e volte aqui para permitir os avisos.</p>':!supported?'<p class="ntf-guide">Este navegador não oferece notificações push. Experimente um navegador compatível.</p>':denied?'<p class="ntf-guide">As notificações estão bloqueadas. Permita nos ajustes do navegador ou do iPhone para o Blessed.</p>':''}<div class="actions"><button class="btn primary" data-a="ntf-push" ${NTF.busy||ios||!supported||denied||(!NTF.enabled&&!NTF.publicKey)?'disabled':''}>${NTF.busy?'Configurando…':NTF.enabled?'Desativar neste aparelho':'Ativar neste aparelho'}</button></div><p id="ntf-status" class="muted" role="status">${esc(NTF.status||(NTF.enabled?'Notificações ativadas neste aparelho.':'Você escolhe se quer receber.'))}</p>`:'<p class="muted">Entre com sua conta para ativar notificações neste aparelho.</p>'}</section>`;
+}
+function ntfClick(a){
+  if(a==='ntf-install'){installConfirm();return true;}
+  if(a==='ntf-install-later'){lsSet('blessed-install-later',Date.now());$('#blessed-install')?.remove();INSTALL.visible=false;return true;}
+  if(a==='ntf-sounds'){NTF.sounds=!NTF.sounds;lsSet('blessed-sounds',NTF.sounds);if(!NTF.sounds)ntfStopSound();else ntfUnlock();rerenderKeepScroll();}
+  else if(a==='ntf-test'){if(!NTF.sounds){flash('Ligue os sons para ouvir o teste.');return true;}ntfUnlock();const ctx=NTF.context;Promise.resolve(ctx?.resume()).then(()=>ntfSound('attention')).catch(()=>{});}
+  else if(a==='ntf-push')ntfTogglePush();else return false;return true;
+}
+document.addEventListener('change',e=>{if(e.target.id==='ntf-volume'){NTF.volume=Number(e.target.value);lsSet('blessed-sound-volume',NTF.volume);ntfSound('like');}});
+async function ntfRequest(action,extra={}){
+ const {data}=await TEAM.client.auth.getSession(),token=data.session?.access_token;
+ if(!token)throw new Error('auth');
+ const response=await fetch(window.CC_SUPABASE.url.replace(/\/$/,'')+'/functions/v1/notifications',{method:'POST',headers:{'Content-Type':'application/json','apikey':window.CC_SUPABASE.key,'Authorization':'Bearer '+token},body:JSON.stringify({action,...extra})});
+ const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.error||'unavailable');return body;
+}
+function ntfPaint(){if(state.view==='ajustes')rerenderKeepScroll();}
+async function ntfConfig(){
+ if(NTF.configChecked||!TEAM.user)return;NTF.configChecked=true;
+ const generation=NTF.generation,owner=TEAM.user.id;
+ try{const result=await ntfRequest('config');if(NTF.generation!==generation||TEAM.user?.id!==owner)return;if(result.ready&&/^[A-Za-z0-9_-]{87}$/.test(result.publicKey||'')){NTF.publicKey=result.publicKey;NTF.status='Pronto para ativar neste aparelho.';}else NTF.status='A ativação das notificações externas ainda está sendo concluída. Os sons no app já funcionam.';}
+ catch(_){if(NTF.generation===generation)NTF.status='A ativação das notificações externas ainda está sendo concluída. Os sons no app já funcionam.';}
+ finally{if(NTF.generation===generation)ntfPaint();}
+}
+function ntfWorkerOwner(reg,owner){
+ return new Promise((resolve,reject)=>{const worker=reg?.active;if(!worker){reject(new Error('worker'));return;}const channel=new MessageChannel(),timer=setTimeout(()=>{channel.port1.close();reject(new Error('worker'));},3000);channel.port1.onmessage=e=>{clearTimeout(timer);channel.port1.close();e.data?.ok?resolve():reject(new Error('worker'));};worker.postMessage({type:'BLESSED_PUSH_OWNER',owner},[channel.port2]);});
+}
+async function ntfInit(){
+ const owner=TEAM.user?.id;if(!owner||NTF.owner===owner)return;NTF.owner=owner;NTF.generation++;NTF.configChecked=false;NTF.publicKey='';const generation=NTF.generation,client=TEAM.client;
+ NTF.channel=client.channel('notices-'+owner).on('postgres_changes',{event:'INSERT',schema:'public',table:'notification_events',filter:'recipient=eq.'+owner},e=>{
+  const n=e.new;if(NTF.generation!==generation||TEAM.user?.id!==owner||n.recipient!==owner||n.actor===owner||DM.blocks.has(n.actor)||!String(n.kind).endsWith('_like')||NTF.seen.has(n.id))return;
+  NTF.seen.add(n.id);if(NTF.seen.size>300)NTF.seen.delete(NTF.seen.values().next().value);
+  if(!document.hidden){ntfSound('like');flash(n.kind==='story_like'?'Seu story recebeu uma curtida.':n.kind==='blessing_like'?'Seu Blessing recebeu uma curtida.':'Sua publicação recebeu uma curtida.');}
+ }).subscribe();
+ if(!('serviceWorker' in navigator))return;
+ try{
+  const reg=await navigator.serviceWorker.getRegistration();if(!reg||NTF.generation!==generation)return;
+  const sub=await reg.pushManager?.getSubscription();if(NTF.generation!==generation)return;
+  if(lsGet('blessed-push-owner','')!==owner){if(sub)await sub.unsubscribe();await ntfWorkerOwner(reg,null);return;}
+  if(sub&&'Notification' in window&&Notification.permission==='granted'){
+   await ntfRequest('subscribe',{subscription:sub.toJSON()});if(NTF.generation!==generation)return;
+   await ntfWorkerOwner(reg,owner);if(NTF.generation!==generation)return;NTF.enabled=true;NTF.status='Notificações ativadas neste aparelho.';ntfPaint();
+  }
+ }catch(_){}
+}
+async function ntfTogglePush(){
+ if(NTF.busy||!TEAM.user)return;
+ const owner=TEAM.user.id,generation=NTF.generation,current=()=>TEAM.user?.id===owner&&NTF.generation===generation;
+ // A solicitação de permissão ocorre diretamente no toque, como o Safari exige.
+ let permission=Promise.resolve('granted');
+ if(!NTF.enabled){if(!NTF.publicKey||!('Notification' in window)||Notification.permission==='denied')return;permission=Notification.permission==='granted'?Promise.resolve('granted'):Notification.requestPermission();}
+ NTF.busy=true;ntfPaint();let created=null;
+ try{
+  if(await permission!=='granted'){if(current())NTF.status='Notificações não foram permitidas. Você pode ativar depois nos ajustes do aparelho.';return;}
+  if(!current())return;
+  const reg=await Promise.race([navigator.serviceWorker.ready,new Promise((_,reject)=>setTimeout(()=>reject(new Error('worker')),10000))]);if(!current())return;
+  let sub=await reg.pushManager.getSubscription();if(!current())return;
+  if(NTF.enabled){
+   if(sub){await ntfRequest('unsubscribe',{endpoint:sub.endpoint}).catch(()=>{});if(!await sub.unsubscribe())throw new Error('unsubscribe');}
+   await ntfWorkerOwner(reg,null);if(!current())return;lsSet('blessed-push-owner','');NTF.enabled=false;NTF.status='Notificações desativadas neste aparelho.';
+  }else{
+   if(!sub){const base=NTF.publicKey.replace(/-/g,'+').replace(/_/g,'/');const bytes=Uint8Array.from(atob(base+'='.repeat((4-base.length%4)%4)),c=>c.charCodeAt(0));sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:bytes});created=sub;}
+   if(!current()){await created?.unsubscribe();return;}
+   await ntfRequest('subscribe',{subscription:sub.toJSON()});if(!current()){await created?.unsubscribe();return;}
+   await ntfWorkerOwner(reg,owner);if(!current())return;lsSet('blessed-push-owner',owner);NTF.enabled=true;NTF.status='Notificações ativadas neste aparelho. O som segue os ajustes do sistema.';
+  }
+ }catch(_){if(created)await created.unsubscribe().catch(()=>{});if(current())NTF.status='Não consegui concluir. Confira a conexão e tente novamente.';}
+ finally{if(current()){NTF.busy=false;ntfPaint();}}
+}
+async function ntfOpenURL(value){
+ try{
+  const u=new URL(value,location.origin);if(u.origin!==location.origin)return;
+  const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+  for(const key of ['conversation','foto','blessing','story']){const id=u.searchParams.get(key);if(!uuid.test(id||''))continue;
+   if(key==='conversation'){state.deepConversation=id;if(TEAM.user&&COMM.me){await dmLoad();}else {state.view='community';render();}}
+   else if(key==='foto'){state.deepPost=id;state.view='community';render();if(COMM.me)commOpenDeep();}
+   else if(key==='blessing'){state.deepBlessing=id;state.view='blessings';render();}
+   else {state.view='community';render();if(TEAM.user){await stLoad(true);const row=ST.rows.find(s=>s.id===id);if(row)stOpen(row.author);}}
+   return;
+  }
+ }catch(_){}
+}
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='BLESSED_PUSH_OPEN'&&e.data.account===TEAM.user?.id)ntfOpenURL(e.data.url);});
+/* Convite de instalação: o navegador e o usuário confirmam; nunca instala sozinho. */
+INSTALL.visible=false;
+function installShow(force=false){
+ if(window.claude||ntfStandalone()||!('serviceWorker' in navigator)||(!force&&Date.now()<Number(lsGet('cc-install-later',0)))||(!force&&Date.now()-Number(lsGet('blessed-install-later',0))<7*86400000))return;
+ document.querySelector('.install')?.remove();let box=$('#blessed-install');if(!box){box=document.createElement('aside');box.id='blessed-install';box.setAttribute('aria-label','Instalar Blessed');document.body.appendChild(box);}
+ box.innerHTML=`<span><b>Leve o Blessed com você</b><small>Instale para abrir pelo ícone e ativar notificações.</small></span><button class="btn primary" data-a="ntf-install">Instalar</button><button class="ntf-install-close" data-a="ntf-install-later" aria-label="Agora não">✕</button>`;INSTALL.visible=true;
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();INSTALL.evt=e;installShow();});
+window.addEventListener('appinstalled',()=>{$('#blessed-install')?.remove();INSTALL.evt=null;INSTALL.visible=false;});
+async function installConfirm(){
+ if(INSTALL.evt){const event=INSTALL.evt;INSTALL.evt=null;await event.prompt();const choice=await event.userChoice;if(choice.outcome==='accepted'){$('#blessed-install')?.remove();INSTALL.visible=false;}return;}
+ closePix();const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true" aria-labelledby="install-title"><h2 id="install-title">Instalar o Blessed</h2>${inAppBrowser()?'<p>Abra este link no <b>Safari</b> (iPhone) ou <b>Chrome</b> (Android), usando o menu deste navegador. Depois toque em Instalar.</p>':ntfIOS()?'<p>No Safari, toque em <b>Compartilhar</b>, depois em <b>Adicionar à Tela de Início</b> e confirme em <b>Adicionar</b>.</p>':'<p>Abra o menu do navegador e escolha <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.</p>'}<p class="muted">Depois abra pelo ícone e vá em Ajustes → Sons e notificações para permitir os avisos.</p><button class="btn primary" data-a="pix-close">Entendi</button></section>`;box.hidden=false;
+}
+window.addEventListener('load',()=>setTimeout(()=>installShow(),1800),{once:true});
+
+/* BLESSED-NOTIFICATIONS-END */
 /* ---------- Ajustes: tema claro/escuro e segurança da conta ---------- */
 try { localStorage.removeItem("cc-tema"); } catch(e) {}
 function viewSettings(){
   const a = state.aj || (state.aj = {});
   return `<div class="top glass-top"><button class="btn ghost" data-a="aj-back" aria-label="Voltar">‹</button><h1 class="page-title">Ajustes</h1></div>
+    ${ntfSettings()}
     ${TEAM.user ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🔒 Segurança da conta</h3>
       <p class="muted" style="font-size:14px;margin:0 0 10px">Conta: <b style="color:var(--ink)">${esc(aj_mask(TEAM.user.email || ""))}</b></p>
       <form class="form" id="aj-pass" autocomplete="on">
@@ -4494,7 +4666,7 @@ async function commToggleLike(id){
   COMM.likes[id] = Math.max(0, (COMM.likes[id] || 0) + (on ? -1 : 1)); rerenderKeepScroll();
   const res = on ? await TEAM.client.from("post_likes").delete().eq("post_id", id).eq("user_id", TEAM.user.id)
                  : await TEAM.client.from("post_likes").insert({post_id: id, user_id: TEAM.user.id});
-  if (res.error) flash("Não consegui curtir agora.");
+  if (res.error) flash("Não consegui curtir agora.");else if(!on)ntfSound('like');
 }
 async function commDeletePost(id){
   const p = COMM.posts[id]; if (!p) return;
@@ -6007,6 +6179,7 @@ document.addEventListener("click", ev => {
   if (a === "terms-accept-open") { termsOpen(true); return; }
   if (a === "cm-edit" && !termsGate()) return;
   if (a === "tw-more") { const set = COMM.twOpen || (COMM.twOpen = new Set()); if (set.has(b.dataset.id)) set.delete(b.dataset.id); else set.add(b.dataset.id); rerenderKeepScroll(); return; }
+  if(a.startsWith("ntf-")&&ntfClick(a))return;
   if (a.startsWith("cm-") && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("pf-") && pfClick(a, b)) return;
@@ -6254,6 +6427,7 @@ const draft = lsGet("cc-draft", null);
 if (draft && draft.id) { state.editing = Object.assign({isNew:true, name:"", artist:"", text:"", origTonic:"G", origMode:"major", targetTonic:"G"}, draft); state.view = "editor"; }
 { const q = new URLSearchParams(location.search).get("blessing"); if (q && /^[0-9a-f-]{36}$/i.test(q)) { state.deepBlessing = q; state.view = "blessings"; try { history.replaceState(null, "", location.pathname); } catch(e) {} } }
 { const q = new URLSearchParams(location.search).get("foto"); if (q && /^[0-9a-f-]{36}$/i.test(q)) { state.deepPost = q; state.view = "community"; try { history.replaceState(null, "", location.pathname); } catch(e) {} } }
+{const params=new URLSearchParams(location.search),conversation=params.get('conversation'),story=params.get('story');if(/^[a-f0-9-]{36}$/i.test(conversation||'')){state.deepConversation=conversation;state.view='community';}if(/^[a-f0-9-]{36}$/i.test(story||'')){state.pushStory=story;state.view='community';}if(conversation||story)history.replaceState(null,'',location.pathname);}
 render();
 initStore();
 teamInit();
