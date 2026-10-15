@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610151610";
+const CACHE = "cifra-campo-202610151643";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const FILES = ["img/fonts/caveat.ttf", "./", "index.html", "tema-vidro.css?v=20261014-lilas", "manifest.json", "info.json", "img/icon-192.png?v=lilas", "img/icon-512.png?v=lilas", "img/apple-touch-icon.png"];
@@ -34,7 +34,7 @@ function pushOwner(value,write=false){return new Promise((resolve,reject)=>{
  const request=indexedDB.open('blessed-push-device',1);request.onupgradeneeded=()=>request.result.createObjectStore('state');request.onerror=()=>reject(new Error('storage'));
  request.onsuccess=()=>{const db=request.result,tx=db.transaction('state',write?'readwrite':'readonly'),store=tx.objectStore('state'),op=write?store.put(value,'owner'):store.get('owner');let result;op.onsuccess=()=>{result=op.result;};tx.oncomplete=()=>{db.close();resolve(result);};tx.onerror=()=>{db.close();reject(new Error('storage'));};};
 });}
-function pushSafeURL(value){try{const u=new URL(value,self.location.origin);if(u.origin!==self.location.origin||u.pathname!=='/')return '/';const entries=[...u.searchParams];if(entries.length!==1)return '/';const [kind,id]=entries[0];return ['conversation','foto','blessing','story'].includes(kind)&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)?u.pathname+u.search:'/';}catch{return '/';}}
+function pushSafeURL(value){try{const u=new URL(value,self.location.origin);if(u.origin!==self.location.origin||u.pathname!=='/')return '/';const entries=[...u.searchParams];if(entries.length!==1)return '/';const [kind,id]=entries[0];return ['conversation','foto','blessing','story','profile'].includes(kind)&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)?u.pathname+u.search:'/';}catch{return '/';}}
 self.addEventListener('message',e=>{
  if(e.data?.type==='BLESSED_PUSH_OWNER'||e.data?.type==='BLESSED_PUSH_LOGOUT'){
   const owner=e.data.type==='BLESSED_PUSH_LOGOUT'?null:e.data.owner;
