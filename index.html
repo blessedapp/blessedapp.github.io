@@ -927,6 +927,7 @@ body.dm-screen-shake{animation:none}}
 @keyframes dm-record-pulse{50%{opacity:.45;transform:scale(.96)}}
 .dmm-recording{display:flex;align-items:center;gap:12px}.dmm-recording::before{content:"";width:14px;height:14px;border-radius:50%;background:#ed5383;box-shadow:0 0 18px #ed538377;animation:dm-record-pulse .8s ease-in-out infinite}@media(prefers-reduced-motion:reduce){.dmm-recording::before{animation:none}}
 .dm-form.dm-record-mode>:not(.dmm-inline){display:none!important}.dmm-inline{display:flex;align-items:center;gap:8px;width:100%;min-width:0;flex-wrap:wrap;padding:4px 0}.dmm-wave-body{flex:1;min-width:60px;overflow:hidden;color:#deb6ff}.dmm-wave-body canvas{display:block;width:100%;height:42px}.dmm-wave-body small{display:block;font-size:11px;color:#c5a6d9}.dmm-wave-body audio{display:block;width:100%;height:42px}.dmm-round{display:grid;place-items:center;flex:none;width:42px;height:42px;border:1px solid #a466cd66;border-radius:50%;background:#382047;color:#f5e6ff;font-size:21px;cursor:pointer}.dmm-round.primary{background:linear-gradient(135deg,#ac60d6,#7024a3)}.dmm-round svg{width:22px;height:22px}.dmm-round:disabled{opacity:.5}
+.sp-card{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #aa67d655;border-radius:18px;background:linear-gradient(135deg,#40204d,#17131e);margin:12px 0}.sp-card img{width:56px;height:56px;border-radius:10px;object-fit:cover}.sp-card>span{display:grid;gap:4px;min-width:0}.sp-card b,.sp-card>span>span{overflow-wrap:anywhere}.sp-card small{color:#b5ebc9;font-size:11px}.sp-card a{font-size:12px;color:#ddadff}.sp-now{border:1px solid #b276db;background:#382047;color:#b5ebc9;border-radius:50%;width:30px;height:30px;padding:0;cursor:pointer;margin-left:-23px;align-self:flex-end;z-index:1}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -1528,7 +1529,7 @@ async function teamLoad(){
 }
 function teamLeave(){
   prBeat(false);prStop();
-  bibleAskReset();ntfReset();
+  bibleAskReset();ntfReset();spReset();
   if (TEAM.sub) { TEAM.client.removeChannel(TEAM.sub); TEAM.sub = null; }
   TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); blReset(); dmReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
   state.songs = lsGet("cc-local-songs", []); state.artists = lsGet("cc-local-artists", []); state.setlist = lsGet("cc-local-setlist", []);
@@ -2971,7 +2972,7 @@ async function commSign(paths){
   need.forEach(p => { if (!COMM.urls[p]) COMM_NOFILE.add(p); });
   commRerender("community", "profile", "post", "profile-edit", "team");
 }
-function commKeep(list){ (list || []).forEach(p => { COMM.profiles[p.id] = Object.assign(COMM.profiles[p.id] || {}, p); }); commSign((list || []).flatMap(p => [p.avatar_path, p.cover_path])); }
+function commKeep(list){ queueMicrotask(()=>spSchedule());(list || []).forEach(p => { COMM.profiles[p.id] = Object.assign(COMM.profiles[p.id] || {}, p); }); commSign((list || []).flatMap(p => [p.avatar_path, p.cover_path])); }
 async function commLoadMe(){
   if (!commIn()) return;
   const {data, error} = await TEAM.client.from("community_profiles").select("*").eq("id", TEAM.user.id).maybeSingle();
@@ -2981,7 +2982,7 @@ async function commLoadMe(){
   const f = await TEAM.client.from("follows").select("followee").eq("follower", TEAM.user.id);
   COMM.following = new Set((f.data || []).map(r => r.followee));
   commRerender("community", "profile");
-  commOpenDeep(); dmEnsure();ntfInit();if(state.pushStory){const id=state.pushStory;state.pushStory=null;ntfOpenURL('/?story='+id);}
+  commOpenDeep(); dmEnsure();ntfInit();spReturn();spSchedule();if(state.pushStory){const id=state.pushStory;state.pushStory=null;ntfOpenURL('/?story='+id);}
 }
 async function commLoadPeople(){
   const {data, error} = await TEAM.client.from("community_profiles")
@@ -4514,12 +4515,36 @@ async function installConfirm(){
 window.addEventListener('load',()=>setTimeout(()=>installShow(),1800),{once:true});
 
 /* BLESSED-NOTIFICATIONS-END */
+/* Spotify econômico: PKCE no aparelho; nenhuma rotina em segundo plano. */
+const SP={busy:false,msg:'',demo:false,clearTimer:null,last:0};
+function spReset(){clearTimeout(SP.clearTimer);SP.last=0;SP.msg='';try{spStore('blessed-spotify-token',null);spStore('blessed-spotify-pending',null);spStore('blessed-spotify-return',null);}catch(e){}}
+function spClient(){const id=window.CC_SUPABASE?.spotifyClientId||'';return /^[a-f0-9]{32}$/i.test(id)?id:'';}
+function spRedirect(){return 'https://blessedapp.github.io/img/spotify/retorno.html';}
+function spStore(key,value){try{if(value==null)sessionStorage.removeItem(key);else sessionStorage.setItem(key,JSON.stringify(value));}catch(e){throw Error('Não foi possível guardar a conexão neste navegador.');}}
+function spRead(key){try{return JSON.parse(sessionStorage.getItem(key)||'null');}catch(e){return null;}}
+function spTokens(){const t=spRead('blessed-spotify-token');return t&&t.owner===TEAM.user?.id?t:null;}
+function spCurrent(value){return value&&typeof value.until==='string'&&Date.parse(value.until)>Date.now()&&(!value.at||(Date.parse(value.at)<=Date.now()+5000&&Date.now()-Date.parse(value.at)<120000))&&/^[A-Za-z0-9]{22}$/.test(value.id||'');}
+function spCard(value,demo=false){if(!spCurrent(value))return '';return `<div class="sp-card">${/^https:\/\/i\.scdn\.co\/image\/[a-f0-9]+$/i.test(value.image||'')?`<img src="${esc(value.image)}" alt="Capa do álbum" referrerpolicy="no-referrer">`:''}<span><small>Ouvindo no Spotify · atualização manual</small><b>${esc(value.name)}</b><span>${esc(value.artist)}</span>${demo?'<small>Prévia visual</small>':`<a href="https://open.spotify.com/track/${esc(value.id)}" target="_blank" rel="noopener noreferrer">Abrir no Spotify ↗</a>`}</span></div>`;}
+function spSettings(){if(!TEAM.user)return '';const token=spTokens(),now=COMM.me?.spotify_now;return `<section class="panel"><h3>Spotify · Ouvindo agora</h3><p class="muted">Você escolhe quando compartilhar. Só consultamos ao tocar em Atualizar, no máximo uma vez por minuto. O status some em até 2 minutos. Nada roda com o Blessed fechado.</p>${!spClient()?'<p class="muted">A conexão está em preparação. Você já pode ver um exemplo do visual.</p>':''}${spCard(now)}<div class="actions">${token?`<button class="btn primary" data-a="sp-refresh" ${SP.busy?'disabled':''}>${SP.busy?'Atualizando…':'Atualizar música'}</button><button class="btn ghost" data-a="sp-disconnect" ${SP.busy?'disabled':''}>Desconectar e ocultar</button>`:`<button class="btn primary" data-a="sp-connect" ${!spClient()||SP.busy||!COMM.me?'disabled':''}>Conectar Spotify</button>`}<button class="btn ghost" data-a="sp-demo">Ver exemplo</button></div><p class="muted" role="status">${esc(SP.msg)}</p><p class="muted" style="font-size:12px">Compartilhe apenas se quiser que membros da comunidade vejam a música. A conexão fica nesta sessão do navegador. Você também pode revogar a autorização na sua conta Spotify.</p></section>`;}
+function spPaint(){if(['ajustes','community','profile'].includes(state.view))rerenderKeepScroll();}
+function spSchedule(){clearTimeout(SP.clearTimer);const times=Object.values(COMM.profiles||{}).map(p=>Date.parse(p.spotify_now?.until)).filter(t=>t>Date.now());if(times.length)SP.clearTimer=setTimeout(()=>{spPaint();spSchedule();},Math.max(100,Math.min(...times)-Date.now()+50));}
+function spModal(value,demo=false){closePix();const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true" aria-labelledby="sp-title"><h2 id="sp-title">${demo?'EXEMPLO · Ouvindo agora':'Ouvindo agora'}</h2>${spCard(value,demo)||'<p class="muted">Nenhuma música compartilhada agora.</p>'}${demo?'<p class="muted">Prévia ilustrativa. Nenhuma conta foi conectada e nada foi publicado.</p>':''}${TEAM.user?.id===COMM.me?.id?'<button class="btn" data-a="sp-settings">Configurar meu Spotify</button>':''}<button class="btn ghost" data-a="pix-close">Fechar</button></section>`;box.hidden=false;}
+async function spConnect(){if(SP.busy||!TEAM.user||!COMM.me||!spClient())return;SP.busy=true;SP.msg='';try{const bytes=crypto.getRandomValues(new Uint8Array(64)),encode=b=>btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');const verifier=encode(bytes),stateId=crypto.randomUUID(),challenge=encode(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier))));spStore('blessed-spotify-pending',{owner:TEAM.user.id,verifier,state:stateId,at:Date.now(),client:spClient()});const query=new URLSearchParams({client_id:spClient(),response_type:'code',redirect_uri:spRedirect(),scope:'user-read-currently-playing',state:stateId,code_challenge_method:'S256',code_challenge:challenge});location.assign('https://accounts.spotify.com/authorize?'+query);}catch(e){SP.msg=e.message||'Não consegui abrir o Spotify.';}finally{SP.busy=false;spPaint();}}
+async function spTokenRequest(body){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(body),signal:AbortSignal.timeout(15000),redirect:'error'});if(!r.ok)throw Error('A autorização expirou ou foi recusada. Conecte o Spotify novamente.');const d=await r.json();if(typeof d.access_token!=='string'||d.access_token.length>4096||!Number.isFinite(d.expires_in)||d.expires_in<=0)throw Error('Resposta do Spotify inválida.');return d;}
+async function spReturn(){const result=spRead('blessed-spotify-return');if(!result||!TEAM.user)return;spStore('blessed-spotify-return',null);const pending=spRead('blessed-spotify-pending');spStore('blessed-spotify-pending',null);state.view='ajustes';if(!pending||pending.owner!==TEAM.user.id||pending.client!==spClient()||pending.state!==result.state||Date.now()-pending.at>600000||Date.now()<pending.at){SP.msg='A conexão não foi confirmada nesta sessão. Tente conectar novamente.';spPaint();return;}if(result.error){SP.msg='Você cancelou a autorização. Nenhuma música foi compartilhada.';spPaint();return;}SP.busy=true;try{const d=await spTokenRequest({grant_type:'authorization_code',code:result.code,redirect_uri:spRedirect(),client_id:spClient(),code_verifier:pending.verifier});if(TEAM.user?.id!==pending.owner)return;spStore('blessed-spotify-token',{owner:pending.owner,client:spClient(),access:d.access_token,refresh:d.refresh_token||'',until:Date.now()+d.expires_in*1000});SP.msg='Conectado. Toque em Atualizar música quando quiser compartilhar.';}catch(e){SP.msg=e.message;}finally{SP.busy=false;spPaint();}}
+async function spAccess(owner){let token=spTokens();if(!token||token.client!==spClient())throw Error('Conecte o Spotify novamente.');if(token.until<Date.now()+30000){if(!token.refresh)throw Error('Conecte o Spotify novamente.');const d=await spTokenRequest({grant_type:'refresh_token',refresh_token:token.refresh,client_id:spClient()});if(TEAM.user?.id!==owner)throw Error('A conta mudou.');token={...token,access:d.access_token,refresh:d.refresh_token||token.refresh,until:Date.now()+d.expires_in*1000};spStore('blessed-spotify-token',token);}return token.access;}
+async function spSave(track){const owner=TEAM.user?.id,client=TEAM.client;const {data,error}=await client.rpc('spotify_share_now',{track});if(TEAM.user?.id!==owner)return;if(error)throw Error('Não consegui compartilhar. A ativação do Spotify no banco ainda precisa ser concluída.');if(COMM.me){COMM.me.spotify_now=data;commKeep([COMM.me]);}spSchedule();}
+async function spRefresh(){if(SP.busy||!TEAM.user||!COMM.me)return;if(Date.now()-SP.last<60000){SP.msg='Espere um minuto entre atualizações para economizar consultas.';spPaint();return;}SP.busy=true;SP.last=Date.now();SP.msg='';spPaint();const owner=TEAM.user.id;try{const access=await spAccess(owner);const r=await fetch('https://api.spotify.com/v1/me/player/currently-playing',{headers:{Authorization:'Bearer '+access},signal:AbortSignal.timeout(15000),redirect:'error'});if(TEAM.user?.id!==owner)return;if(r.status===429){const retry=Math.min(86400,Math.max(60,Number(r.headers.get('Retry-After'))||60));SP.last=Date.now()+(retry-60)*1000;throw Error('O Spotify pediu uma pausa. Tente mais tarde.');}if(r.status===401){spStore('blessed-spotify-token',null);throw Error('A autorização expirou. Conecte novamente.');}if(r.status===403)throw Error('O Spotify não liberou esta conta para o teste. Confira a lista de usuários no painel Spotify.');if(!r.ok)throw Error('O Spotify está indisponível agora.');const d=r.status===204?null:await r.json(),item=d?.item;if(!d?.is_playing||d.currently_playing_type!=='track'||!item||!/^[A-Za-z0-9]{22}$/.test(item.id||'')){await spSave(null);SP.msg='Nada tocando no Spotify agora. Seu status foi ocultado.';}else{const remaining=Math.max(1,Math.min(120,Math.ceil((Number(item.duration_ms)-Number(d.progress_ms||0))/1000)));await spSave({id:item.id,name:String(item.name||'').slice(0,160),artist:(item.artists||[]).map(a=>a.name).join(', ').slice(0,180),image:(item.album?.images||[]).find(i=>/^https:\/\/i\.scdn\.co\/image\/[a-f0-9]+$/i.test(i.url||''))?.url||'',seconds:remaining});SP.msg='Música compartilhada por até 2 minutos. Não faremos outra consulta automaticamente.';}}catch(e){if(TEAM.user?.id===owner)SP.msg=e.message||'Não foi possível atualizar.';}finally{SP.busy=false;spPaint();}}
+async function spDisconnect(){if(SP.busy)return;SP.busy=true;spStore('blessed-spotify-token',null);spStore('blessed-spotify-pending',null);try{await spSave(null);SP.msg='Desconectado neste navegador. Música ocultada.';}catch(e){SP.msg='Conexão local removida. Não consegui ocultar agora; o status expira em até 2 minutos.';}finally{SP.busy=false;spPaint();}}
+function spClick(a,b){if(a==='sp-connect')spConnect();else if(a==='sp-refresh')spRefresh();else if(a==='sp-disconnect')spDisconnect();else if(a==='sp-settings'){closePix();state.view='ajustes';render();}else if(a==='sp-now')spModal(COMM.profiles[b.dataset.id]?.spotify_now);else if(a==='sp-demo')spModal({id:'0000000000000000000000',name:'Louvor de exemplo',artist:'Artista de exemplo',until:new Date(Date.now()+120000).toISOString()},true);else return false;return true;}
+
 /* ---------- Ajustes: tema claro/escuro e segurança da conta ---------- */
 try { localStorage.removeItem("cc-tema"); } catch(e) {}
 function viewSettings(){
   const a = state.aj || (state.aj = {});
   return `<div class="top glass-top"><button class="btn ghost" data-a="aj-back" aria-label="Voltar">‹</button><h1 class="page-title">Ajustes</h1></div>
     ${ntfSettings()}
+    ${spSettings()}
     ${TEAM.user ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🔒 Segurança da conta</h3>
       <p class="muted" style="font-size:14px;margin:0 0 10px">Conta: <b style="color:var(--ink)">${esc(aj_mask(TEAM.user.email || ""))}</b></p>
       <form class="form" id="aj-pass" autocomplete="on">
@@ -4571,7 +4596,7 @@ function recentBubbles(list){
 }
 function viewCommunity(){
   if((!TEAM.user||COMM.me===null)&&state.deepPost){state.postId=state.deepPost;state.deepPost=null;state.view="post";return pcPostPage();}
-  const head = `<div class="top glass-top"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
+  const head = `<div class="top glass-top"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>${spCurrent(COMM.me.spotify_now)?`<button class="sp-now" data-a="sp-now" data-id="${esc(COMM.me.id)}" aria-label="Sua música no Spotify">♫</button>`:""}` : ""}</div>`;
   const wrap = inner => head + inner + tabbar("community");
   if (!TEAM.user&&teamAvailable()) return wrap(pcCommunity());
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
@@ -4618,6 +4643,7 @@ function viewProfile(){
       <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id) + dmBtn(id)}</div></div>
     <div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2><p class="muted" style="margin:0">@${esc(p.handle || "")}</p></div>
       <div class="cm-counts" aria-label="Atividade do perfil"><button data-a="cm-profile-photos"><b>${c.photos??(posts?posts.filter(id=>COMM.posts[id]?.image_path).length:'–')}</b><span>Fotos</span></button><button data-a="cm-connections" data-v="followers" data-id="${esc(id)}"><b>${c.followers??'–'}</b><span>Seguidores</span></button><button data-a="cm-connections" data-v="following" data-id="${esc(id)}"><b>${c.following??'–'}</b><span>Seguindo</span></button></div></div>
+    ${spCard(p.spotify_now)}
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
     ${(() => { if (isChurch(p)) return p.church || p.city ? `<p class="cm-church big">${commWhere(p)}</p>` : "";
@@ -6350,6 +6376,7 @@ document.addEventListener("click", ev => {
   if (a === "tw-more") { const set = COMM.twOpen || (COMM.twOpen = new Set()); if (set.has(b.dataset.id)) set.delete(b.dataset.id); else set.add(b.dataset.id); rerenderKeepScroll(); return; }
   if(a.startsWith("pc-")&&pcClick(a,b))return;
   if(a.startsWith("ntf-")&&ntfClick(a))return;
+  if(a.startsWith("sp-")&&spClick(a,b))return;
   if (a.startsWith("cm-") && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("pf-") && pfClick(a, b)) return;
@@ -6609,6 +6636,10 @@ if (!window.claude) fetch("info.json", {cache:"no-cache"}).then(r => r.ok ? r.js
   if (m && typeof m === "object") { state.infoDocs = m; lsSet("cc-info-cache", m); if (state.view === "song" || state.view === "artist") rerenderKeepScroll(); }
 }).catch(() => {});
 })();
+</script>
+
+<script type="text/plain" id="blessed-spotify-callback">
+const q=new URLSearchParams(location.search);try{sessionStorage.setItem('blessed-spotify-return',JSON.stringify({code:(q.get('code')||'').slice(0,2048),state:(q.get('state')||'').slice(0,100),error:!!q.get('error')}));history.replaceState(null,'',location.pathname);location.replace('/?spotify_return=1');}catch(e){document.body.textContent='Não foi possível concluir. Abra o Blessed no mesmo navegador e tente conectar novamente.';}
 </script>
 
 <script>

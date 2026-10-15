@@ -1,0 +1,3 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="referrer" content="no-referrer"><title>Conectar Spotify · Blessed</title><body>Voltando ao Blessed…<script>
+const q=new URLSearchParams(location.search);try{sessionStorage.setItem('blessed-spotify-return',JSON.stringify({code:(q.get('code')||'').slice(0,2048),state:(q.get('state')||'').slice(0,100),error:!!q.get('error')}));history.replaceState(null,'',location.pathname);location.replace('/?spotify_return=1');}catch(e){document.body.textContent='Não foi possível concluir. Abra o Blessed no mesmo navegador e tente conectar novamente.';}
+</script></body></html>
