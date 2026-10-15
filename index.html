@@ -1390,7 +1390,10 @@ function viewLogin(){
     ${tab === "up" ? '<p class="muted" style="font-size:13px">Com a conta você já entra na Comunidade. As cifras da equipe abrem depois que o administrador aprovar.</p>' : ""}
     <div style="margin-top:14px">${safeBadge()}</div>`);
 }
-function pendingCount(){ return teamRole() === "admin" && TEAM.users ? TEAM.users.filter(u => u.role === "pending").length : 0; }
+function pendingCount(){
+  if (teamRole() !== "admin") return 0;
+  if (!TEAM.users && !TEAM.usersLoading) { TEAM.usersLoading = true; setTimeout(() => loadTeamUsers().finally(() => TEAM.usersLoading = false)); }
+  return TEAM.users ? TEAM.users.filter(u => u.role === "pending" || (u.reviewed === false && u.role !== "blocked")).length : 0; }
 async function loadTeamUsers(){
   const {data, error} = await TEAM.client.from("profiles").select("*").order("created_at", {ascending: false});
   TEAM.users = error ? [] : data; render();
@@ -1403,6 +1406,11 @@ function viewTeam(){
     ${u.id === TEAM.user.id ? '<span class="tag">Você</span>' : `<select class="role-sel" data-uid="${esc(u.id)}" aria-label="Função de ${esc(u.name || u.email || "")}">${Object.keys(ROLE_NAME).map(r => `<option value="${r}" ${r === u.role ? "selected" : ""}>${ROLE_NAME[r]}</option>`).join("")}</select>`}</div>`;
   return `<div class="top"><h1 class="page-title">Equipe</h1><span style="flex:1"></span><button class="btn" data-a="team-out">Sair</button></div>
     <p class="muted" style="margin:-6px 0 12px">Você está como <b style="color:#fff">${esc(TEAM.profile.name || TEAM.user.email)}</b> (administrador).</p>
+    ${(() => { const fresh = users.filter(u => u.reviewed === false && u.role !== "blocked" && u.role !== "pending");
+      return fresh.length ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🆕 Novos para revisar (${fresh.length})</h3>
+      <p class="muted" style="font-size:13px;margin:0 0 8px">Já entraram e usam o app. Veja o perfil e decida se mantém.</p>
+      ${fresh.map(u => `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">${esc(u.name || "Sem nome")}</b><span class="muted" style="font-size:13px;overflow-wrap:anywhere">${esc(u.email || "")} · ${commAgo(u.created_at)}</span></span>
+        <button class="btn" data-a="cm-profile" data-id="${esc(u.id)}">Perfil</button><button class="btn primary" data-a="team-keep" data-uid="${esc(u.id)}">Manter</button><button class="btn ghost" data-a="team-role" data-uid="${esc(u.id)}" data-v="blocked">Bloquear</button></div>`).join("")}</section>` : ""; })()}
     ${waiting.length ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:6px">Pedindo para entrar (${waiting.length})</h3>
       ${waiting.map(u => `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b style="display:block">${esc(u.name || "Sem nome")}</b><span class="muted" style="font-size:13px;overflow-wrap:anywhere">${esc(u.email || "")}</span></span>
         <button class="btn primary" data-a="team-role" data-uid="${esc(u.id)}" data-v="member">Aprovar</button><button class="btn ghost" data-a="team-role" data-uid="${esc(u.id)}" data-v="blocked">Recusar</button></div>`).join("")}</section>` : ""}
@@ -5031,9 +5039,11 @@ document.addEventListener("click", ev => {
   else if (a === "login-tab") { state.loginTab = b.dataset.v; TEAM.msg = ""; render(); }
   else if (a === "team-out") { if (TEAM.client) TEAM.client.auth.signOut().finally(teamLeave); }
   else if (a === "team-check") { TEAM.client.auth.getUser().then(({data}) => data && data.user ? teamEnter(data.user).then(render) : null); }
+  else if (a === "team-keep") { TEAM.client.from("profiles").update({reviewed: true}).eq("id", b.dataset.uid).then(({error}) => { if (error) flash("Não consegui agora."); loadTeamUsers(); }); }
   else if (a === "team-role") {
     const uid = b.dataset.uid, role = b.dataset.v;
-    TEAM.client.from("profiles").update({role}).eq("id", uid).then(({error}) => { if (error) flash("Não consegui mudar agora."); loadTeamUsers(); });
+    if (role === "blocked" && !confirm("Bloquear esta pessoa? Ela perde o acesso e o perfil some da Comunidade.")) return;
+    TEAM.client.from("profiles").update(role === "blocked" ? {role, reviewed: true} : {role}).eq("id", uid).then(({error}) => { if (error) flash("Não consegui mudar agora."); loadTeamUsers(); });
   }
   else if (a === "mode") { state.mode = b.dataset.v; lsSet("cc-mode", state.mode); state.follow = null; state.sheet = null; rerenderKeepScroll(); }
   else if (a === "pdf") openPdfChoice();
