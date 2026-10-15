@@ -1459,7 +1459,7 @@ function viewLogin(){
       <button class="btn primary big-paste" type="submit" ${TEAM.busy ? "disabled" : ""}>${TEAM.busy ? "Aguarde…" : tab === "up" ? "Criar minha conta" : "Entrar"}</button>
     </form>
     ${tab === "up" ? "" : '<p style="margin:12px 0 0"><button class="lnk2" data-a="aj-forgot">Esqueci minha senha</button></p>'}
-    ${tab === "up" ? '<p class="muted" style="font-size:13px">Com a conta você já entra na Comunidade. As cifras da equipe abrem depois que o administrador aprovar.</p>' : ""}
+    ${tab === "up" ? '<p class="muted" style="font-size:13px">Com a conta você entra na hora: letras, cifras, vídeos e a comunidade, tudo liberado.</p>' : ""}
     <div style="margin-top:14px">${safeBadge()}</div>`);
 }
 function pendingCount(){
@@ -4363,8 +4363,8 @@ function viewStudy(){
 /* Capa da tela inicial: mosaico inclinado com as fotos dos artistas (estilo app de streaming). */
 function vitrineRows(){
   const list = state.vitrine;
-  const cta = `<section class="lock-cta"><div><b>Entre na equipe para abrir as cifras</b><span>Crie sua conta: depois que o administrador aprovar, todas as músicas abrem no seu tom, com graus, campo harmônico e vídeo.</span></div>
-    <div class="actions"><button class="btn primary" data-a="tab" data-v="login">Entrar</button><button class="btn" data-a="go-signup">Criar conta</button></div>${safeBadge()}</section>`;
+  const cta = `<section class="lock-cta"><div><b>Crie sua conta grátis 🙏</b><span>Conecte-se com irmãos na fé de várias igrejas e tenha acesso às letras, cifras no seu tom, vídeos e à comunidade do louvor.</span></div>
+    <div class="actions"><button class="btn primary" data-a="go-signup">Criar minha conta</button><button class="btn" data-a="tab" data-v="login">Já tenho conta</button></div>${safeBadge()}</section>`;
   if (list === undefined || list === null) return `<div class="rows"><p class="muted" style="padding-inline:16px">Carregando o repertório…</p></div>` + cta;
   if (!list.length) return `<div class="rows"></div>` + cta;
   const by = new Map();
