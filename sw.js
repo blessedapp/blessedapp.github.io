@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610151516";
+const CACHE = "cifra-campo-202610151530";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const FILES = ["img/fonts/caveat.ttf", "./", "index.html", "tema-vidro.css?v=20261014-lilas", "manifest.json", "info.json", "img/icon-192.png?v=lilas", "img/icon-512.png?v=lilas", "img/apple-touch-icon.png"];
@@ -50,7 +50,7 @@ self.addEventListener('push',e=>{
    body:String(notification.body||'Abra o Blessed para ver seus avisos.').slice(0,200),
    icon:'/img/icon-192.png',badge:'/img/icon-192.png',tag:known?String(data.tag||data.id).slice(0,100):'blessed',
    data:{url:known?pushSafeURL(data.url):'/',account:known?owner:null},
-   renotify:false,silent:!known
+   renotify:!!known,silent:!known,...(known?{vibrate:[180,90,180]}:{})
   });
  })());
 });

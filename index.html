@@ -958,7 +958,7 @@ self.addEventListener('push',e=>{
    body:String(notification.body||'Abra o Blessed para ver seus avisos.').slice(0,200),
    icon:'/img/icon-192.png',badge:'/img/icon-192.png',tag:known?String(data.tag||data.id).slice(0,100):'blessed',
    data:{url:known?pushSafeURL(data.url):'/',account:known?owner:null},
-   renotify:false,silent:!known
+   renotify:!!known,silent:!known,...(known?{vibrate:[180,90,180]}:{})
   });
  })());
 });
@@ -4415,7 +4415,7 @@ function ntfSettings(){
   if(TEAM.user&&!NTF.configChecked)queueMicrotask(ntfConfig);
   const supported='Notification' in window&&'serviceWorker' in navigator&&'PushManager' in window;
   const ios=ntfIOS()&&!ntfStandalone(),denied=supported&&Notification.permission==='denied';
-  return `<section class="panel ntf-settings"><h3>Sons e notificações</h3><p class="muted">Sons leves para curtidas, mensagens e chamados, gerados no seu aparelho.</p><div class="actions"><button class="btn" data-a="ntf-sounds" aria-pressed="${NTF.sounds}">Sons no app: ${NTF.sounds?'ligados':'desligados'}</button><button class="btn ghost" data-a="ntf-test">Ouvir chamado</button></div><label class="ntf-volume">Volume dos efeitos<select id="ntf-volume" aria-label="Volume dos efeitos">${[[.25,'Baixo'],[.5,'Médio'],[.75,'Alto']].map(([n,label])=>`<option value="${n}" ${NTF.volume===n?'selected':''}>${label}</option>`).join('')}</select></label>${TEAM.user?`<h4>Avisos com o app fechado</h4><p class="muted">Mensagens, chamados e curtidas podem aparecer nas notificações do aparelho. O som desses avisos segue os ajustes do sistema.</p>${ios?'<p class="ntf-guide">No iPhone: abra no Safari → Compartilhar → Adicionar à Tela de Início. Abra o Blessed pelo ícone e volte aqui para permitir os avisos.</p>':!supported?'<p class="ntf-guide">Este navegador não oferece notificações push. Experimente um navegador compatível.</p>':denied?'<p class="ntf-guide">As notificações estão bloqueadas. Permita nos ajustes do navegador ou do iPhone para o Blessed.</p>':''}<div class="actions"><button class="btn primary" data-a="ntf-push" ${NTF.busy||ios||!supported||denied||(!NTF.enabled&&!NTF.publicKey)?'disabled':''}>${NTF.busy?'Configurando…':NTF.enabled?'Desativar neste aparelho':'Ativar neste aparelho'}</button></div><p id="ntf-status" class="muted" role="status">${esc(NTF.status||(NTF.enabled?'Notificações ativadas neste aparelho.':'Você escolhe se quer receber.'))}</p>`:'<p class="muted">Entre com sua conta para ativar notificações neste aparelho.</p>'}</section>`;
+  return `<section class="panel ntf-settings"><h3>Sons e notificações</h3><p class="muted">Sons leves para curtidas, mensagens e chamados, gerados no seu aparelho.</p><div class="actions"><button class="btn" data-a="ntf-sounds" aria-pressed="${NTF.sounds}">Sons no app: ${NTF.sounds?'ligados':'desligados'}</button><button class="btn ghost" data-a="ntf-test">Ouvir chamado</button></div><label class="ntf-volume">Volume dos efeitos<select id="ntf-volume" aria-label="Volume dos efeitos">${[[.25,'Baixo'],[.5,'Médio'],[.75,'Alto']].map(([n,label])=>`<option value="${n}" ${NTF.volume===n?'selected':''}>${label}</option>`).join('')}</select></label>${TEAM.user?`<h4>Avisos com o app fechado</h4><p class="muted">Mensagens, chamados, curtidas e comentários podem aparecer nas notificações do aparelho. O som desses avisos segue os ajustes do sistema.</p>${ios?'<p class="ntf-guide">No iPhone: abra no Safari → Compartilhar → Adicionar à Tela de Início. Abra o Blessed pelo ícone e volte aqui para permitir os avisos.</p>':!supported?'<p class="ntf-guide">Este navegador não oferece notificações push. Experimente um navegador compatível.</p>':denied?'<p class="ntf-guide">As notificações estão bloqueadas. Permita nos ajustes do navegador ou do iPhone para o Blessed.</p>':''}<div class="actions"><button class="btn primary" data-a="ntf-push" ${NTF.busy||ios||!supported||denied||(!NTF.enabled&&!NTF.publicKey)?'disabled':''}>${NTF.busy?'Configurando…':NTF.enabled?'Desativar neste aparelho':'Ativar neste aparelho'}</button></div><p id="ntf-status" class="muted" role="status">${esc(NTF.status||(NTF.enabled?'Notificações ativadas neste aparelho.':'Você escolhe se quer receber.'))}</p>`:'<p class="muted">Entre com sua conta para ativar notificações neste aparelho.</p>'}</section>`;
 }
 function ntfClick(a){
   if(a==='ntf-install'){installConfirm();return true;}
@@ -4445,9 +4445,9 @@ function ntfWorkerOwner(reg,owner){
 async function ntfInit(){
  const owner=TEAM.user?.id;if(!owner||NTF.owner===owner)return;NTF.owner=owner;NTF.generation++;NTF.configChecked=false;NTF.publicKey='';const generation=NTF.generation,client=TEAM.client;
  NTF.channel=client.channel('notices-'+owner).on('postgres_changes',{event:'INSERT',schema:'public',table:'notification_events',filter:'recipient=eq.'+owner},e=>{
-  const n=e.new;if(NTF.generation!==generation||TEAM.user?.id!==owner||n.recipient!==owner||n.actor===owner||DM.blocks.has(n.actor)||!String(n.kind).endsWith('_like')||NTF.seen.has(n.id))return;
+  const n=e.new;if(NTF.generation!==generation||TEAM.user?.id!==owner||n.recipient!==owner||n.actor===owner||DM.blocks.has(n.actor)||!(/_(like|comment)$/.test(String(n.kind)))||NTF.seen.has(n.id))return;
   NTF.seen.add(n.id);if(NTF.seen.size>300)NTF.seen.delete(NTF.seen.values().next().value);
-  if(!document.hidden){ntfSound('like');flash(n.kind==='story_like'?'Seu story recebeu uma curtida.':n.kind==='blessing_like'?'Seu Blessing recebeu uma curtida.':'Sua publicação recebeu uma curtida.');}
+  if(!document.hidden){ntfSound(String(n.kind).endsWith('_comment')?'message':'like');flash(n.kind==='post_comment'?'Sua publicação recebeu um comentário.':n.kind==='blessing_comment'?'Seu Blessing recebeu um comentário.':n.kind==='story_like'?'Seu story recebeu uma curtida.':n.kind==='blessing_like'?'Seu Blessing recebeu uma curtida.':'Sua publicação recebeu uma curtida.');}
  }).subscribe();
  if(!('serviceWorker' in navigator))return;
  try{
