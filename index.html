@@ -904,6 +904,15 @@ body.dm-screen-shake{animation:dm-screen-shake .6s ease-in-out;overflow-x:clip}
 
 .ntf-settings h3{font-size:19px}.ntf-settings h4{margin:20px 0 5px}.ntf-volume{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;color:var(--muted);font-size:14px}.ntf-volume select{width:auto;min-width:110px;margin:0;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--ink);font:inherit}.ntf-guide{border-left:3px solid #ac65d4;padding:10px 12px;background:#9b59bd14;font-size:14px}
 #blessed-install{position:fixed;left:12px;right:12px;bottom:calc(95px + env(safe-area-inset-bottom,0px));z-index:90;max-width:550px;margin:auto;display:flex;gap:10px;align-items:center;padding:15px;border:1px solid #aa75c7;border-radius:20px;background:#271631f5;box-shadow:0 10px 40px #0008}#blessed-install>span{display:grid;gap:5px;flex:1;min-width:0}#blessed-install b{font-size:15px}#blessed-install small{font-size:12px;color:#d9c5e5}.ntf-install-close{align-self:flex-start;background:none;border:0;color:#fff;padding:4px;font-size:16px}#blessed-install .btn{padding:10px;font-size:13px}
+
+.community-primary.home-comm{height:510px;margin:8px 16px 24px;background:radial-gradient(ellipse at 70% 20%,#643381,#160f20 75%)}
+.community-primary .hc-over{padding:100px 20px 25px;gap:12px}.community-primary h2{font:clamp(34px,7vw,62px)/1.05 var(--f-display);letter-spacing:-1px;margin:0;color:#f2e2ff;max-width:670px}.community-primary .hc-over>p:last-of-type{font-size:16px;line-height:1.5;max-width:520px}.community-primary .hc-over .btn{margin:0}.community-primary .hct{pointer-events:none}
+.hero.artists-secondary{min-height:300px;height:auto;padding-block:35px}.artists-secondary .bl-mark{font-size:clamp(48px,9vw,85px)}.artists-secondary .meta{font-size:14px}.artists-secondary .bl-tag{font-size:12px}
+.pc-welcome{padding:12px 0 20px}.pc-welcome h2{font-size:clamp(23px,5vw,32px);line-height:1.2;margin-bottom:10px}.pc-welcome p{color:var(--muted);line-height:1.5}.pc-people{display:grid}.pc-person{display:flex;align-items:center;gap:12px;padding:15px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;color:var(--ink);font:inherit;width:100%}.pc-person>span:nth-child(2){display:grid;gap:4px;flex:1;min-width:0;overflow-wrap:anywhere}.pc-person small{color:var(--muted)}.pc-post .cm-post-h>span{display:grid;gap:3px;min-width:0}.pc-post .cm-post-h small{color:var(--muted)}.pc-post .cm-bar>.muted{margin-left:auto;font-size:12px}.pc-post .cm-post-img img{max-height:650px;object-fit:contain}.pc-artist{display:grid;justify-items:center;gap:10px;margin-bottom:20px}.pc-artist .ph{width:150px;height:150px;background-size:cover;background-position:center;border-radius:22px}.pc-artist h1{font-size:28px;text-align:center}.cm-counts>span{display:grid;text-align:center;font-size:11px;gap:4px;padding:5px 3px}
+@media(min-width:800px){.community-primary.home-comm{height:530px}.community-primary .hc-over{padding-left:35px}}
+@media(max-width:360px){.community-primary.home-comm{height:465px}.community-primary .hc-over{padding-inline:15px}.community-primary .actions{gap:8px}.community-primary .actions .btn{font-size:13px;padding-inline:12px}}
+
+.artist-hero-title{font:clamp(29px,6vw,44px)/1.12 var(--f-display);letter-spacing:-.5px;margin:0;color:var(--cream);overflow-wrap:anywhere}.pc-home-posts{padding-top:0}.pc-home-posts h3{display:flex;align-items:center;gap:12px;font-size:17px;padding-inline:16px}.pc-home-posts h3 .lnk{margin-left:auto;font-size:13px;white-space:nowrap}.pc-home-post{width:180px;flex:none;border:1px solid var(--line);padding:0 0 12px;border-radius:18px;background:var(--surface);color:var(--ink);text-align:left;overflow:hidden;display:grid;gap:6px;cursor:pointer}.pc-home-post>img,.pc-home-text{width:100%;height:190px;object-fit:cover}.pc-home-text{display:grid;place-items:center;padding:14px;overflow:hidden;font-size:18px}.pc-home-post>b,.pc-home-post>small{padding-inline:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pc-home-post>small{color:var(--muted);font-size:12px}.pc-home-posts .rail{padding-inline:16px}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -1386,9 +1395,9 @@ function viewLibrary(){
   const songs = songsAll().slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
   if (state.searchOpen) {
     const q = norm(state.q);
-    const res = songs.filter(s => !q || norm(s.name+" "+(s.artist||"")).includes(q));
+    const res = (isVisitor()?pcSongList():songs).filter(s => !q || norm(s.name+" "+(s.artist||"")).includes(q));
     return head + `<div class="nf-search"><input id="q" class="search" type="search" placeholder="Música ou artista" value="${esc(state.q)}" aria-label="Buscar música ou artista">
-      ${res.length ? `<div class="grid">${res.map(songCard).join("")}</div>` : `<p class="muted">Nenhuma música com “${esc(state.q)}”.</p>`}</div>`;
+      ${res.length ? `<div class="grid">${res.map(s=>isVisitor()?`<button class="card" data-a="pc-track" data-n="${esc(s.name)}" data-artist="${esc(s.artist||'')}" style="${coverStyle(s.artist,s.name)}"><span class="ct">${esc(s.name)}</span></button>`:songCard(s)).join("")}</div>` : `<p class="muted">Nenhuma música com “${esc(state.q)}”.</p>`}</div>`;
   }
   const all = songs;
   const setSongs = state.setlist.map(id => id==="exemplo" ? EXAMPLE : songsAll().find(s=>s.id===id)).filter(Boolean);
@@ -1410,8 +1419,9 @@ function viewLibrary(){
   return head + `
   ${installBanner()}
   ${pendingCount() ? `<button class="team-alert" data-a="tab" data-v="team">🔔 ${pendingCount()} pessoa${pendingCount() > 1 ? "s" : ""} pedindo para entrar na equipe · <b>Ver</b></button>` : ""}
-  ${heroMosaic(setSongs)}
   ${homeCommunity()}
+  ${pcHomePosts()}
+  ${heroMosaic(setSongs)}
   ${isVisitor() ? vitrineRows() : `<div class="rows">
     ${setSongs.length ? `<section class="row"><h3>Escala do culto <small>${setSongs.length} música${setSongs.length>1?"s":""}</small><button class="lnk" data-a="setlist">Organizar ›</button></h3>
       <div class="rail">${setSongs.map((s,i) => `<button class="top10" data-a="open" data-id="${esc(s.id)}" data-from="set"><span class="num">${i+1}</span><span class="poster" style="${coverStyle(s.artist, s.name)}"><em>${esc(songKeyLabel(s))}</em><span>${esc(s.name)}</span></span></button>`).join("")}</div></section>`
@@ -1533,7 +1543,7 @@ const TERMS_HTML = `<h3>1. O que é o Blessed</h3>
 <h3>4. Moderação</h3>
 <p>Qualquer pessoa pode denunciar fotos, vídeos, comentários, mensagens e perfis. A equipe do Blessed pode <b>remover conteúdos e bloquear contas</b> que descumpram estes termos, sem aviso prévio.</p>
 <h3>5. Privacidade</h3>
-<p>Usamos seu e-mail só para login e recuperação de senha; ele não aparece para outras pessoas. Seu perfil, fotos e posts ficam visíveis só para quem está logado. As mensagens privadas são vistas apenas por você e por quem conversa com você. Você pode apagar seus posts e seu perfil quando quiser. Seus dados são tratados conforme a LGPD (Lei 13.709/2018).</p>
+<p>Usamos seu e-mail só para login e recuperação de senha; ele não aparece para outras pessoas. Seu perfil, fotos e posts da comunidade podem ser vistos também por visitantes. Para interagir é preciso entrar com uma conta. As mensagens privadas são vistas apenas por você e por quem conversa com você. Você pode apagar seus posts e seu perfil quando quiser. Seus dados são tratados conforme a LGPD (Lei 13.709/2018).</p>
 <h3>6. Idade</h3>
 <p>Menores de 18 anos devem usar o Blessed com o conhecimento dos pais ou responsáveis.</p>
 <h3>7. Mudanças</h3>
@@ -3088,34 +3098,70 @@ function isMember(p){ return !!p && p.kind === "membro"; }
 function commKindOf(p){ return isChurch(p) ? "igreja" : isMember(p) ? "membro" : "musico"; }
 function commChurchOf(name){ const n = norm(name); return n ? (COMM.people || []).find(x => isChurch(x) && norm(x.display_name) === n) : null; }
 function commMembersOf(p){ const n = norm(p.display_name); return (COMM.people || []).filter(x => commKindOf(x) === "musico" && norm(x.church) === n); }
+/* PUBLIC-COMMUNITY-START: leitura pública isolada do estado privado da conta. */
+const PC={pages:new Map(),tab:'posts'};
+function pcKey(person='',entry=''){return person+'|'+entry;}
+function pcPage(person='',entry=''){const key=pcKey(person,entry);let page=PC.pages.get(key);if(!page){page={people:[],posts:[],urls:{},loading:false,at:0,error:'',person,entry};if(PC.pages.size>=30)PC.pages.delete(PC.pages.keys().next().value);PC.pages.set(key,page);}if(!page.loading&&Date.now()-page.at>240000)pcLoad(page);return page;}
+async function pcLoad(page,more=false){
+ if(page.loading||!window.CC_SUPABASE)return;page.loading=true;page.error='';
+ try{
+  const body={person:page.person||null,entry:page.entry||null};
+  if(more&&page.posts.length){const last=page.posts.at(-1);body.before_at=last.created_at;body.before_id=last.id;}
+  const response=await fetch(window.CC_SUPABASE.url.replace(/\/$/,'')+'/functions/v1/public-community',{method:'POST',headers:{'Content-Type':'application/json','apikey':window.CC_SUPABASE.key},body:JSON.stringify(body)});
+  if(!response.ok)throw new Error('unavailable');const data=await response.json();
+  if(!Array.isArray(data.people)||!Array.isArray(data.posts))throw new Error('data');
+  page.people=more?[...new Map([...page.people,...data.people].map(p=>[p.id,p])).values()]:data.people;
+  page.posts=more?[...new Map([...page.posts,...data.posts].map(p=>[p.id,p])).values()]:data.posts;
+  page.urls=more?{...page.urls,...data.urls}:data.urls||{};page.more=data.posts.length===24;
+ }catch(_){page.error='Não consegui carregar a comunidade. Tente novamente.';}
+ finally{page.loading=false;page.at=Date.now();if(['library','community','profile','post'].includes(state.view))rerenderKeepScroll();}
+}
+function pcAvatar(p,page,size=44){const url=page.urls[p.avatar_path];return `<span class="cm-av" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.4)}px;--acc:${THEMES[p.theme]||THEMES.red}">${url?`<img src="${esc(url)}" alt="" loading="lazy">`:esc(initials(p.display_name||'?'))}</span>`;}
+function pcJoin(label='Participar'){return `<button class="btn primary" data-a="${TEAM.user?'cm-edit':'cm-login'}" data-v="up">${TEAM.user?'Criar meu perfil':label}</button>`;}
+function pcPerson(p,page){return `<button class="pc-person" data-a="pc-profile" data-id="${esc(p.id)}">${pcAvatar(p,page,52)}<span><b>${esc(p.display_name||'')}${commBadge(p)}</b><small>@${esc(p.handle||'')}</small>${p.church||p.city?`<small>${commWhere(p)}</small>`:''}</span><span aria-hidden="true">›</span></button>`;}
+function pcPost(p,page,detail=false){
+ const author=page.people.find(a=>a.id===p.author)||{},photo=page.urls[detail?p.image_path:commThumb(p.image_path||'')]||page.urls[p.image_path];
+ return `<article class="cm-post pc-post"><button class="cm-post-h" data-a="pc-profile" data-id="${esc(p.author)}">${pcAvatar(author,page,38)}<span><b>${esc(author.display_name||'')}${commBadge(author)}</b><small>@${esc(author.handle||'')}</small></span></button>${p.image_path?photo?`<button class="cm-post-img" data-a="pc-post" data-id="${esc(p.id)}"><img src="${esc(photo)}" alt="Publicação de ${esc(author.display_name||'')}" loading="lazy"></button>`:'<p class="muted">Imagem indisponível.</p>':`<button class="cm-post-text" data-a="pc-post" data-id="${esc(p.id)}" style="${txStyle(p)}">${esc(p.caption||'')}</button>`}${p.image_path&&p.caption?`<p class="cm-cap">${esc(p.caption)}</p>`:''}<div class="cm-bar"><button class="cm-act" data-a="pc-interact" aria-label="Curtir">${CM_ICONS.heart}</button><button class="cm-act" data-a="pc-interact" aria-label="Comentar">${CM_ICONS.comment}</button><span class="muted">${commAgo(p.created_at)}</span></div></article>`;
+}
+function pcStatus(page){return page.loading&&!page.posts.length&&!page.people.length?'<p class="muted" role="status">Carregando a comunidade…</p>':page.error?`<div class="panel"><p role="status">${esc(page.error)}</p><button class="btn" data-a="pc-retry" data-person="${esc(page.person)}" data-entry="${esc(page.entry)}">Tentar novamente</button></div>`:'';}
+function pcCommunity(){
+ const page=pcPage();return `<section class="pc-welcome"><h2>A fé aproxima. A comunidade acontece aqui.</h2><p>Conheça pessoas, igrejas e publicações reais do Blessed. Entre para seguir, conversar e compartilhar seus momentos.</p>${pcJoin('Fazer parte')}</section><div class="inst cm-seg"><button data-a="pc-tab" data-v="posts" aria-pressed="${PC.tab==='posts'}">Publicações</button><button data-a="pc-tab" data-v="people" aria-pressed="${PC.tab==='people'}">Pessoas</button></div>${pcStatus(page)}${PC.tab==='people'?`<div class="pc-people">${page.people.map(p=>pcPerson(p,page)).join('')}</div>`:page.posts.map(p=>pcPost(p,page)).join('')}${!page.loading&&!page.error&&!(PC.tab==='people'?page.people:page.posts).length?'<p class="muted">Ainda não há publicações por aqui.</p>':''}${page.more&&PC.tab==='posts'?'<button class="btn cm-more" data-a="pc-more">Ver mais publicações</button>':''}`;
+}
+function pcProfile(){
+ const page=pcPage(state.profileId),p=page.people.find(p=>p.id===state.profileId),back='<div class="top"><button class="btn ghost" data-a="pc-back">‹ Comunidade</button></div>';
+ if(!p)return back+pcStatus(page)+(!page.loading&&!page.error?'<p class="muted">Este perfil não está disponível.</p>':'')+tabbar('community');
+ return `${back}<section class="cm-prof"><div class="cm-cover" ${page.urls[p.cover_path]?`style="background-image:url(&quot;${esc(page.urls[p.cover_path])}&quot;)"`:''}></div><div class="cm-id">${pcAvatar(p,page,104)}<div class="cm-actions"><button class="btn primary" data-a="pc-interact">Seguir</button><button class="btn" data-a="pc-interact">Mensagem</button></div></div><div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name)}${commBadge(p,true)}</h2><p class="muted">@${esc(p.handle)}</p></div><div class="cm-counts"><span><b>${p.photos||0}</b> Fotos</span><span><b>${p.followers||0}</b> Seguidores</span><span><b>${p.following||0}</b> Seguindo</span></div></div><p class="muted">${commWhere(p)}</p>${p.bio?`<p>${esc(p.bio)}</p>`:''}</section><h3>Publicações</h3>${pcStatus(page)}${page.posts.map(p=>pcPost(p,page)).join('')}${page.more?`<button class="btn cm-more" data-a="pc-more" data-person="${esc(p.id)}">Ver mais publicações</button>`:''}${tabbar('community')}`;
+}
+function pcPostPage(){const page=pcPage('',state.postId),post=page.posts.find(p=>p.id===state.postId);return '<div class="top"><button class="btn ghost" data-a="pc-back">‹ Comunidade</button></div>'+pcStatus(page)+(post?pcPost(post,page,true):!page.loading&&!page.error?'<p class="muted">Esta publicação não está disponível.</p>':'')+tabbar('community');}
+function pcHomePosts(){
+ if(!teamAvailable())return '';const page=pcPage();if(!page.posts.length)return '';
+ return `<section class="row pc-home-posts"><h3>Acontecendo na comunidade<button class="lnk" data-a="tab" data-v="community">Ver tudo ›</button></h3><div class="rail">${page.posts.slice(0,6).map(p=>{const author=page.people.find(a=>a.id===p.author)||{},photo=page.urls[commThumb(p.image_path||'')]||page.urls[p.image_path];return `<button class="pc-home-post" data-a="pc-post" data-id="${esc(p.id)}">${photo?`<img src="${esc(photo)}" alt="" loading="lazy">`:`<span class="pc-home-text" style="${txStyle(p)}">${esc(p.caption||'')}</span>`}<b>${esc(author.display_name||'')}</b><small>${esc(p.caption||'Ver publicação')}</small></button>`;}).join('')}</div></section>`;
+}
+function pcSongList(){const rows=Array.isArray(state.vitrine)?state.vitrine:[];return rows.length?rows:(CATALOG.songs||[]).map(([artist,name])=>({artist,name}));}
+function pcArtist(name){const songs=pcSongList().filter(s=>norm(s.artist)===norm(name));return `<div class="top"><button class="btn ghost" data-a="home">‹ Início</button></div><section class="pc-artist"><span class="ph" style="${coverStyle(name)}"></span><h1>${esc(name)}</h1><p class="muted">Louvor e adoração</p></section><div class="rows">${songs.map(s=>`<button class="set-row" data-a="pc-track" data-n="${esc(s.name)}" data-artist="${esc(name)}"><span>${esc(s.name)}</span><span aria-hidden="true">›</span></button>`).join('')}</div>${tabbar('library')}`;}
+function pcArtists(){const groups=[...new Set(pcSongList().map(s=>s.artist).filter(Boolean))];return `<div class="rows"><section class="row" id="artistas"><h3>Artistas e louvor <small>${groups.length}</small></h3><div class="rail">${groups.map(name=>`<button class="artist" data-a="pc-artist" data-n="${esc(name)}"><span class="ph" style="${coverStyle(name)}">${artistPhoto(name)?'':esc(initials(name))}</span><b>${esc(name)}</b></button>`).join('')}</div></section></div>`;}
+function pcClick(action,button){
+ if(action==='pc-profile'){closePix();state.profileId=button.dataset.id;state.view='profile';render();scrollTo(0,0);}
+ else if(action==='pc-post'){closePix();state.postId=button.dataset.id;state.view='post';render();scrollTo(0,0);}
+ else if(action==='pc-back'){state.view='community';render();scrollTo(0,0);}
+ else if(action==='pc-tab'){PC.tab=button.dataset.v==='people'?'people':'posts';rerenderKeepScroll();}
+ else if(action==='pc-more')pcLoad(pcPage(button.dataset.person||''),true);
+ else if(action==='pc-retry')pcLoad(pcPage(button.dataset.person||'',button.dataset.entry||''));
+ else if(action==='pc-interact'){const modal=$('#modal');modal.className='modal';modal.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true"><h2>Faça parte da conversa</h2><p>Você pode explorar a comunidade à vontade. Para curtir, comentar, seguir ou mandar mensagens, ${TEAM.user?'crie seu perfil':'entre ou crie sua conta'}.</p>${pcJoin('Entrar na comunidade')}<button class="btn ghost" data-a="pix-close">Continuar explorando</button></section>`;modal.hidden=false;}
+ else if(action==='pc-artist'){state.currentArtist=button.dataset.n;state.view='artist';render();scrollTo(0,0);}
+ else if(action==='pc-track'){const modal=$('#modal');modal.className='modal';modal.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true"><h2>${esc(button.dataset.n)}</h2><p>${esc(button.dataset.artist)}</p><div class="actions"><a class="btn primary" href="https://www.youtube.com/results?search_query=${encodeURIComponent(button.dataset.artist+' '+button.dataset.n)}" target="_blank" rel="noopener">Encontrar o louvor ↗</a><a class="btn" href="https://www.cifraclub.com.br/?q=${encodeURIComponent(button.dataset.artist+' '+button.dataset.n)}" target="_blank" rel="noopener">Buscar cifra ↗</a></div><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;modal.hidden=false;}
+ else return false;return true;
+}
+/* PUBLIC-COMMUNITY-END */
+
 // Tela inicial: perfis da Comunidade subindo e descendo (mesma animação da capa). Perfil novo entra sozinho.
 function homeCommunity(){
-  if (!commOn()) return "";
-  const logged = commIn() && !COMM.missing;
-  let ppl = [];
-  if (logged) {
-    if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
-    ppl = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 40);
-  }
-  const demo = DEMO_PEOPLE.map(d => ({demo: d.e, theme: d.t, img: d.img, church: d.k === "igreja"}));
-  const base = ppl.length ? ppl : demo, tiles = [];
-  for (let i = 0; tiles.length < Math.max(48, base.length); i++) tiles.push(base[i % base.length]);
-  const tile = p => {
-    const acc = THEMES[p.theme] || THEMES.red;
-    if (p.demo) return p.img ? `<span class="hct demo-photo${p.church ? " sq" : ""}" style="--acc:${acc};background-image:url(&quot;${p.img}&quot;)"></span>` : `<span class="hct demo" style="--acc:${acc}"><i>${p.demo}</i></span>`;
-    const u = commUrl(p.avatar_path) || commUrl(p.cover_path);
-    return `<button class="hct${isChurch(p) ? " sq" : ""}" data-a="cm-profile" data-id="${esc(p.id)}" tabindex="-1" style="--acc:${acc}${u ? `;background-image:url(&quot;${esc(u)}&quot;)` : ""}">${u ? "" : `<i>${esc(initials(p.display_name || "?"))}</i>`}<span>${esc(isChurch(p) ? p.display_name : (p.display_name || "").split(" ")[0])}${commBadge(p)}</span></button>`;
-  };
-  const cols = 12, col = k => { const c = tiles.filter((_, i) => i % cols === k); return c.concat(c).map(tile).join(""); };
-  const n = (COMM.people || []).length;
-  const cta = !TEAM.user ? '<button class="btn light" data-a="cm-login" data-v="up">Entrar na Comunidade</button>'
-    : logged && COMM.me === null ? '<button class="btn light" data-a="cm-edit">Criar meu perfil</button>'
-    : '<button class="btn light" data-a="tab" data-v="community">Ver a Comunidade</button>';
-  return `<section class="home-comm" aria-label="Comunidade">
-    <div class="hc-mosaic" aria-hidden="true">${Array.from({length: cols}, (_, k) => `<div class="mcol ${k % 2 ? "up" : "down"}">${col(k)}</div>`).join("")}</div>
-    <div class="hc-over"><p class="hc-kicker">Comunidade</p><h3>Músicos, igrejas e membros</h3>
-      <p>${ppl.length ? `${n} perfi${n === 1 ? "l" : "s"} · quem cria um perfil novo aparece aqui` : "Crie seu perfil de músico, igreja ou membro e apareça aqui. (Fotos ilustrativas.)"}</p>${cta}</div>
-  </section>`;
+  if(!teamAvailable())return '';
+  const logged=commIn()&&COMM.me,publicPage=logged?null:pcPage();let people=[];
+  if(logged){if(COMM.people===null){COMM.people=[];commLoadPeople();}people=COMM.people||[];}else people=publicPage.people;
+  const tiles=people.length?Array.from({length:48},(_,i)=>people[i%people.length]):[];
+  const tile=p=>{const u=logged?commUrl(p.avatar_path):publicPage.urls[p.avatar_path];return `<button class="hct" data-a="${logged?'cm-profile':'pc-profile'}" data-id="${esc(p.id)}" tabindex="-1" style="--acc:${THEMES[p.theme]||THEMES.red}${u?`;background-image:url(&quot;${esc(u)}&quot;)`:''}">${u?'':`<i>${esc(initials(p.display_name||''))}</i>`}<span>${esc(p.display_name||'')}${commBadge(p)}</span></button>`;};
+  return `<section class="home-comm community-primary" aria-label="Comunidade Blessed"><div class="hc-mosaic" aria-hidden="true">${Array.from({length:8},(_,col)=>`<div class="mcol ${col%2?'up':'down'}">${tiles.filter((_,i)=>i%8===col).map(tile).join('')}</div>`).join('')}</div><div class="hc-over"><p class="hc-kicker">Seu lugar na comunidade</p><h2>Fé que conecta.<br>Gente de verdade.</h2><p>Músicos, igrejas e membros compartilhando louvor e vida com Deus.</p><div class="actions"><button class="btn light" data-a="tab" data-v="community">Explorar a comunidade</button>${!TEAM.user?pcJoin('Fazer parte'):!COMM.me?pcJoin():''}</div></div></section>`;
 }
 function commWhere(p){ return [p.church, p.city].filter(Boolean).map(esc).join(" · "); }
 function commFollowBtn(id){
@@ -4411,16 +4457,15 @@ function recentBubbles(list){
     return mine ? `<button class="rc" data-a="open" data-id="${esc(mine.id)}">${inner}</button>` : `<div class="rc">${inner}</div>`; }).join("")}</div>`;
 }
 function viewCommunity(){
+  if((!TEAM.user||COMM.me===null)&&state.deepPost){state.postId=state.deepPost;state.deepPost=null;state.view="post";return pcPostPage();}
   const head = `<div class="top glass-top"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
   const wrap = inner => head + inner + tabbar("community");
+  if (!TEAM.user&&teamAvailable()) return wrap(pcCommunity());
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
-  if (!TEAM.user) return wrap(commDemoHtml());
   if (teamRole() === "blocked") return wrap(`<div class="panel"><p>O acesso desta conta não foi liberado.</p></div>`);
   if (COMM.me === undefined) { commLoadMe(); return wrap('<p class="muted">Carregando…</p>'); }
   if (COMM.missing) return wrap(`<div class="panel"><h3 style="font-size:18px">A comunidade está sendo preparada</h3><p class="muted">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-comunidade.sql</b> no Supabase (SQL Editor → New query → Run)." : "Volte daqui a pouco."}</p></div>`);
-  if (!COMM.me) return wrap(`<section class="cm-hero"><p class="cm-kicker">Bem-vindo(a)</p><h2>Crie seu perfil</h2>
-      <p>Músico, igreja ou membro: escolha o tipo, coloque a foto e a sua igreja. Depois é só seguir a galera e postar.</p>
-      <div class="actions"><button class="btn primary" data-a="cm-edit">Criar meu perfil</button></div></section>`);
+  if (!COMM.me) return wrap(pcCommunity());
   const tab = state.cmTab || "explore";
   if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
   if (tab === "feed" && COMM.feed === null) { COMM.feed = []; commLoadPosts("feed"); }
@@ -4444,6 +4489,7 @@ function viewCommunity(){
     <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`);
 }
 function viewProfile(){
+  if(!TEAM.user||COMM.me===null)return pcProfile();
   const id = state.profileId, p = COMM.profiles[id];
   const back = `<div class="top"><button class="btn ghost" data-a="tab" data-v="community">‹ Comunidade</button></div>`;
   if (!p || !p.full) { if (!p || !p.loading) { COMM.profiles[id] = Object.assign(p || {}, {loading: true}); commLoadProfile(id); } if (!p || !p.display_name) return back + '<p class="muted">Carregando…</p>' + tabbar("community"); }
@@ -4489,6 +4535,7 @@ function viewProfile(){
   ${tabbar("community")}`;
 }
 function viewPost(){
+  if(!TEAM.user||COMM.me===null)return pcPostPage();
   const p = COMM.posts[state.postId];
   const back = `<div class="top"><button class="btn ghost" data-a="cm-back">‹ Voltar</button></div>`;
   if (!p) return back + '<p class="muted">Esta foto não está mais disponível.</p>' + tabbar("community");
@@ -4562,7 +4609,7 @@ function viewPostNew(){
     ${mySongs.length ? `<label>Música (opcional)<select id="cm-post-song"><option value="">Nenhuma</option>${mySongs.map((s, i) => `<option value="${i}" ${String(d.song) === String(i) ? "selected" : ""}>${esc(s.name)}${s.key ? " (" + esc(s.key) + ")" : ""}</option>`).join("")}</select></label>` : ""}
     ${false ? `<div class="cm-tx-colors" role="group" aria-label="Cor do texto"><span class="muted" style="font-size:13px">Cor do cartão</span><div>${Object.entries(TX_STYLES).map(([k, t]) => `<button type="button" class="cm-swatch" data-a="cm-tstyle" data-v="${k}" aria-pressed="${(d.style || "vidro") === k}" aria-label="${t.l}" title="${t.l}" style="background:${t.bg}"></button>`).join("")}</div></div>` : ""}
     ${pfTagPicker()}
-    <p class="muted" style="font-size:13px;margin:0">Só quem está logado vê. Não poste telefone, endereço nem fotos de outras pessoas sem permissão.</p>
+    <p class="muted" style="font-size:13px;margin:0">Publicações da comunidade podem ser vistas por visitantes. Não poste telefone, endereço nem fotos de outras pessoas sem permissão.</p>
     ${COMM.msg ? `<p class="confirm">${esc(COMM.msg)}</p>` : ""}
     <button class="btn primary big-paste" type="submit" ${COMM.busy || (!tx && !d.data) ? "disabled" : ""}>${COMM.busy ? "Publicando…" : "Publicar"}</button>
   </form>${tabbar("community")}`;
@@ -5479,23 +5526,8 @@ function viewStudy(){
 }
 
 /* Capa da tela inicial: mosaico inclinado com as fotos dos artistas (estilo app de streaming). */
-function vitrineRows(){
-  const list = state.vitrine;
-  const cta = `<section class="lock-cta"><div><b>Crie sua conta grátis 🙏</b><span>Conecte-se com irmãos na fé de várias igrejas e tenha acesso às letras, cifras no seu tom, vídeos e à comunidade do louvor.</span></div>
-    <div class="actions"><button class="btn primary" data-a="go-signup">Criar minha conta</button><button class="btn" data-a="tab" data-v="login">Já tenho conta</button></div>${safeBadge()}</section>`;
-  if (list === undefined || list === null) return `<div class="rows"><p class="muted" style="padding-inline:16px">Carregando o repertório…</p></div>` + cta;
-  if (!list.length) return `<div class="rows"></div>` + cta;
-  const by = new Map();
-  for (const x of list) { const k = norm(x.artist) || "_"; if (!by.has(k)) by.set(k, {name: x.artist || "Outros", songs: []}); by.get(k).songs.push(x); }
-  const groups = [...by.values()].sort((a, b) => b.songs.length - a.songs.length);
-  const lockCard = x => `<button class="card locked" data-a="locked" data-n="${esc(x.name)}" style="${coverStyle(x.artist, x.name)}" aria-label="${esc(x.name)}, bloqueada: entre na equipe">${artistPhoto(x.artist) ? "" : `<span class="mono">${initials(x.name)}</span>`}<span class="lock" aria-hidden="true">🔒</span><span class="ct">${esc(x.name)}</span></button>`;
-  return `<div class="rows">
-    <section class="row"><h3>Artistas <small>${groups.length}</small></h3>
-      <div class="rail">${groups.map(g => `<button class="artist" data-a="locked" data-n="${esc(g.name)}"><span class="ph" style="${coverStyle(g.name)}">${artistPhoto(g.name) ? "" : initials(g.name)}</span><b>${esc(g.name)}</b></button>`).join("")}</div></section>
-    ${cta}
-    ${groups.map(g => `<section class="row"><h3>${esc(g.name)} <small>${g.songs.length}</small></h3><div class="rail">${g.songs.map(lockCard).join("")}</div></section>`).join("")}
-  </div>`;
-}
+function vitrineRows(){return pcArtists();}
+
 function openLock(name){
   const m = $("#modal"); m.className = "modal";
   m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="lk-t">
@@ -5544,20 +5576,21 @@ function heroMosaic(setSongs){
     .map(a => `<button class="mt" data-a="artist" data-n="${esc(a.name)}" tabindex="-1" aria-hidden="true" style="${coverStyle(a.name)}">${artistPhoto(a.name) ? "" : `<span>${initials(a.name)}</span>`}</button>`).join("");
   const first = setSongs.find(x => !x.pending);
   const logged = store.mode === "team";
-  return `<section class="hero mosaic-hero">
+  return `<section class="hero mosaic-hero artists-secondary">
     <div class="mosaic" aria-hidden="true">${[0,1,2,3,4,5].map(k => `<div class="mcol ${k % 2 ? "up" : "down"}">${col(k)}</div>`).join("")}</div>
     <div class="hero-in">
       <div class="kicker">${BL_ICON}${first ? "Escala do culto pronta" : `${catalogArtists().length} artistas · louvor e adoração`}</div>
-      <h2 class="bl-mark">BLESSED</h2><p class="bl-tag">Comunidade e louvor</p>
+      <h2 class="artist-hero-title">Louvor que inspira</h2>
       <div class="meta"><span>Cifras no tom do culto, graus, campo harmônico e a roda dos caminhos.</span></div>
       <div class="acts">
         ${first ? `<button class="btn light" data-a="set-start">▶ Começar culto</button>` : `<button class="btn light" data-a="scroll-artists">▶ Ver artistas</button>`}
-        ${teamAvailable() && !logged ? `<button class="btn" data-a="tab" data-v="login">Entrar na equipe</button>` : `<button class="btn" data-a="search">Buscar música</button>`}
+        <button class="btn" data-a="search">Buscar música</button>
       </div>
     </div>
   </section>`;
 }
 function viewArtist(){
+  if(isVisitor())return pcArtist(state.currentArtist);
   const name = state.currentArtist, f = folderFor(name);
   const songs = songsAll().filter(s => norm(s.artist) === norm(name)).sort((a,b)=>(a.pending?1:0)-(b.pending?1:0) || a.name.localeCompare(b.name));
   return `
@@ -6179,6 +6212,7 @@ document.addEventListener("click", ev => {
   if (a === "terms-accept-open") { termsOpen(true); return; }
   if (a === "cm-edit" && !termsGate()) return;
   if (a === "tw-more") { const set = COMM.twOpen || (COMM.twOpen = new Set()); if (set.has(b.dataset.id)) set.delete(b.dataset.id); else set.add(b.dataset.id); rerenderKeepScroll(); return; }
+  if(a.startsWith("pc-")&&pcClick(a,b))return;
   if(a.startsWith("ntf-")&&ntfClick(a))return;
   if (a.startsWith("cm-") && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
