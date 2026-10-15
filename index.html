@@ -848,13 +848,13 @@ body.st-story-open{overflow:hidden}
 .st-camera-head{position:absolute;inset:0 0 auto;z-index:3;background:linear-gradient(#08030bb3,transparent);padding-bottom:30px}.st-camera-head h2{color:#fff;font-size:18px}.st-camera-head .st-control{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .st-camera-bottom{position:absolute;inset:auto 0 0;z-index:3;padding:35px 0 calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,#0b0612c9 18%,#11091bed 100%)}
 .st-camera #st-camera-status{margin:0 20px 10px;min-height:18px;color:#fff;text-align:center;text-shadow:0 1px 5px #000;font-size:12px;line-height:1.4}
-.st-makeup-list{display:flex;gap:9px;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:5px 20px 10px;scroll-snap-type:x proximity;touch-action:pan-x}
-.st-makeup-list::-webkit-scrollbar{display:none}.st-makeup-option{position:relative;flex:none;width:66px;height:88px;padding:0;border:1px solid #ffffff50;border-radius:13px;overflow:hidden;background:#281932;color:white;scroll-snap-align:center;box-shadow:0 2px 9px #0004;transition:border-color .12s,box-shadow .12s}.st-makeup-option:before{display:none}.st-makeup-option img{height:100%;width:100%;object-fit:cover}.st-makeup-option span{position:absolute;bottom:0;left:0;right:0;padding:15px 3px 6px;background:linear-gradient(transparent,#18091eea);font-size:9px;font-weight:700;text-align:center;line-height:1.2}.st-makeup-option[aria-pressed=true]{border:2px solid #d598ff;box-shadow:0 0 0 2px #4a1d65,0 0 16px #bb5eff66}
+.st-compose .st-lut-controls{width:100%;overflow:hidden}.st-compose .st-lut-list{padding-left:0;padding-right:0}.st-compose .st-intensity{padding:0}.st-compose #st-photo-status{margin:6px 0 0;font-size:12px}.st-lut-list{display:flex;gap:9px;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:5px 20px 10px;scroll-snap-type:x proximity;touch-action:pan-x}
+.st-lut-list::-webkit-scrollbar{display:none}.st-lut-option{position:relative;flex:none;width:66px;height:88px;padding:0;border:1px solid #ffffff50;border-radius:13px;overflow:hidden;background:#281932;color:white;scroll-snap-align:center;box-shadow:0 2px 9px #0004;transition:border-color .12s,box-shadow .12s}.st-lut-option:before{display:none}.st-lut-option img{height:100%;width:100%;object-fit:cover}.st-lut-option span{position:absolute;bottom:0;left:0;right:0;padding:15px 3px 6px;background:linear-gradient(transparent,#18091eea);font-size:9px;font-weight:700;text-align:center;line-height:1.2}.st-lut-option[aria-pressed=true]{border:2px solid #d598ff;box-shadow:0 0 0 2px #4a1d65,0 0 16px #bb5eff66}
 .st-intensity{display:flex;align-items:center;gap:10px;padding:0 24px;margin:0;color:#e3c8f3;font-size:11px}.st-intensity input{flex:1;min-width:0;accent-color:#c880fb;width:auto;min-height:26px}.st-intensity output{min-width:27px;text-align:right}
 .st-shutter-row{display:flex;align-items:center;justify-content:space-around;gap:22px;padding:12px 26px 0}.st-shutter{width:72px;height:72px;flex:none;padding:5px;background:#ffffff0e;border:2px solid #e9ceff;border-radius:22px;box-shadow:0 0 24px #b448f63b}.st-shutter>span{display:block;width:100%;height:100%;border-radius:15px;background:linear-gradient(145deg,#f9edff,#cf97ee)}.st-shutter:disabled{opacity:.45}
 .st-gallery-return,.st-native-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:74px;min-height:65px;padding:0;border:0;background:transparent;color:#fff}.st-gallery-return img{height:36px;width:34px;object-fit:cover;border:1px solid #eed5ff99;border-radius:9px}.st-gallery-return>span,.st-native-action>span{display:grid;place-items:center;height:36px;width:36px;background:#ffffff14;border:1px solid #eed5ff55;border-radius:11px;font-size:23px}.st-gallery-return small,.st-native-action small{font-size:10px}
 @media(min-width:780px){.st-fullscreen{place-items:center;background:#08060bef}.st-fullscreen .st-box{max-width:520px;border-left:1px solid #ffffff15;border-right:1px solid #ffffff15}.st-gallery-grid{gap:6px;padding:0 12px}}
-@media(max-height:700px){.st-makeup-option{width:53px;height:70px}.st-camera-bottom{padding-top:20px}.st-shutter{height:60px;width:60px;border-radius:18px}.st-shutter>span{border-radius:12px}.st-shutter-row{padding-top:6px}.st-camera-head{padding-top:calc(8px + env(safe-area-inset-top,0px))}}
+@media(max-height:700px){.st-lut-option{width:53px;height:70px}.st-camera-bottom{padding-top:20px}.st-shutter{height:60px;width:60px;border-radius:18px}.st-shutter>span{border-radius:12px}.st-shutter-row{padding-top:6px}.st-camera-head{padding-top:calc(8px + env(safe-area-inset-top,0px))}}
 
 </style>
 
@@ -2160,7 +2160,7 @@ function stRender(first=false){
   else if(p.kind==="gallery") { body=stGalleryView(p); }
   else if(p.kind==="compose") {
     const d=p.draft, colors=ST_THEMES[d.theme]||ST_THEMES.lilas;
-    body=`<div class="modal-box st-box st-compose" role="dialog" aria-modal="true" aria-labelledby="st-title"><div class="st-head"><h2 id="st-title">Novo story</h2><button class="btn ghost" id="st-close" data-a="st-close" ${p.busy?"disabled":""} aria-label="Fechar">✕</button></div><p class="muted">Texto ou foto · visível por 24 horas</p><div class="st-preview${d.image?" st-with-image":""}" style="--st-from:${colors[0]};--st-to:${colors[1]}">${d.image?`<img src="${esc(d.image)}" alt="Prévia da foto do story">`:""}<p id="st-preview-caption">${esc(d.caption||"Compartilhe uma palavra, um momento ou um versículo.")}</p></div><label class="bs-label" for="st-caption">${d.image?"Legenda":"Seu texto"}</label><textarea id="st-caption" maxlength="700" rows="3" placeholder="Escreva seu story…" ${p.busy?"disabled":""}>${esc(d.caption)}</textarea><div class="actions"><button class="btn" data-a="st-gallery" ${p.busy?"disabled":""}>Galeria</button>${d.original?'<button class="btn" data-a="st-save-original">Salvar original</button>':""}<button class="btn" data-a="st-camera" ${p.busy?"disabled":""}>Abrir câmera</button><label class="btn file-btn">${d.image?"Trocar foto":"Escolher foto"}<input id="st-file" type="file" accept="image/jpeg,image/png,image/webp" ${p.busy?"disabled":""}></label>${d.image?`<button class="btn ghost" data-a="st-remove-image" ${p.busy?"disabled":""}>Tirar foto</button>`:""}</div><div class="inst" role="group" aria-label="Fundo do story">${Object.keys(ST_THEMES).map(k=>`<button data-a="st-theme" data-v="${k}" aria-pressed="${d.theme===k}" ${p.busy?"disabled":""}>${{lilas:"Lilás",rosa:"Rosa",noite:"Noite"}[k]}</button>`).join("")}</div>${p.error||ST.error?`<p role="status" class="st-status">${esc(p.error||ST.error)}</p>`:""}${!ST.ready?`<button class="btn" data-a="st-reload" ${ST.loading?"disabled":""}>${ST.loading?"Conectando…":"Tentar conexão novamente"}</button>`:""}<button class="btn primary" data-a="st-send" ${p.busy||!ST.ready?"disabled":""}>${p.busy?"Publicando…":"Publicar por 24 horas"}</button></div>`;
+    body=`<div class="modal-box st-box st-compose" role="dialog" aria-modal="true" aria-labelledby="st-title"><div class="st-head"><h2 id="st-title">Novo story</h2><button class="btn ghost" id="st-close" data-a="st-close" ${p.busy?"disabled":""} aria-label="Fechar">✕</button></div><p class="muted">Texto ou foto · visível por 24 horas</p><div class="st-preview${d.image?" st-with-image":""}" style="--st-from:${colors[0]};--st-to:${colors[1]}">${d.image?`<img src="${esc(d.image)}" alt="Prévia da foto do story">`:""}<p id="st-preview-caption">${esc(d.caption||"Compartilhe uma palavra, um momento ou um versículo.")}</p></div><label class="bs-label" for="st-caption">${d.image?"Legenda":"Seu texto"}</label><textarea id="st-caption" maxlength="700" rows="3" placeholder="Escreva seu story…" ${p.busy?"disabled":""}>${esc(d.caption)}</textarea>${d.image?stLutControls(d.lut||'natural',d.strength??40,'photo'):''}<div class="actions"><button class="btn" data-a="st-gallery" ${p.busy?"disabled":""}>Galeria</button>${d.original?'<button class="btn" data-a="st-save-original">Salvar original</button>':""}<button class="btn" data-a="st-camera" ${p.busy?"disabled":""}>Abrir câmera</button><label class="btn file-btn">${d.image?"Trocar foto":"Escolher foto"}<input id="st-file" type="file" accept="image/jpeg,image/png,image/webp" ${p.busy?"disabled":""}></label>${d.image?`<button class="btn ghost" data-a="st-remove-image" ${p.busy?"disabled":""}>Tirar foto</button>`:""}</div><div class="inst" role="group" aria-label="Fundo do story">${Object.keys(ST_THEMES).map(k=>`<button data-a="st-theme" data-v="${k}" aria-pressed="${d.theme===k}" ${p.busy?"disabled":""}>${{lilas:"Lilás",rosa:"Rosa",noite:"Noite"}[k]}</button>`).join("")}</div>${p.error||ST.error?`<p role="status" class="st-status">${esc(p.error||ST.error)}</p>`:""}${!ST.ready?`<button class="btn" data-a="st-reload" ${ST.loading?"disabled":""}>${ST.loading?"Conectando…":"Tentar conexão novamente"}</button>`:""}<button class="btn primary" data-a="st-send" ${p.busy||p.lutLoading||!ST.ready?"disabled":""}>${p.busy?"Publicando…":"Publicar por 24 horas"}</button></div>`;
   } else if(p.kind==="camera") { body=stCameraView(p);
   } else if(p.kind==="viewer") {
     const x=ST.rows.find(s=>s.id===p.ids[p.index]); if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
@@ -2176,12 +2176,12 @@ async function stPick(file){
   const p=ST.panel;if(!p||p.kind!=="compose"||p.busy||!stPanelCurrent(p))return;
   if(!file||!["image/jpeg","image/png","image/webp","image/heic","image/heif"].includes(file.type)||file.size>50*1024*1024){p.error="Escolha uma foto de até 50 MB. Se ela não abrir, use JPEG ou PNG.";stRender();return;}
   p.busy=true;p.error="";stRender();
-  try{const data=await stPhotoPrepare(file);const blob=await(await fetch(data)).blob();if(blob.size>512*1024)throw new Error("large");if(stPanelCurrent(p)){p.draft.image=data;p.draft.original=file;}}
+  try{const data=await stPhotoPrepare(file);const blob=await(await fetch(data)).blob();if(blob.size>512*1024)throw new Error("large");if(stPanelCurrent(p)){p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.photoSource=null;p.photoMirror=false;p.appliedLut='natural';p.appliedStrength=40;p.draft.lut='natural';p.draft.strength=40;p.draft.image=data;p.draft.original=file;}}
   catch(_){if(stPanelCurrent(p))p.error="Não consegui preparar essa foto. Tente outra imagem.";}
   finally{if(stPanelCurrent(p)){p.busy=false;stRender();}}
 }
 async function stSend(){
-  const p=ST.panel;if(!p||p.kind!=="compose"||p.busy||!ST.ready||!COMM.me||!stPanelCurrent(p))return;
+  const p=ST.panel;if(!p||p.kind!=="compose"||p.busy||p.lutLoading||!ST.ready||!COMM.me||!stPanelCurrent(p))return;
   if(!termsOk()){closePix();termsOpen(true);return;}
   const caption=p.draft.caption.trim();if(!caption&&!p.draft.image){p.error="Escreva um texto ou escolha uma foto.";stRender();return;}
   if([...caption].length>700){p.error="Use até 700 caracteres.";stRender();return;}
@@ -2234,14 +2234,18 @@ async function stDelete(id){
   }catch(_){if(stPanelCurrent(p)){p.busy=false;p.error="Não consegui apagar agora. Tente novamente.";stRender();}}
 }
 function stInput(target){const p=ST.panel;
-  if(target.id==='st-camera-intensity' && p?.camera){p.camera.strength=Math.max(0,Math.min(100,Number(target.value)||0));const output=$('#st-camera-strength');if(output)output.textContent=p.camera.strength+'%';stCameraApplyTone(p.camera);return true;}
+  if(['st-camera-intensity','st-photo-intensity'].includes(target.id)&&p){
+    const strength=Math.max(0,Math.min(100,Number(target.value)||0));
+    if(target.id==='st-camera-intensity'&&p.camera&&!p.camera.busy){p.camera.strength=strength;const output=$('#st-camera-strength');if(output)output.textContent=strength+'%';stCameraApplyTone(p.camera);}
+    else if(target.id==='st-photo-intensity'&&p.kind==='compose'&&!p.busy){p.draft.strength=strength;const output=$('#st-photo-strength');if(output)output.textContent=strength+'%';stPhotoFilter();}return true;
+  }
 if(target.id!=="st-caption"||!p||p.kind!=="compose")return false;p.draft.caption=target.value.slice(0,700);const el=$("#st-preview-caption");if(el)el.textContent=p.draft.caption||"Compartilhe uma palavra, um momento ou um versículo.";return true;}
 function stClick(action,button){
   if(stCameraClick(action,button))return true;
   if(action==="st-menu")stMenu();else if(action==="st-new")stNew();else if(action==="st-open")stOpen(button.dataset.id);
   else if(action==="st-close")closePix();else if(action==="st-send")stSend();else if(action==="st-reload")stLoad(true);
   else if(action==="st-theme"){const p=ST.panel;if(p&&p.kind==="compose"&&!p.busy&&ST_THEMES[button.dataset.v]){p.draft.theme=button.dataset.v;stRender();}}
-  else if(action==="st-remove-image"){const p=ST.panel;if(p&&p.kind==="compose"&&!p.busy){p.draft.image=null;stRender();}}
+  else if(action==="st-remove-image"){const p=ST.panel;if(p&&p.kind==="compose"&&!p.busy){p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.draft.image=null;p.draft.original=null;p.photoSource=null;stRender();}}
   else if(action==="st-next")stNext(1);else if(action==="st-prev")stNext(-1);
   else if(action==="st-pause"){const p=ST.panel;if(p&&p.kind==="viewer"){p.paused=!p.paused;p.lastTick=performance.now();const control=$("#st-pause");if(control){control.textContent=p.paused?"▶":"Ⅱ";control.setAttribute("aria-label",p.paused?"Continuar":"Pausar");}}}
   else if(action==="st-delete")stDelete(button.dataset.id);
@@ -2263,9 +2267,9 @@ function stGalleryView(p){
 }
 function stGalleryOpen(){
   const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;
-  stCameraStop(p);p.kind='gallery';p.error='';stRender(true);
+  stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.kind='gallery';p.error='';stRender(true);
 }
-function stTextOpen(){const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;stCameraStop(p);p.draft.image=null;p.draft.original=null;p.kind='compose';stRender(true);}
+function stTextOpen(){const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.photoSource=null;p.draft.image=null;p.draft.original=null;p.kind='compose';stRender(true);}
 async function stFileCanvas(file,maxSide){
   const url=URL.createObjectURL(file),image=new Image();
   try{image.src=url;await image.decode();const scale=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight));const canvas=stCanvas(image.naturalWidth*scale,image.naturalHeight*scale);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);return canvas;}
@@ -2297,23 +2301,116 @@ function stNativeCancel(){const p=ST.panel;if(!p||!p.picking)return;p.picking=fa
 async function stNativeChoose(file){const p=ST.panel;if(!p||!stPanelCurrent(p))return;if(!file){stNativeCancel();return;}p.picking=false;stCameraStop(p);p.kind='compose';await stPick(file);}
 function stSaveOriginal(){const file=ST.panel?.draft?.original;if(!file)return;const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name||'blessed-original.jpg';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 
-/* STORIES-CAMERA-START: maquiagem local; somente a foto confirmada entra no rascunho. */
-const ST_PHOTO = {maxSide:1600,maxBytes:500000}; // Mantém compatibilidade com o bucket de 512 KiB.
-const ST_MAKEUP = [{id:'natural',name:'Original',smooth:0,tint:0,glow:0}];
-const ST_MESH_URL='https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/';
-let stMeshScript=null;
-function stMeshLoad(){
-  if(window.FaceMesh)return Promise.resolve();
-  if(stMeshScript)return stMeshScript;
-  stMeshScript=new Promise((resolve,reject)=>{
-    const script=document.createElement('script');script.src=ST_MESH_URL+'face_mesh.js';script.crossOrigin='anonymous';
-    script.integrity='sha384-nKiz5QrpRlMQLw5nrZcprT7N9vmmAcIgV8TuGuep4x91V4JIPsXa+D44Wxj0guoa';
-    const timeout=setTimeout(()=>{script.remove();reject(new Error('model timeout'));},20000);
-    script.onload=()=>{clearTimeout(timeout);window.FaceMesh?resolve():reject(new Error('model unavailable'));};
-    script.onerror=()=>{clearTimeout(timeout);script.remove();reject(new Error('model load'));};document.head.appendChild(script);
-  }).catch(error=>{stMeshScript=null;throw error;});return stMeshScript;
-}
+/* STORIES-CAMERA-START: LUTs locais na GPU; fotos nunca saem do aparelho antes de publicar. */
+const ST_PHOTO = {maxSide:1600,maxBytes:500000};
+const ST_LUTS = [{id:'natural',name:'Original'},...Array.from({length:10},(_,i)=>({id:'lut'+(i+1),name:'LUT '+(i+1),size:i===9?33:65}))];
+const ST_LUT_IMAGES=new Map();
 function stCanvas(width,height){const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width));canvas.height=Math.max(1,Math.round(height));return canvas;}
+function stLutImage(id){
+  if(id==='natural')return Promise.resolve(null);
+  if(!ST_LUTS.some(f=>f.id===id))return Promise.reject(new Error('unknown lut'));
+  if(!ST_LUT_IMAGES.has(id))ST_LUT_IMAGES.set(id,new Promise((resolve,reject)=>{const image=new Image();const timeout=setTimeout(()=>{image.src='';reject(new Error('lut timeout'));},15000);image.onload=()=>{clearTimeout(timeout);resolve(image);};image.onerror=()=>{clearTimeout(timeout);reject(new Error('lut load'));};image.src='img/luts/'+id+'.png?v=1';}).catch(error=>{ST_LUT_IMAGES.delete(id);throw error;}));
+  return ST_LUT_IMAGES.get(id);
+}
+function stLutControls(id='natural',strength=40,scope='camera'){
+  return `<div class="st-lut-controls" data-scope="${scope}"><div class="st-lut-list" role="group" aria-label="Cores da foto">${ST_LUTS.map(f=>`<button type="button" class="st-lut-option" data-a="st-lut-filter" data-id="${f.id}" aria-pressed="${id===f.id}"><img src="img/luts/${f.id}.jpg?v=1" alt="${f.name} na modelo de exemplo" loading="lazy"><span>${f.name}</span></button>`).join('')}</div><label class="st-intensity" for="st-${scope}-intensity"><span>Intensidade</span><output id="st-${scope}-strength">${strength}%</output><input id="st-${scope}-intensity" type="range" min="0" max="100" value="${strength}" ${id==='natural'?'disabled':''}></label>${scope==='photo'?'<p id="st-photo-status" class="muted" role="status">'+(ST_LUTS.find(f=>f.id===id)?.name||'Original')+'</p>':''}</div>`;
+}
+// Atlas 2D de fatias azuis; interpolação trilinear, sem biblioteca ou processamento facial.
+function stLutRenderer(canvas){
+  const gl=canvas.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,preserveDrawingBuffer:false});if(!gl)throw new Error('webgl unavailable');
+  const shader=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){gl.deleteShader(s);throw new Error('shader');}return s;};
+  const vertex=shader(gl.VERTEX_SHADER,'attribute vec2 position;varying vec2 uv;void main(){uv=position*.5+.5;gl_Position=vec4(position,0.,1.);}');
+  const fragment=shader(gl.FRAGMENT_SHADER,`precision highp float;varying vec2 uv;uniform sampler2D frame;uniform sampler2D lut;uniform float size;uniform float columns;uniform vec2 atlas;uniform float strength;
+    vec3 slice(vec3 c,float blue){vec2 tile=vec2(mod(blue,columns),floor(blue/columns));vec2 xy=(tile*size+c.rg*(size-1.)+.5)/atlas;return texture2D(lut,xy).rgb;}
+    void main(){vec3 c=texture2D(frame,uv).rgb;float b=c.b*(size-1.);vec3 color=mix(slice(c,floor(b)),slice(c,min(floor(b)+1.,size-1.)),fract(b));gl_FragColor=vec4(mix(c,color,strength),1.);}`);
+  const program=gl.createProgram();gl.attachShader(program,vertex);gl.attachShader(program,fragment);gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error('program');gl.useProgram(program);gl.deleteShader(vertex);gl.deleteShader(fragment);
+  const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);const loc=gl.getAttribLocation(program,'position');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const texture=unit=>{const t=gl.createTexture();gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,t);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return t;};
+  const frame=texture(0),lut=texture(1),uniform=name=>gl.getUniformLocation(program,name),u={size:uniform('size'),columns:uniform('columns'),atlas:uniform('atlas'),strength:uniform('strength')};gl.uniform1i(uniform('frame'),0);gl.uniform1i(uniform('lut'),1);let selected=null,disposed=false;
+  return {draw(source,preset,image,strength,maxSide=960){
+    if(disposed||gl.isContextLost())throw new Error('context lost');
+    const w=source.videoWidth||source.width,h=source.videoHeight||source.height,scale=Math.min(1,maxSide/Math.max(w,h)),width=Math.max(1,Math.round(w*scale)),height=Math.max(1,Math.round(h*scale));
+    if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}gl.viewport(0,0,width,height);gl.useProgram(program);
+    gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,lut);
+    if(selected!==image){gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL,gl.NONE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,image);selected=image;}
+    gl.uniform1f(u.size,preset.size);gl.uniform1f(u.columns,Math.ceil(Math.sqrt(preset.size)));gl.uniform2f(u.atlas,image.naturalWidth,image.naturalHeight);gl.uniform1f(u.strength,Math.max(0,Math.min(1,strength/100)));
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,frame);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL,gl.BROWSER_DEFAULT_WEBGL);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,source);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);return canvas;
+  },dispose(){if(disposed)return;disposed=true;gl.deleteTexture(frame);gl.deleteTexture(lut);gl.deleteBuffer(buffer);gl.deleteProgram(program);gl.getExtension('WEBGL_lose_context')?.loseContext();}};
+}
+function stLutPhoto(source,preset,image,strength,mirror=false){
+  let renderer,painted=source;
+  const out=stCanvas(source.width,source.height),ctx=out.getContext('2d');
+  try{if(preset.id!=='natural'&&strength>0){renderer=stLutRenderer(stCanvas(1,1));painted=renderer.draw(source,preset,image,strength,ST_PHOTO.maxSide);}if(mirror){ctx.translate(out.width,0);ctx.scale(-1,1);}ctx.drawImage(painted,0,0,out.width,out.height);return out;}finally{renderer?.dispose();}
+}
+async function stPhotoFilter(){
+  const p=ST.panel;if(!p||p.kind!=='compose'||p.busy||!p.draft.image)return;
+  const request=p.photoRequest=(p.photoRequest||0)+1,id=p.draft.lut||'natural',strength=p.draft.strength??40,preset=ST_LUTS.find(f=>f.id===id)||ST_LUTS[0];p.lutLoading=true;
+  const send=$('[data-a="st-send"]');if(send)send.disabled=true;
+  const status=$('#st-photo-status');if(status)status.textContent='Aplicando cor…';
+  const current=()=>stPanelCurrent(p)&&p.kind==='compose'&&p.photoRequest===request;
+  try{
+    await new Promise(resolve=>setTimeout(resolve,100));if(!current())return;const image=await stLutImage(id);if(!current())return;
+    const source=p.photoSource||await stFileCanvas(p.draft.original,ST_PHOTO.maxSide);if(!current())return;p.photoSource=source;
+    const out=stLutPhoto(source,preset,image,strength,p.photoMirror||false),photo=await stPhotoEncode(out);if(!current())return;
+    p.appliedLut=id;p.appliedStrength=strength;p.draft.image=photo;const preview=$('.st-preview img');if(preview)preview.src=photo;const liveStatus=$('#st-photo-status');if(liveStatus)liveStatus.textContent=preset.name+(id==='natural'?'':' · '+strength+'%');
+  }catch(_){if(current()){p.draft.lut=p.appliedLut||'natural';p.draft.strength=p.appliedStrength??40;p.lutLoading=false;p.error='Não consegui aplicar essa cor. Sua foto anterior foi mantida.';stRender();}}
+  finally{if(current()){p.lutLoading=false;const button=$('[data-a="st-send"]');if(button)button.disabled=!!p.busy||!ST.ready;}}
+}
+function stLutSelect(id){
+  const p=ST.panel,preset=ST_LUTS.find(f=>f.id===id);if(!p||!preset||p.busy)return;
+  if(p.kind==='camera'&&p.camera&&!p.camera.busy){p.camera.filter=id;stCameraApplyTone(p.camera);}
+  else if(p.kind==='compose'&&p.draft.image){p.draft.lut=id;stPhotoFilter();}else return;
+  document.querySelectorAll('[data-a="st-lut-filter"]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.id===id)));
+  const slider=$('#st-'+(p.kind==='camera'?'camera':'photo')+'-intensity');if(slider)slider.disabled=id==='natural';
+}
+function stCameraStop(p){
+  const c=p&&p.camera;if(!c)return;c.stopped=true;cancelAnimationFrame(c.raf);c.stream?.getTracks().forEach(track=>track.stop());if(c.video){c.video.pause();c.video.srcObject=null;}c.renderer?.dispose();p.camera=null;
+}
+function stCameraCurrent(p,c){return stPanelCurrent(p)&&p.kind==='camera'&&p.camera===c&&!c.stopped;}
+function stCameraStatus(message){const el=$('#st-camera-status');if(el&&el.textContent!==message)el.textContent=message;}
+function stCameraView(p){
+  return `<section class="st-box st-camera st-studio" role="dialog" aria-modal="true" aria-labelledby="st-camera-title"><div class="st-camera-frame"><video id="st-camera-video" muted autoplay playsinline aria-label="Câmera ao vivo"></video><canvas id="st-camera-preview" aria-hidden="true" hidden></canvas></div><header class="st-studio-head st-camera-head"><button class="st-control" id="st-close" data-a="st-camera-back" aria-label="Voltar às fotos">✕</button><div><small>BLESSED</small><h2 id="st-camera-title">Seu Story</h2></div><button class="st-control" data-a="st-camera-flip" aria-label="Trocar câmera">↻</button></header><div class="st-camera-bottom"><p id="st-camera-status" role="status">Abrindo câmera…</p>${stLutControls(p.camera.filter,p.camera.strength)}<div class="st-shutter-row"><button class="st-gallery-return" data-a="st-gallery" aria-label="Voltar à galeria">${ST_MEDIA.items[0]?`<img src="${esc(ST_MEDIA.items[0].url)}" alt="">`:'<span>▧</span>'}<small>Galeria</small></button><button id="st-camera-capture" class="st-shutter" data-a="st-camera-capture" aria-label="Tirar foto" disabled><span></span></button><button class="st-native-action" data-a="st-native-open" aria-label="Abrir câmera do aparelho"><span>▣</span><small>Câmera nativa</small></button></div></div><input id="st-native-camera" class="st-hidden-file" type="file" capture="user" accept="image/jpeg,image/png,image/heic,image/heif"></section>`;
+}
+async function stCameraOpen(facing='user'){
+  const p=ST.panel;if(!p||!stPanelCurrent(p)||!['gallery','compose','camera'].includes(p.kind)||p.busy)return;
+  if(!navigator.mediaDevices?.getUserMedia){p.kind='gallery';p.error='Você pode usar a câmera do aparelho ou escolher uma foto.';stRender();return;}
+  const previous=p.camera,filter=previous?.filter||'natural',strength=previous?.strength??40;stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.kind='camera';p.picking=false;
+  const c={facing,filter,strength,stopped:false,busy:false,rendered:0,lutImage:null,loading:false};p.camera=c;stRender(true);
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30},resizeMode:{ideal:'none'}}});
+    if(!stCameraCurrent(p,c)){stream.getTracks().forEach(t=>t.stop());return;}
+    c.stream=stream;const track=stream.getVideoTracks()[0],zoom=track?.getCapabilities?.().zoom;if(zoom&&zoom.min<=1&&zoom.max>=1){try{await track.applyConstraints({advanced:[{zoom:1}]});}catch(_){}}if(!stCameraCurrent(p,c))return;
+    c.video=$('#st-camera-video');c.preview=$('#st-camera-preview');c.video.srcObject=stream;await c.video.play();if(!stCameraCurrent(p,c))return;c.scratch=stCanvas(1,1);stCameraApplyTone(c);stCameraLoop(p,c);
+  }catch(error){if(!stCameraCurrent(p,c))return;stCameraStop(p);p.kind='gallery';p.error=error.name==='NotAllowedError'?'O acesso à câmera não foi permitido. Escolha uma foto ou use a câmera do aparelho.':'Não consegui abrir a câmera ao vivo. Você pode usar a câmera do aparelho ou a galeria.';stRender();}
+}
+async function stCameraApplyTone(c){
+  const p=ST.panel;if(!stCameraCurrent(p,c))return;
+  const request=c.lutRequest=(c.lutRequest||0)+1,id=c.filter;c.loading=false;c.lutImage=null;c.error='';
+  if(c.video){c.video.style.filter='none';c.video.style.transform=c.facing==='user'?'scaleX(-1)':'none';}if(c.preview){c.preview.hidden=true;c.preview.style.transform=c.facing==='user'?'scaleX(-1)':'none';}
+  if(id==='natural'||!c.strength)return;
+  c.loading=true;
+  try{const image=await stLutImage(id);if(!stCameraCurrent(p,c)||request!==c.lutRequest)return;c.renderer=c.renderer||stLutRenderer(c.preview);c.lutImage=image;}
+  catch(_){if(stCameraCurrent(p,c)&&request===c.lutRequest)c.error='Essa cor não abriu. Escolha Original ou tente outra.';}
+  finally{if(stCameraCurrent(p,c)&&request===c.lutRequest)c.loading=false;}
+}
+function stCameraSnapshot(c,max=720){
+  const scale=Math.min(1,max/Math.max(c.video.videoWidth,c.video.videoHeight)),canvas=c.scratch;canvas.width=Math.max(1,Math.round(c.video.videoWidth*scale));canvas.height=Math.max(1,Math.round(c.video.videoHeight*scale));canvas.getContext('2d').drawImage(c.video,0,0,canvas.width,canvas.height);return canvas;
+}
+function stCameraLoop(p,c){
+  if(!stCameraCurrent(p,c))return;if(document.hidden&&!p.picking){stCameraBack(p);return;}
+  const now=performance.now();if(!c.lastPaint||now-c.lastPaint>=(c.paintInterval||32)){
+    c.lastPaint=now;
+    if(c.video.videoWidth&&c.preview){
+      const preset=ST_LUTS.find(f=>f.id===c.filter)||ST_LUTS[0],active=preset.id!=='natural'&&c.strength>0;
+      if(active&&c.lutImage&&!c.error){try{const start=performance.now();c.renderer.draw(c.video,preset,c.lutImage,c.strength,c.previewSide||960);c.preview.hidden=false;c.rendered++;const elapsed=performance.now()-start;if(elapsed>40){c.previewSide=640;c.paintInterval=50;}}catch(_){c.error='Essa cor não abriu. Escolha Original ou tente outra.';c.preview.hidden=true;}}
+      else c.preview.hidden=true;
+      const capture=$('#st-camera-capture');if(capture)capture.disabled=!!c.busy||!!c.loading||!!c.error;
+      if(!c.busy)stCameraStatus(c.error||(c.loading?'Carregando cor…':active?preset.name+' · '+c.strength+'%':'Original'));
+    }
+  }
+  c.raf=requestAnimationFrame(()=>stCameraLoop(p,c));
+}
+function stCameraBack(p=ST.panel){if(!p||p.kind!=='camera')return;stCameraStop(p);p.kind='gallery';p.busy=false;stRender(true);}
 async function stPhotoEncode(source){
   let scale=Math.min(1,ST_PHOTO.maxSide/Math.max(source.width,source.height));
   for(let size=0;size<6;size++){
@@ -2328,138 +2425,6 @@ async function stPhotoEncode(source){
   throw new Error('photo too large');
 }
 async function stPhotoPrepare(file){return stPhotoEncode(await stFileCanvas(file,ST_PHOTO.maxSide));}
-function stCameraStop(p){
-  const c=p&&p.camera;if(!c)return;
-  c.stopped=true;clearTimeout(c.timer);cancelAnimationFrame(c.raf);c.stream?.getTracks().forEach(track=>track.stop());
-  if(c.video){c.video.pause();c.video.srcObject=null;}
-  if(c.mesh){const mesh=c.mesh;c.mesh=null;Promise.resolve(c.pending).catch(()=>{}).then(()=>mesh.close()).catch(()=>{});}
-  p.camera=null;
-}
-function stCameraCurrent(p,c){return stPanelCurrent(p)&&p.kind==='camera'&&p.camera===c&&!c.stopped;}
-function stCameraStatus(message){const el=$('#st-camera-status');if(el&&el.textContent!==message)el.textContent=message;}
-function stCameraView(p){
-  const c=p.camera;
-  return `<section class="st-box st-camera st-studio" role="dialog" aria-modal="true" aria-labelledby="st-camera-title"><div class="st-camera-frame"><video id="st-camera-video" muted autoplay playsinline aria-label="Câmera ao vivo"></video><canvas id="st-camera-preview" aria-hidden="true"></canvas></div><header class="st-studio-head st-camera-head"><button class="st-control" id="st-close" data-a="st-camera-back" aria-label="Voltar às fotos">✕</button><div><small>BLESSED</small><h2 id="st-camera-title">Seu Story</h2></div><button class="st-control" data-a="st-camera-flip" aria-label="Trocar câmera">↻</button></header><div class="st-camera-bottom"><p id="st-camera-status" role="status">Abrindo câmera…</p><div class="st-shutter-row"><button class="st-gallery-return" data-a="st-gallery" aria-label="Voltar à galeria">${ST_MEDIA.items[0]?`<img src="${esc(ST_MEDIA.items[0].url)}" alt="">`:'<span>▧</span>'}<small>Galeria</small></button><button id="st-camera-capture" class="st-shutter" data-a="st-camera-capture" aria-label="Tirar foto" disabled><span></span></button><button class="st-native-action" data-a="st-native-open" aria-label="Abrir câmera do aparelho"><span>▣</span><small>Câmera nativa</small></button></div></div><input id="st-native-camera" class="st-hidden-file" type="file" capture="user" accept="image/jpeg,image/png,image/heic,image/heif"></section>`;
-}
-async function stCameraOpen(facing='user'){
-  const p=ST.panel;if(!p||!stPanelCurrent(p)||!['gallery','compose','camera'].includes(p.kind)||p.busy)return;
-  if(!navigator.mediaDevices?.getUserMedia){p.kind='gallery';p.error='Você pode usar a câmera do aparelho ou escolher uma foto.';stRender();return;}
-  const previous=p.camera,filter=previous?.filter||'natural',strength=previous?.strength??75;
-  stCameraStop(p);p.kind='camera';p.picking=false;
-  const c={facing,filter,strength,stopped:false,points:null,detectedAt:0,modelReady:false,modelFailed:false,modelLoading:false,busy:false,rendered:0,analyses:0};p.camera=c;stRender(true);
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30},resizeMode:{ideal:'none'}}});
-    if(!stCameraCurrent(p,c)){stream.getTracks().forEach(t=>t.stop());return;}
-    c.stream=stream;const track=stream.getVideoTracks()[0],zoom=track?.getCapabilities?.().zoom;if(zoom&&zoom.min<=1&&zoom.max>=1){try{await track.applyConstraints({advanced:[{zoom:1}]});}catch(_){}}if(!stCameraCurrent(p,c))return;c.video=$('#st-camera-video');c.preview=$('#st-camera-preview');c.video.srcObject=stream;await c.video.play();
-    if(!stCameraCurrent(p,c))return;c.scratch=stCanvas(1,1);c.analysis=stCanvas(1,1);
-    stCameraApplyTone(c);stCameraLoop(p,c);stCameraTrack(p,c);
-  }catch(error){if(!stCameraCurrent(p,c))return;stCameraStop(p);p.kind='gallery';p.error=error.name==='NotAllowedError'?'O acesso à câmera não foi permitido. Escolha uma foto ou use a câmera do aparelho.':'Não consegui abrir a câmera ao vivo. Você pode usar a câmera do aparelho ou a galeria.';stRender();}
-}
-async function stCameraModel(p,c){
-  if(c.modelLoading||c.modelReady||c.modelFailed)return;c.modelLoading=true;
-  try{
-    await stMeshLoad();if(!stCameraCurrent(p,c))return;
-    const mesh=new window.FaceMesh({locateFile:file=>ST_MESH_URL+file});c.mesh=mesh;
-    mesh.setOptions({maxNumFaces:1,refineLandmarks:false,minDetectionConfidence:.6,minTrackingConfidence:.6});
-    mesh.onResults(result=>{if(stCameraCurrent(p,c)){c.points=result.multiFaceLandmarks?.[0]||null;c.detectedAt=performance.now();}});
-    const init=mesh.initialize();c.pending=init;let timeout;try{await Promise.race([init,new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('model timeout')),25000);})]);}finally{clearTimeout(timeout);}if(stCameraCurrent(p,c)){c.modelReady=true;c.modelLoading=false;}
-  }catch(error){if(stCameraCurrent(p,c)){c.modelLoading=false;c.modelFailed=true;c.points=null;stCameraStatus('A maquiagem não carregou. Escolha Original para fotografar ou tente abrir a câmera novamente.');}}
-}
-function stCameraSnapshot(c,max=720){
-  const scale=Math.min(1,max/Math.max(c.video.videoWidth,c.video.videoHeight)),canvas=c.scratch;
-  canvas.width=Math.max(1,Math.round(c.video.videoWidth*scale));canvas.height=Math.max(1,Math.round(c.video.videoHeight*scale));
-  canvas.getContext('2d').drawImage(c.video,0,0,canvas.width,canvas.height);return canvas;
-}
-async function stCameraDetect(p,c,source){
-  if(!c.modelReady||!c.mesh||!stCameraCurrent(p,c))return;
-  const width=source.videoWidth||source.width,height=source.videoHeight||source.height,scale=Math.min(1,320/Math.max(width,height)),canvas=c.analysis;
-  const w=Math.max(1,Math.round(width*scale)),h=Math.max(1,Math.round(height*scale));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
-  canvas.getContext('2d').drawImage(source,0,0,w,h);c.pending=c.mesh.send({image:canvas});
-  let timeout;try{await Promise.race([c.pending,new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('tracking timeout')),2500);})]);c.analyses++;}finally{clearTimeout(timeout);}
-}
-function stCameraApplyTone(c){
-  const preset=ST_MAKEUP.find(f=>f.id===c.filter)||ST_MAKEUP[0];
-  if(c.video){c.video.style.filter=stToneFilter(preset,c.strength);c.video.style.transform=c.facing==='user'?'scaleX(-1)':'none';}
-  if(c.preview){c.preview.style.transform=c.facing==='user'?'scaleX(-1)':'none';const original=preset.id==='natural'||!c.strength;c.preview.hidden=original;if(original)c.preview.width=c.preview.width;}
-}
-function stToneSettings(preset,strength){
-  const amount=preset.id==='natural'?0:Math.max(0,Math.min(1,strength/100));
-  return {brightness:1+preset.glow*1.35*amount,contrast:1+(preset.id==='noite'||preset.id==='glam'?.06:-preset.smooth*.15)*amount,saturation:1+preset.tint*.65*amount};
-}
-function stToneFilter(preset,strength){if(preset.id==='natural'||!strength)return 'none';const t=stToneSettings(preset,strength);return `brightness(${t.brightness}) contrast(${t.contrast}) saturate(${t.saturation})`;}
-function stTonePixels(ctx,w,h,preset,strength){
-  if(preset.id==='natural'||!strength)return;
-  const t=stToneSettings(preset,strength),image=ctx.getImageData(0,0,w,h),d=image.data;
-  for(let i=0;i<d.length;i+=4){let r=(d[i]*t.brightness-127.5)*t.contrast+127.5,g=(d[i+1]*t.brightness-127.5)*t.contrast+127.5,b=(d[i+2]*t.brightness-127.5)*t.contrast+127.5;const l=.2126*r+.7152*g+.0722*b;d[i]=l+(r-l)*t.saturation;d[i+1]=l+(g-l)*t.saturation;d[i+2]=l+(b-l)*t.saturation;}ctx.putImageData(image,0,0);
-}
-async function stCameraTrack(p,c){
-  if(!stCameraCurrent(p,c)||c.busy)return;
-  let delay=240;
-  if(c.filter!=='natural'&&c.strength>0){
-    if(!c.modelReady&&!c.modelLoading&&!c.modelFailed)stCameraModel(p,c);
-    if(c.modelReady){const start=performance.now();try{await stCameraDetect(p,c,c.video);delay=Math.min(1000,Math.max(66,(performance.now()-start)*2));}catch(_){if(stCameraCurrent(p,c)){c.modelFailed=true;c.modelReady=false;c.points=null;}}}
-  }
-  if(stCameraCurrent(p,c)&&!c.busy)c.timer=setTimeout(()=>stCameraTrack(p,c),delay);
-}
-function stCameraCrop(source,points,p){
-  // Preserva todo o sensor: o formato da tela não deve ampliar ou recortar a foto.
-  const scale=Math.min(1,ST_PHOTO.maxSide/Math.max(source.width,source.height)),out=stCanvas(source.width*scale,source.height*scale);
-  out.getContext('2d').drawImage(source,0,0,out.width,out.height);return {canvas:out,points};
-}
-function stFacePath(ctx,points,ids,w,h){
-  ids.forEach((id,i)=>{const point=points[id];if(i===0)ctx.moveTo(point.x*w,point.y*h);else ctx.lineTo(point.x*w,point.y*h);});ctx.closePath();
-}
-function stMakeupPaint(source,out,points,preset,strength,mirror=false,overlay=false){
-  const w=source.width,h=source.height;if(out.width!==w||out.height!==h){out.width=w;out.height=h;}const x=out.getContext('2d');if(overlay){if(x.reset)x.reset();else out.width=w;}x.clearRect(0,0,w,h);if(!overlay){x.drawImage(source,0,0);stTonePixels(x,w,h,preset,strength);}
-  const amount=Math.max(0,Math.min(1,strength/100));
-  if(preset.id!=='natural'&&amount&&points&&points.length>=468){
-    const face=[10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
-    const outerLip=[61,146,91,181,84,17,314,405,321,375,291,409,270,269,267,0,37,39,40,185];
-    const innerLip=[78,95,88,178,87,14,317,402,318,324,308,415,310,311,312,13,82,81,80,191];
-    const eyes=[[33,7,163,144,145,153,154,155,133,173,157,158,159,160,161,246],[362,382,381,380,374,373,390,249,263,466,388,387,386,385,384,398]];
-    const width=Math.hypot((points[234].x-points[454].x)*w,(points[234].y-points[454].y)*h);
-    // Suaviza só a área do rosto; olhos e boca mantêm seus detalhes.
-    x.save();x.beginPath();stFacePath(x,points,face,w,h);eyes.forEach(e=>stFacePath(x,points,e,w,h));stFacePath(x,points,outerLip,w,h);x.clip('evenodd');
-    x.globalAlpha=(preset.glow*.6+preset.smooth*.08)*amount;x.fillStyle=preset.id==='perola'?'#f3e7ff':'#fff0df';x.fillRect(0,0,w,h);x.restore();
-    // Cores translúcidas preservam textura e tom de pele, sem deformar o rosto.
-    x.save();x.beginPath();stFacePath(x,points,face,w,h);x.clip();
-    for(const id of [50,280]){
-      const point=points[id],r=width*.15,g=x.createRadialGradient(point.x*w,point.y*h,0,point.x*w,point.y*h,r);
-      g.addColorStop(0,preset.blush);g.addColorStop(1,preset.blush+'00');x.globalAlpha=(.08+preset.tint*.9)*amount;x.fillStyle=g;x.fillRect(point.x*w-r,point.y*h-r,2*r,2*r);
-    }
-    // Sombra acompanha a inclinação das pálpebras superiores.
-    for(const [a,b] of [[33,133],[362,263]]){
-      const left=points[a],right=points[b],cx=(left.x+right.x)*w/2,cy=(left.y+right.y)*h/2-width*.035;
-      const angle=Math.atan2((right.y-left.y)*h,(right.x-left.x)*w),radius=Math.hypot((right.x-left.x)*w,(right.y-left.y)*h)*.62;
-      x.save();x.translate(cx,cy);x.rotate(angle);x.scale(1,.5);const g=x.createRadialGradient(0,0,0,0,0,radius);g.addColorStop(0,preset.shadow);g.addColorStop(1,preset.shadow+'00');x.globalAlpha=(.06+preset.tint*.8)*amount;x.fillStyle=g;x.fillRect(-radius,-radius,2*radius,2*radius);x.restore();
-    }
-    x.restore();
-    if(['glam','malva','vinho','noite','romantica'].includes(preset.id)){
-      x.save();x.globalAlpha=.28*amount;x.strokeStyle='#3c2534';x.lineWidth=Math.max(.6,width*.003);x.lineJoin='round';x.lineCap='round';
-      for(const ids of [[33,246,161,160,159,158,157,173,133],[362,398,384,385,386,387,388,466,263]]){x.beginPath();ids.forEach((id,i)=>{const point=points[id];if(i)x.lineTo(point.x*w,point.y*h);else x.moveTo(point.x*w,point.y*h);});x.stroke();}x.restore();
-    }
-    x.save();x.filter='blur(.45px)';x.globalCompositeOperation='source-over';x.globalAlpha=Math.min(.64,.12+preset.tint*1.45)*amount;x.fillStyle=preset.lip;x.beginPath();stFacePath(x,points,outerLip,w,h);stFacePath(x,points,innerLip,w,h);x.fill('evenodd');x.restore();
-  }
-  if(mirror){const copy=out._stMirror||(out._stMirror=stCanvas(w,h));copy.width=w;copy.height=h;copy.getContext('2d').drawImage(out,0,0);x.save();x.translate(w,0);x.scale(-1,1);x.drawImage(copy,0,0);x.restore();}
-  return out;
-}
-function stCameraLoop(p,c){
-  if(!stCameraCurrent(p,c))return;
-  if(document.hidden&&!p.picking){stCameraBack(p);return;}
-  const now=performance.now();
-  if(!c.lastPaint||now-c.lastPaint>=32){
-    c.lastPaint=now;
-    if(c.video.videoWidth&&c.preview){
-      const width=c.video.videoWidth,height=c.video.videoHeight,scale=Math.min(1,640/Math.max(width,height));
-      const preset=ST_MAKEUP.find(f=>f.id===c.filter)||ST_MAKEUP[0],points=now-c.detectedAt<800?c.points:null;
-      if(c.filter!=='natural'&&c.strength>0)stMakeupPaint({width:Math.round(width*scale),height:Math.round(height*scale)},c.preview,points,preset,c.strength,false,true);c.rendered++;
-      const capture=$('#st-camera-capture');if(capture)capture.disabled=!!c.busy;
-      if(!c.busy)stCameraStatus(c.filter==='natural'||c.strength===0?'Original':c.modelFailed?'Cor aplicada · maquiagem indisponível neste aparelho':!c.modelReady?preset.name+' · preparando maquiagem…':points?preset.name+' · '+c.strength+'%':preset.name+' · posicione o rosto na câmera');
-    }
-  }
-  c.raf=requestAnimationFrame(()=>stCameraLoop(p,c));
-}
-function stCameraBack(p=ST.panel){if(!p||p.kind!=='camera')return;stCameraStop(p);p.kind='gallery';p.busy=false;stRender(true);}
 async function stCameraWait(promise,ms=3500){let timer;try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('camera timeout')),ms);})]);}finally{clearTimeout(timer);}}
 async function stCameraOriginal(c){
   const track=c.stream.getVideoTracks()[0];
@@ -2473,19 +2438,14 @@ async function stCameraOriginal(c){
   const full=stCameraSnapshot(c,Infinity);return new Promise(resolve=>full.toBlob(resolve,'image/jpeg',.97));
 }
 async function stCameraCapture(){
-  const p=ST.panel,c=p?.camera;if(!c||!stCameraCurrent(p,c)||c.busy||!c.video.videoWidth)return;
-  c.busy=true;clearTimeout(c.timer);$('#st-camera-capture').disabled=true;stCameraStatus('Preparando sua foto…');
+  const p=ST.panel,c=p?.camera;if(!c||!stCameraCurrent(p,c)||c.busy||c.loading||c.error||!c.video.videoWidth)return;
+  c.busy=true;$('#st-camera-capture').disabled=true;stCameraStatus('Preparando sua foto…');
   try{
-    if(c.modelReady){let timeout;try{await Promise.race([c.pending,new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('capture timeout')),2500);})]);}finally{clearTimeout(timeout);}}if(!stCameraCurrent(p,c))return;
-    const raw=await stCameraOriginal(c);
-    if(!stCameraCurrent(p,c))return;
-    const original=new File([raw],raw.type==='image/png'?'blessed-original.png':'blessed-original.jpg',{type:raw.type||'image/jpeg'}),source=await stFileCanvas(original,ST_PHOTO.maxSide);
-    if(c.modelReady&&c.filter!=='natural'&&c.strength>0)await stCameraDetect(p,c,source);if(!stCameraCurrent(p,c))return;
-    const preset=ST_MAKEUP.find(f=>f.id===c.filter)||ST_MAKEUP[0],cropped=stCameraCrop(source,c.modelReady?c.points:null,p);
-    const out=stMakeupPaint(cropped.canvas,stCanvas(1,1),cropped.points,preset,c.strength,c.facing==='user');
-    const photo=await stPhotoEncode(out);if(!stCameraCurrent(p,c))return;
-    p.draft.image=photo;p.draft.original=original;stCameraStop(p);p.kind='compose';stRender(true);
-  }catch(_){if(stCameraCurrent(p,c)){c.busy=false;stCameraStatus('Não consegui tirar a foto. Tente novamente ou use a câmera do aparelho.');stCameraTrack(p,c);}}
+    const id=c.filter,strength=c.strength,preset=ST_LUTS.find(f=>f.id===id)||ST_LUTS[0],image=c.lutImage,raw=await stCameraOriginal(c);if(!stCameraCurrent(p,c))return;if(!raw)throw new Error('empty photo');
+    const original=new File([raw],raw.type==='image/png'?'blessed-original.png':'blessed-original.jpg',{type:raw.type||'image/jpeg'}),source=await stFileCanvas(original,ST_PHOTO.maxSide);if(!stCameraCurrent(p,c))return;
+    const out=stLutPhoto(source,preset,image,strength,c.facing==='user'),photo=await stPhotoEncode(out);if(!stCameraCurrent(p,c))return;
+    p.photoSource=source;p.photoMirror=c.facing==='user';p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.appliedLut=id;p.appliedStrength=strength;p.draft.lut=id;p.draft.strength=strength;p.draft.image=photo;p.draft.original=original;stCameraStop(p);p.kind='compose';stRender(true);
+  }catch(_){if(stCameraCurrent(p,c)){c.busy=false;stCameraStatus('Não consegui tirar a foto. Tente novamente ou use a câmera do aparelho.');}}
 }
 function stCameraClick(action,button){
   if(action==='st-gallery'){stGalleryOpen();return true;}
@@ -2493,17 +2453,16 @@ function stCameraClick(action,button){
   if(action==='st-native-open'){stNativeOpen();return true;}
   if(action==='st-text'){stTextOpen();return true;}
   if(action==='st-save-original'){stSaveOriginal();return true;}
-
   if(action==='st-camera')stCameraOpen();
   else if(action==='st-camera-back')stCameraBack();
   else if(action==='st-camera-flip'){const p=ST.panel;if(p?.camera&&!p.camera.busy)stCameraOpen(p.camera.facing==='user'?'environment':'user');}
   else if(action==='st-camera-capture')stCameraCapture();
-  else if(action==='st-camera-filter'){
-    const c=ST.panel?.camera;if(c&&!c.busy&&ST_MAKEUP.some(f=>f.id===button.dataset.id)){c.filter=button.dataset.id;stCameraApplyTone(c);document.querySelectorAll('[data-a="st-camera-filter"]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.id===c.filter)));}
-  }else return false;return true;
+  else if(action==='st-lut-filter')stLutSelect(button.dataset.id);
+  else return false;return true;
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&ST.panel?.kind==='camera'&&!ST.panel.picking)stCameraBack();});
 /* STORIES-CAMERA-END */
+
 
 /* STORIES-24H-END */
 

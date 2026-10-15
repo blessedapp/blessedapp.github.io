@@ -1,15 +1,20 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610150404";
+const CACHE = "cifra-campo-202610150420";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
+const LUT_CACHE = "blessed-story-luts-v1";
 const FILES = ["./", "index.html", "tema-vidro.css?v=20261014-lilas", "manifest.json", "info.json", "img/icon-192.png?v=lilas", "img/icon-512.png?v=lilas", "img/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
   // a Bíblia fica num cache próprio que não é apagado a cada versão (o texto não muda)
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== BIBLE_CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== BIBLE_CACHE && k !== LUT_CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== location.origin) return;
+  if (url.pathname.includes("/img/luts/")) {
+    e.respondWith(caches.open(LUT_CACHE).then(c => c.match(e.request).then(h => h || fetch(e.request).then(async r => { if (r.ok) await c.put(e.request, r.clone()).catch(() => {}); return r; }))));
+    return;
+  }
   if (url.pathname.includes("/biblia/")) {
     e.respondWith(caches.open(BIBLE_CACHE).then(c => c.match(e.request).then(h => h || fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }))));
     return;
