@@ -882,6 +882,8 @@ body.st-story-open{overflow:hidden}
 .st-viewer .st-audience{position:fixed;inset:auto 0 0;max-height:75dvh;max-width:520px;margin:0 auto;z-index:5}
 @media(max-height:650px){.st-viewer>.st-footer{bottom:calc(70px + env(safe-area-inset-bottom,0px))}.st-viewer>.st-music-card{bottom:calc(120px + env(safe-area-inset-bottom,0px))}.st-viewer .st-metric small{font-size:10px}.st-viewer>.st-stage.st-photo>p{top:75px;font-size:14px}}
 
+.st-audio-card{padding:0;margin:4px 0;max-width:100%}.st-audio-badge{display:flex;align-items:center;gap:9px;max-width:100%;width:100%;min-height:48px;padding:9px 12px;border:1px solid #d29ee65c;border-radius:13px;background:#24122de8;color:#f6e7ff;text-align:left}.st-audio-symbol{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:9px;background:#c87dff25;color:#e6b9ff;font-size:21px}.st-audio-symbol.st-audio-playing{display:flex;align-items:center;justify-content:center;gap:3px}.st-audio-symbol.st-audio-playing:before,.st-audio-symbol.st-audio-playing:after{content:"";display:block;width:3px;height:13px;background:currentColor;border-radius:1px}.st-audio-badge>span:last-child{display:grid;gap:4px;min-width:0}.st-audio-badge b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.st-audio-badge small{font-size:10px;color:#d4b7e3}.st-viewer>.st-audio-card{position:absolute;left:16px;right:16px;bottom:calc(155px + env(safe-area-inset-bottom,0px));z-index:2;max-width:310px}.st-viewer:has(.st-audience)>.st-audio-card{visibility:hidden}.st-music-edit>input[type=search]{font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);width:100%}
+
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -2102,9 +2104,9 @@ addEventListener("pagehide",bsFlush);
 
 /* STORIES-24H-START: o banco define o vencimento; imagens ficam em bucket privado. */
 const ST_THEMES = {lilas:["#62278d","#22112f"],rosa:["#8b365c","#2b1421"],noite:["#26324f","#10141e"]};
-const ST = {owner:null,generation:0,rows:[],seen:{},loading:false,ready:false,missing:false,interactions:false,music:false,error:"",loadedAt:0,serverTime:0,receivedAt:0,panel:null,timer:null,expiryTimer:null,lastCleanup:0};
+const ST = {owner:null,generation:0,rows:[],seen:{},loading:false,ready:false,missing:false,interactions:false,music:false,audioLibrary:false,error:"",loadedAt:0,serverTime:0,receivedAt:0,panel:null,timer:null,expiryTimer:null,lastCleanup:0};
 function stClock(){ return ST.serverTime ? ST.serverTime + (performance.now() - ST.receivedAt) : Date.now(); }
-function stReset(){ stMediaReset(); const visible=!!ST.panel; stClose(); clearTimeout(ST.expiryTimer); ST.expiryTimer=null; if(visible){const m=$("#modal");if(m){m.hidden=true;m.innerHTML="";}} ST.owner = null; ST.generation++; ST.rows=[]; ST.seen={}; ST.loading=false; ST.ready=false; ST.missing=false; ST.interactions=false; ST.music=false; ST.error=""; ST.loadedAt=0; ST.serverTime=0; ST.lastCleanup=0; }
+function stReset(){ stAudioReset(); stMediaReset(); const visible=!!ST.panel; stClose(); clearTimeout(ST.expiryTimer); ST.expiryTimer=null; if(visible){const m=$("#modal");if(m){m.hidden=true;m.innerHTML="";}} ST.owner = null; ST.generation++; ST.rows=[]; ST.seen={}; ST.loading=false; ST.ready=false; ST.missing=false; ST.interactions=false; ST.music=false; ST.audioLibrary=false; ST.error=""; ST.loadedAt=0; ST.serverTime=0; ST.lastCleanup=0; }
 function stActor(){
   const owner = TEAM.user && TEAM.user.id;
   if (ST.owner !== owner) { stReset(); ST.owner = owner; const seen=owner?lsGet("blessed-stories-seen:"+owner,{}):{}; ST.seen=seen&&typeof seen==="object"&&!Array.isArray(seen)?seen:{}; }
@@ -2119,7 +2121,7 @@ async function stLoad(force = false){
   try {
     const {data,error} = await a.client.rpc("story_feed"); if (error) throw error; if (!stCurrent(a)) return;
     if (!data || !Array.isArray(data.stories) || !Number.isFinite(Date.parse(data.server_time))) throw new Error("invalid feed");
-    ST.interactions=!!data.interactions; ST.music=!!data.music; ST.serverTime = Date.parse(data.server_time); ST.receivedAt=performance.now();
+    ST.interactions=!!data.interactions; ST.music=!!data.music; ST.audioLibrary=!!data.audio_library; ST.serverTime = Date.parse(data.server_time); ST.receivedAt=performance.now();
     ST.rows = data.stories.filter(x=>x && x.id && x.author && Date.parse(x.expires_at)>ST.serverTime);
     const activeIds=new Set(ST.rows.map(x=>x.id));Object.keys(ST.seen).forEach(id=>{if(!activeIds.has(id))delete ST.seen[id];});lsSet("blessed-stories-seen:"+a.owner,ST.seen);
     const authors = [...new Set(ST.rows.map(x=>x.author))].filter(id=>!COMM.profiles[id]).slice(0,50);
@@ -2192,7 +2194,7 @@ function stRender(first=false){
   } else if(p.kind==="viewer") {
     const x=ST.rows.find(s=>s.id===p.ids[p.index]); if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
     const author=COMM.profiles[x.author]||{}, colors=ST_THEMES[x.theme]||ST_THEMES.lilas;
-    body=`<div class="st-viewer st-box" role="dialog" aria-modal="true" aria-label="Story de ${esc(author.display_name||"alguém")}" style="--st-from:${colors[0]};--st-to:${colors[1]}"><div class="st-progress" aria-label="Story ${p.index+1} de ${p.ids.length}">${p.ids.map((_,i)=>`<span><i id="st-progress-${i}" style="transform:scaleX(${i<p.index?1:0})"></i></span>`).join("")}</div><header class="st-head"><button class="st-author" data-a="cm-profile" data-id="${esc(x.author)}">${commAvatar(author,36)}<span><b>${esc(author.display_name||"Perfil")}</b><small>${commAgo(x.created_at)} · Story</small></span></button><button class="btn ghost" id="st-pause" data-a="st-pause" aria-label="${p.paused?"Continuar":"Pausar"}">${p.paused?"▶":"Ⅱ"}</button><button class="btn ghost" id="st-close" data-a="st-close" aria-label="Fechar story">✕</button></header><div class="st-stage${x.image_path?" st-photo":""}">${p.url?`<img id="st-viewer-image" src="${esc(p.url)}" alt="Foto do story">`:""}<p>${esc(x.caption||"")}</p>${p.loading?'<small id="st-image-status" class="st-loading" role="status">Carregando foto…</small>':""}${p.error?`<small class="st-loading" role="status">${esc(p.error)}</small>`:""}${x.music_video?'<span class="st-music-dot" aria-label="Story com clipe musical">♫</span>':''}</div>${x.music_video?stMusicCard(stMusicData(p),p.loading):''}<footer class="st-footer"><button class="btn ghost" data-a="st-prev" ${p.index===0?"disabled":""}>‹ Anterior</button><small>Visível por 24 horas</small><button class="btn ghost" data-a="st-next">Próximo ›</button></footer><div id="st-social">${stSocialView(p,x)}</div>${x.author===p.actor.owner||teamRole()==="admin"?`<button class="lnk2 st-delete" data-a="st-delete" data-id="${esc(x.id)}">Apagar story</button>`:""}</div>`;
+    body=`<div class="st-viewer st-box" role="dialog" aria-modal="true" aria-label="Story de ${esc(author.display_name||"alguém")}" style="--st-from:${colors[0]};--st-to:${colors[1]}"><div class="st-progress" aria-label="Story ${p.index+1} de ${p.ids.length}">${p.ids.map((_,i)=>`<span><i id="st-progress-${i}" style="transform:scaleX(${i<p.index?1:0})"></i></span>`).join("")}</div><header class="st-head"><button class="st-author" data-a="cm-profile" data-id="${esc(x.author)}">${commAvatar(author,36)}<span><b>${esc(author.display_name||"Perfil")}</b><small>${commAgo(x.created_at)} · Story</small></span></button><button class="btn ghost" id="st-pause" data-a="st-pause" aria-label="${p.paused?"Continuar":"Pausar"}">${p.paused?"▶":"Ⅱ"}</button><button class="btn ghost" id="st-close" data-a="st-close" aria-label="Fechar story">✕</button></header><div class="st-stage${x.image_path?" st-photo":""}">${p.url?`<img id="st-viewer-image" src="${esc(p.url)}" alt="Foto do story">`:""}<p>${esc(x.caption||"")}</p>${p.loading?'<small id="st-image-status" class="st-loading" role="status">Carregando foto…</small>':""}${p.error?`<small class="st-loading" role="status">${esc(p.error)}</small>`:""}${x.music_video?'<span class="st-music-dot" aria-label="Story com clipe musical">♫</span>':''}</div>${x.music_video||x.music_track?stMusicCard(stMusicData(p),p.loading):''}<footer class="st-footer"><button class="btn ghost" data-a="st-prev" ${p.index===0?"disabled":""}>‹ Anterior</button><small>Visível por 24 horas</small><button class="btn ghost" data-a="st-next">Próximo ›</button></footer><div id="st-social">${stSocialView(p,x)}</div>${x.author===p.actor.owner||teamRole()==="admin"?`<button class="lnk2 st-delete" data-a="st-delete" data-id="${esc(x.id)}">Apagar story</button>`:""}</div>`;
   }
   m.innerHTML=body; m.hidden=false;
   const prior=id&&document.getElementById(id); if(!first&&prior){prior.focus();if(typeof position==="number"&&prior.setSelectionRange)try{prior.setSelectionRange(position,position);}catch(_){}}
@@ -2217,7 +2219,7 @@ async function stSend(){
   try{
     if(path){const blob=await(await fetch(p.draft.image)).blob();if(!stPanelCurrent(p))return;const {error}=await p.actor.client.storage.from("stories").upload(path,blob,{contentType:"image/jpeg",cacheControl:"0",upsert:false});if(error)throw error;uploaded=true;}
     if(!stCurrent(p.actor))return;
-    const {data,error}=await p.actor.client.from("stories").insert({id,author:p.actor.owner,caption,image_path:path,theme:p.draft.theme,...(ST.music&&p.draft.music?{music_video:p.draft.music.video,music_title:p.draft.music.title,music_start:p.draft.music.start,music_duration:p.draft.music.duration}:{})}).select("*").single();
+    const {data,error}=await p.actor.client.from("stories").insert({id,author:p.actor.owner,caption,image_path:path,theme:p.draft.theme,...(ST.music&&p.draft.music?(p.draft.music.track?{music_track:p.draft.music.track,music_title:p.draft.music.title,music_start:0,music_duration:p.draft.music.duration}:{music_video:p.draft.music.video,music_title:p.draft.music.title,music_start:p.draft.music.start,music_duration:p.draft.music.duration}):{})}).select("*").single();
     if(error)throw error;if(!stCurrent(p.actor))return;
     ST.rows.unshift(data);ST.loadedAt=0;if(stPanelCurrent(p)){closePix();flash("Story publicado. Ele fica visível por 24 horas.");}
     await stLoad(true);
@@ -2231,7 +2233,7 @@ async function stOpen(author){
 async function stShow(p,index){
   if(!stPanelCurrent(p))return;stMusicStop(p);clearTimeout(ST.timer);p.index=index;p.url="";p.loading=false;p.elapsed=0;p.lastTick=performance.now();p.loadStarted=p.lastTick;p.error="";p.audience=null;p.reactions={};p.reactionLoading=!!ST.interactions;p.heartBusy=false;p.viewRecorded=false;p.viewPending=false;p.viewElapsed=0;p.musicAutoTried=false;p.musicError=false;p.musicEnded=false;p.musicWaiting=false;p.musicStarted=false;p.musicPlaying=false;const request=++p.request;
   const x=ST.rows.find(s=>s.id===p.ids[index]);if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
-  p.musicWaiting=!!x.music_video;
+  p.musicWaiting=!!(x.music_video||x.music_track);
   ST.seen[x.id]=x.expires_at;lsSet("blessed-stories-seen:"+p.actor.owner,ST.seen);
   if(x.image_path)p.loading=true;stRender(true);stTick();stSocialLoad(p);if(!x.image_path)stMusicAuto(p);
   if(x.image_path){
@@ -2243,11 +2245,11 @@ async function stShow(p,index){
 function stTick(){
   clearTimeout(ST.timer);const p=ST.panel;if(!p||p.kind!=="viewer"||!stPanelCurrent(p))return;const x=ST.rows.find(s=>s.id===p.ids[p.index]);
   if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
-  const now=performance.now();if(!p.loading&&!p.error&&!document.hidden)p.viewElapsed=(p.viewElapsed||0)+now-p.lastTick;if(!p.paused&&!p.audience&&!p.loading&&!document.hidden&&!p.musicWaiting&&(!x.music_video||p.musicPlaying||p.musicEnded||p.musicError))p.elapsed+=now-p.lastTick;p.lastTick=now;
+  const now=performance.now();if(!p.loading&&!p.error&&!document.hidden)p.viewElapsed=(p.viewElapsed||0)+now-p.lastTick;if(!p.paused&&!p.audience&&!p.loading&&!document.hidden&&!p.musicWaiting&&(!(x.music_video||x.music_track)||p.musicPlaying||p.musicEnded||p.musicError))p.elapsed=p.audio&&!p.musicEnded?p.audio.currentTime*1000:p.elapsed+now-p.lastTick;p.lastTick=now;
   if(!p.loading&&!p.error&&!document.hidden&&p.viewElapsed>=1000)stRecordView(p,x);
   if(p.loading&&now-p.loadStarted>15000){p.loading=false;p.error="Não consegui carregar a foto. Você pode seguir para o próximo story.";stRender();}
-  const bar=document.getElementById("st-progress-"+p.index);if(bar)bar.style.transform="scaleX("+Math.min(1,p.elapsed/(x.music_video?(x.music_duration||15)*1000:8000))+")";
-  if(!p.audience&&!p.paused&&p.elapsed>=(x.music_video?(x.music_duration||15)*1000:8000)){stNext(1);return;}ST.timer=setTimeout(stTick,200);
+  const bar=document.getElementById("st-progress-"+p.index);if(bar)bar.style.transform="scaleX("+Math.min(1,p.elapsed/(x.music_video||x.music_track?(x.music_duration||15)*1000:8000))+")";
+  if(!p.audience&&!p.paused&&p.elapsed>=(x.music_video||x.music_track?(x.music_duration||15)*1000:8000)){stNext(1);return;}ST.timer=setTimeout(stTick,200);
 }
 function stNext(direction){
   const p=ST.panel;if(!p||p.kind!=="viewer")return;let index=p.index+direction;
@@ -2271,6 +2273,7 @@ function stInput(target){const p=ST.panel;if(stMusicInput(target))return true;
 if(target.id!=="st-caption"||!p||p.kind!=="compose")return false;p.draft.caption=target.value.slice(0,700);const el=$("#st-preview-caption");if(el)el.textContent=p.draft.caption||"Compartilhe uma palavra, um momento ou um versículo.";return true;}
 function stClick(action,button){
   if(action==='st-music-play'){stMusicStart();return true;}
+  if(action==='st-audio-reload'){stAudioLoad(true);return true;}
   if(stSocialClick(action,button)||stCameraClick(action,button))return true;
   if(action==="st-menu")stMenu();else if(action==="st-new")stNew();else if(action==="st-open")stOpen(button.dataset.id);
   else if(action==="st-close")closePix();else if(action==="st-send")stSend();else if(action==="st-reload")stLoad(true);
@@ -2546,21 +2549,79 @@ function stSocialClick(action,button){
 }
 /* STORIES-SOCIAL-END */
 
+/* STORIES-AUDIO-START: biblioteca só no editor; o áudio acompanha a publicação, sem rádio. */
+const ST_AUDIO={owner:null,rows:[],loading:false,loaded:false,error:'',request:0};
+function stAudioReset(){ST_AUDIO.request++;ST_AUDIO.owner=null;ST_AUDIO.rows=[];ST_AUDIO.loading=false;ST_AUDIO.loaded=false;ST_AUDIO.error='';}
+const stAudioNorm=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+function stAudioUrl(key){
+  if(!/^story-audio\/[a-f0-9]{24}\.m4a$/.test(key||''))return '';
+  const base=blBase();try{const url=new URL(base);if(url.protocol!=='https:')return '';return base+'/'+key;}catch(_){return '';}
+}
+async function stAudioLoad(force=false){
+  const p=ST.panel;if(!p||p.kind!=='compose'||!ST.audioLibrary||!stPanelCurrent(p))return;
+  if(ST_AUDIO.owner!==p.actor.owner){stAudioReset();ST_AUDIO.owner=p.actor.owner;}
+  if(ST_AUDIO.loading||(!force&&(ST_AUDIO.loaded||ST_AUDIO.error)))return;
+  const request=++ST_AUDIO.request,actor=p.actor;ST_AUDIO.loading=true;ST_AUDIO.error='';
+  try{
+    const {data,error}=await actor.client.from('story_music_tracks').select('id,artist,title,object_key,duration_seconds').eq('ready',true).order('artist').limit(1000);
+    if(error)throw error;if(!stCurrent(actor)||ST_AUDIO.request!==request)return;
+    ST_AUDIO.rows=(data||[]).filter(t=>/^[a-f0-9]{24}$/.test(t.id)&&t.object_key==='story-audio/'+t.id+'.m4a'&&t.duration_seconds===30);ST_AUDIO.loaded=true;
+  }catch(_){if(stCurrent(actor)&&ST_AUDIO.request===request)ST_AUDIO.error='Não consegui carregar a biblioteca. Tente novamente.';}
+  finally{if(stCurrent(actor)&&ST_AUDIO.request===request){ST_AUDIO.loading=false;if(ST.panel?.kind==='compose')stRender();}}
+}
+function stMusicOptions(p){
+  const music=p.draft.music,query=stAudioNorm(p.audioQuery||''),matches=(artist,title)=>!query||stAudioNorm(artist+' '+title).includes(query);
+  const tracks=ST_AUDIO.owner===p.actor.owner?ST_AUDIO.rows.filter(t=>t.id===music?.track||matches(t.artist,t.title)):[];
+  const videos=stMusicVideos().filter(s=>music?.video===ytId(s.youtube)||matches(s.artist,s.name));
+  return `<option value="">Sem música</option>${tracks.length?`<optgroup label="Biblioteca Blessed · só áudio">${tracks.map(t=>`<option value="audio:${t.id}" ${music?.track===t.id?'selected':''}>${esc(t.artist+' · '+t.title)}</option>`).join('')}</optgroup>`:''}${videos.length?`<optgroup label="Clipes salvos · vídeo visível">${videos.map(s=>`<option value="${esc(s.id)}" ${music?.video===ytId(s.youtube)?'selected':''}>${esc((s.artist?s.artist+' · ':'')+s.name)}</option>`).join('')}</optgroup>`:''}`;
+}
+function stAudioCard(music,loading=false){
+  return `<section class="st-audio-card" aria-label="Música desta publicação"><button class="st-audio-badge" data-a="st-music-play" aria-label="Ouvir ${esc(music.title||'música')}" ${loading?'disabled':''}><span class="st-audio-symbol" aria-hidden="true">♫</span><span><b>${esc(music.title||'Música do momento')}</b><small id="st-music-status" role="status">${music.duration} s · Biblioteca Blessed</small></span></button></section>`;
+}
+async function stAudioStart(p,music){
+  if(p.musicPlayer&&p.musicEngine==='audio'&&!p.musicError){
+    if(p.musicPlaying){p.paused=p.kind==='viewer';stPauseControl(p);stMusicPause(p,true);return;}
+    if(p.musicEnded){p.musicPlayer.seekTo(0);p.musicEnded=false;p.musicStarted=false;p.elapsed=0;}
+    p.paused=false;stPauseControl(p);await p.musicPlayer.playVideo();return;
+  }
+  stMusicStop(p);const request=p.musicRequest,kind=p.kind,current=()=>stPanelCurrent(p)&&p.musicRequest===request&&p.kind===kind;
+  const src=stAudioUrl(music.audio);if(!src){p.musicError=true;p.musicWaiting=false;stMusicStatus('Áudio indisponível.');return;}
+  const mini=$('#miniyt');if(mini){mini.hidden=true;mini.innerHTML='';}
+  const audio=new Audio();audio.preload='none';audio.loop=false;audio.src=src;audio.setAttribute('playsinline','');p.audio=audio;p.musicEngine='audio';p.musicStarting=true;p.musicError=false;p.paused=false;stPauseControl(p);
+  const button=$('[data-a="st-music-play"]');
+  const status=(text,playing=false)=>{if(!current())return;stMusicStatus(text);const symbol=$('.st-audio-symbol');if(symbol){symbol.textContent=playing?'':'♫';symbol.classList.toggle('st-audio-playing',playing);}if(button){button.disabled=false;button.setAttribute('aria-label',(playing?'Pausar ':'Ouvir ')+(music.title||'música'));}};
+  const ended=()=>{if(!current())return;p.musicPlaying=false;p.musicEnded=true;p.musicWaiting=false;p.elapsed=music.duration*1000;p.lastTick=performance.now();status('Trecho concluído.');};
+  const failed=()=>{if(!current())return;p.musicStarting=false;p.musicPlaying=false;p.musicWaiting=false;p.musicError=true;status('Não consegui abrir o áudio. Toque para tentar de novo.');};
+  const play=async()=>{
+    try{await audio.play();}
+    catch(error){if(!current())return;p.musicStarting=false;p.musicPlaying=false;if(error.name==='NotAllowedError'){p.musicWaiting=true;status('Toque para ativar o som.');}else failed();}
+  };
+  audio.addEventListener('playing',()=>{if(!current())return;if(document.hidden||p.audience||p.paused){audio.pause();return;}p.musicStarting=false;p.musicPlaying=true;p.musicWaiting=false;p.musicEnded=false;p.musicError=false;p.lastTick=performance.now();if(!p.musicStarted){p.musicStarted=true;p.elapsed=0;}status(music.duration+' s · Tocando',true);});
+  audio.addEventListener('pause',()=>{if(current()){p.musicPlaying=false;p.lastTick=performance.now();if(!p.musicEnded&&!p.musicError)status('Toque para continuar.');}});
+  audio.addEventListener('waiting',()=>{if(current()){p.musicPlaying=false;p.lastTick=performance.now();status('Carregando áudio…');}});
+  audio.addEventListener('timeupdate',()=>{if(!current())return;p.elapsed=Math.min(audio.currentTime,music.duration)*1000;if(audio.currentTime>=music.duration){audio.pause();ended();}});
+  audio.addEventListener('ended',ended);audio.addEventListener('error',failed);
+  p.musicPlayer={playVideo:play,pauseVideo:()=>audio.pause(),seekTo:time=>{audio.currentTime=time;},destroy:()=>{audio.pause();audio.removeAttribute('src');audio.load();}};
+  status('Carregando áudio…');await play();
+}
+/* STORIES-AUDIO-END */
+
 /* STORIES-MUSIC-START: referência ao clipe; player oficial visível, sem extrair áudio. */
 let stYoutubeAPI=null;
 function stMusicVideos(){return songsAll().filter(song=>ytId(song.youtube)).sort((a,b)=>(a.artist||'').localeCompare(b.artist||'')||(a.name||'').localeCompare(b.name||''));}
 function stMusicData(p){
   if(p.kind==='compose')return p.draft.music||null;
-  const x=ST.rows.find(s=>s.id===p.ids?.[p.index]);return x?.music_video?{video:x.music_video,title:x.music_title,start:x.music_start||0,duration:x.music_duration||15}:null;
+  const x=ST.rows.find(s=>s.id===p.ids?.[p.index]);if(x?.music_track)return {track:x.music_track,audio:x.music_audio,title:x.music_title,start:0,duration:x.music_duration||30};return x?.music_video?{video:x.music_video,title:x.music_title,start:x.music_start||0,duration:x.music_duration||15}:null;
 }
 function stMusicCard(music,loading=false){
+  if(music?.track)return stAudioCard(music,loading);
   if(!music||!/^[A-Za-z0-9_-]{11}$/.test(music.video))return '';
   return `<section class="st-music-card" aria-label="Clipe deste story"><div class="st-music-label"><span aria-hidden="true">♫</span><div><small>BLESSED · TRILHA DO MOMENTO</small><b>${esc(music.title||'Clipe musical')}</b><small>${Math.floor(music.start/60)}:${String(music.start%60).padStart(2,'0')} · ${music.duration} segundos</small></div></div><div id="st-music-host"><div id="st-music-player"></div></div><button class="btn" data-a="st-music-play" ${loading?'disabled':''}>▶ Tocar trecho</button><p id="st-music-status" class="muted" role="status">Toque para ouvir com o clipe visível.</p><a class="st-music-link" href="https://www.youtube.com/watch?v=${music.video}&t=${music.start}s" target="_blank" rel="noopener">Abrir clipe no YouTube ↗</a></section>`;
 }
 function stMusicEdit(p){
   if(!ST.music)return '';
-  const music=p.draft.music,items=stMusicVideos();
-  return `<section class="st-music-edit"><label for="st-music-select">♫ Trilha do momento</label><select id="st-music-select" ${p.busy?'disabled':''}><option value="">Sem música</option>${items.map(song=>`<option value="${esc(song.id)}" ${music?.video===ytId(song.youtube)?'selected':''}>${esc((song.artist?song.artist+' · ':'')+song.name)}</option>`).join('')}</select>${!items.length?'<p class="muted">Salve o link do clipe em uma música do repertório para escolhê-lo aqui.</p>':''}${music?`<div class="st-music-cut"><label>Início (segundos)<input id="st-music-start" type="number" inputmode="numeric" min="0" max="86400" step="1" value="${music.start}" ${p.busy?'disabled':''}></label><label>Trecho<select id="st-music-duration" ${p.busy?'disabled':''}>${[5,10,15,20,30].map(n=>`<option value="${n}" ${music.duration===n?'selected':''}>${n} segundos</option>`).join('')}</select></label></div>${stMusicCard(music)}`:''}</section>`;
+  if(ST.audioLibrary)stAudioLoad();const music=p.draft.music,items=stMusicVideos();
+  return `<section class="st-music-edit"><label for="st-music-select">♫ Trilha do momento</label>${ST.audioLibrary?`<input id="st-audio-search" type="search" placeholder="Buscar música ou artista" value="${esc(p.audioQuery||'')}" aria-label="Buscar na biblioteca" ${p.busy?'disabled':''}>`:''}<select id="st-music-select" ${p.busy?'disabled':''}>${stMusicOptions(p)}</select>${ST.audioLibrary&&ST_AUDIO.loading?'<p class="muted" role="status">Carregando biblioteca…</p>':''}${ST_AUDIO.error?`<p class="muted" role="status">${esc(ST_AUDIO.error)} <button class="lnk2" data-a="st-audio-reload">Tentar novamente</button></p>`:''}${!items.length&&!ST.audioLibrary?'<p class="muted">Salve o link do clipe em uma música do repertório para escolhê-lo aqui.</p>':''}${music?`<div class="st-music-cut">${!music.track?`<label>Início (segundos)<input id="st-music-start" type="number" inputmode="numeric" min="0" max="86400" step="1" value="${music.start}" ${p.busy?'disabled':''}></label>`:''}<label>Trecho<select id="st-music-duration" ${p.busy?'disabled':''}>${[5,10,15,20,30].map(n=>`<option value="${n}" ${music.duration===n?'selected':''}>${n} segundos</option>`).join('')}</select></label></div>${stMusicCard(music)}`:''}</section>`;
 }
 function stMusicAPI(){
   if(window.YT?.Player)return Promise.resolve();if(stYoutubeAPI)return stYoutubeAPI;
@@ -2571,12 +2632,12 @@ function stMusicAPI(){
   }).catch(error=>{stYoutubeAPI=null;throw error;});return stYoutubeAPI;
 }
 function stMusicAuto(p){if(!stPanelCurrent(p)||p.kind!=='viewer'||p.loading||p.error||document.hidden||p.paused||p.musicAutoTried||!stMusicData(p))return;p.musicAutoTried=true;stMusicStart();}
-function stMusicStop(p){if(!p)return;clearTimeout(p.musicFallback);p.musicRequest=(p.musicRequest||0)+1;try{p.musicPlayer?.destroy();}catch(_){}p.musicPlayer=null;p.musicPlaying=false;p.musicStarting=false;}
+function stMusicStop(p){if(!p)return;p.audio=null;p.musicEngine=null;clearTimeout(p.musicFallback);p.musicRequest=(p.musicRequest||0)+1;try{p.musicPlayer?.destroy();}catch(_){}p.musicPlayer=null;p.musicPlaying=false;p.musicStarting=false;}
 function stMusicStatus(message){const el=$('#st-music-status');if(el){el.hidden=false;el.textContent=message;}}
 function stMusicPause(p,paused){try{if(paused){p.musicPlayer?.pauseVideo();p.musicPlaying=false;}else p.musicPlayer?.playVideo();}catch(_){}p.lastTick=performance.now();}
 async function stMusicStart(){
   const p=ST.panel;if(!p||!stPanelCurrent(p)||!['compose','viewer'].includes(p.kind)||p.busy||p.loading||p.musicStarting)return;
-  const music=stMusicData(p);if(!music)return;
+  const music=stMusicData(p);if(!music)return;if(music.track)return stAudioStart(p,music);
   if(p.musicPlayer&&p.musicError)stMusicStop(p);
   if(p.musicPlayer){if(p.musicEnded){try{p.musicPlayer.seekTo(music.start,true);}catch(_){}p.elapsed=0;p.musicEnded=false;p.musicWaiting=true;p.musicStarted=false;}if(p.kind==='viewer'){p.paused=false;stPauseControl(p);}stMusicPause(p,false);return;}
   stMusicStop(p);const request=p.musicRequest,kind=p.kind,current=()=>stPanelCurrent(p)&&p.musicRequest===request&&p.kind===kind;
@@ -2595,9 +2656,10 @@ async function stMusicStart(){
 }
 function stPauseControl(p){const control=$('#st-pause');if(control){control.textContent=p.paused?'▶':'Ⅱ';control.setAttribute('aria-label',p.paused?'Continuar':'Pausar');}}
 function stMusicInput(target){
-  const p=ST.panel;if(!p||p.kind!=='compose'||p.busy||!['st-music-select','st-music-start','st-music-duration'].includes(target.id))return false;
+  const p=ST.panel;if(!p||p.kind!=='compose'||p.busy||!['st-music-select','st-music-start','st-music-duration','st-audio-search'].includes(target.id))return false;
+  if(target.id==='st-audio-search'){p.audioQuery=target.value.slice(0,100);const select=$('#st-music-select');if(select)select.innerHTML=stMusicOptions(p);return true;}
   stMusicStop(p);
-  if(target.id==='st-music-select'){const song=stMusicVideos().find(s=>s.id===target.value);p.draft.music=song?{video:ytId(song.youtube),title:((song.artist?song.artist+' · ':'')+song.name).slice(0,120),start:0,duration:15}:null;}
+  if(target.id==='st-music-select'){const track=ST_AUDIO.rows.find(t=>'audio:'+t.id===target.value);if(track&&ST_AUDIO.owner===p.actor.owner){p.draft.music={track:track.id,audio:track.object_key,title:(track.artist+' · '+track.title).slice(0,120),start:0,duration:30};stRender();return true;}const song=stMusicVideos().find(s=>s.id===target.value);p.draft.music=song?{video:ytId(song.youtube),title:((song.artist?song.artist+' · ':'')+song.name).slice(0,120),start:0,duration:15}:null;}
   else if(p.draft.music){if(target.id==='st-music-start')p.draft.music.start=Math.max(0,Math.min(86400,Math.floor(Number(target.value)||0)));else p.draft.music.duration=[5,10,15,20,30].includes(Number(target.value))?Number(target.value):15;}
   stRender();return true;
 }
