@@ -884,6 +884,24 @@ body.st-story-open{overflow:hidden}
 
 .st-audio-card{padding:0;margin:4px 0;max-width:100%}.st-audio-badge{display:flex;align-items:center;gap:9px;max-width:100%;width:100%;min-height:48px;padding:9px 12px;border:1px solid #d29ee65c;border-radius:13px;background:#24122de8;color:#f6e7ff;text-align:left}.st-audio-symbol{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:9px;background:#c87dff25;color:#e6b9ff;font-size:21px}.st-audio-symbol.st-audio-playing{display:flex;align-items:center;justify-content:center;gap:3px}.st-audio-symbol.st-audio-playing:before,.st-audio-symbol.st-audio-playing:after{content:"";display:block;width:3px;height:13px;background:currentColor;border-radius:1px}.st-audio-badge>span:last-child{display:grid;gap:4px;min-width:0}.st-audio-badge b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.st-audio-badge small{font-size:10px;color:#d4b7e3}.st-viewer>.st-audio-card{position:absolute;left:16px;right:16px;bottom:calc(155px + env(safe-area-inset-bottom,0px));z-index:2;max-width:310px}.st-viewer:has(.st-audience)>.st-audio-card{visibility:hidden}.st-music-edit>input[type=search]{font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);width:100%}
 
+
+/* Blessed: identidade em destaque e chamado pessoal, com movimento breve. */
+.cm-identity-summary{display:flex;align-items:center;gap:14px;margin:14px 0 12px;flex-wrap:wrap}
+.cm-identity-name{flex:1;min-width:110px;overflow-wrap:anywhere}.cm-identity-name .cm-name{margin:0 0 3px;font-size:clamp(23px,5vw,30px)}
+.cm-identity-summary .cm-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:0;padding:7px 5px;border:1px solid rgba(208,163,245,.24);border-radius:17px;background:linear-gradient(140deg,rgba(126,56,173,.24),rgba(35,24,48,.55));flex:0 1 214px}
+.cm-counts button{border:0;border-radius:10px;background:none;color:var(--muted);display:grid;gap:3px;text-align:center;padding:6px 3px;font:12px var(--f-body);min-height:54px;cursor:pointer}.cm-counts button:hover{background:rgba(194,135,241,.14)}.cm-counts button b{font-size:22px;line-height:1;color:#fff}
+.cm-connection-person{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;color:#fff;text-align:left;font:inherit}.cm-connection-person>span:nth-child(2){display:grid;gap:3px;flex:1;min-width:0;overflow-wrap:anywhere}.cm-connection-person small{color:var(--muted)}
+.dm-top-tools{display:flex;align-items:center;gap:8px;margin-left:auto;min-width:0}.glass-top .dm-top-tools .dm-icon,.dm-top-tools .dm-icon{width:44px;height:44px;border-radius:15px;margin:0;background:linear-gradient(150deg,rgba(201,155,240,.18),rgba(71,37,99,.3));box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}.dm-icon svg{width:25px;height:25px}
+.dm-attention-badge{display:flex;align-items:center;gap:7px;border:1px solid rgba(220,172,255,.45);border-radius:13px;padding:7px 9px;background:#392045;color:#fff;text-align:left;font:inherit;min-width:0;max-width:210px}.dm-attention-badge svg{width:24px;height:24px;flex:none}.dm-attention-badge>span{display:grid;min-width:0}.dm-attention-badge b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-attention-badge small{font-size:10px;color:#e6b8ff}
+.glass-top:has(.dm-attention-badge){flex-wrap:wrap}.glass-top:has(.dm-attention-badge) .page-title{flex:1 1 100%}.glass-top:has(.dm-attention-badge) .dm-top-tools{margin-left:0;flex:1}.glass-top:has(.dm-attention-badge) .cm-me{margin-left:auto}
+.dm-attention-float{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:120;display:flex;align-items:center;gap:5px;max-width:calc(100vw - 24px);padding:5px;background:#25122f;border:1px solid #9564b7;border-radius:17px;box-shadow:0 8px 30px #0008}.dm-attention-float>button:last-child{background:none;color:#fff;border:0;padding:10px;font:inherit}.dm-attention-announcer{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.dm-nudge-button{display:grid;place-items:center;gap:2px;align-self:center;flex:none;background:#382047;border:1px solid #83529e;border-radius:14px;padding:6px;color:#f1dbff;min-width:44px;cursor:pointer}.dm-nudge-button svg{width:23px;height:23px}.dm-nudge-button small{font-size:10px}.dm-nudge-button:disabled{opacity:.5}
+.dm-nudge-message{display:flex;align-items:center;gap:9px;align-self:center;border:1px solid #6f4288;border-radius:15px;background:#291b34;padding:10px 15px;margin:8px 0;color:#e8c7ff;font-size:13px}.dm-nudge-message svg{width:25px;height:25px}.dm-nudge-message span{display:grid;gap:3px}.dm-nudge-message small{font-size:10px;color:var(--muted)}
+@keyframes dm-screen-shake{0%,100%{transform:translate(0,0)}12%{transform:translate(-6px,2px)}25%{transform:translate(6px,-2px)}38%{transform:translate(-5px,-1px)}52%{transform:translate(5px,2px)}68%{transform:translate(-3px,-1px)}83%{transform:translate(2px,1px)}}
+body.dm-screen-shake{animation:dm-screen-shake .6s ease-in-out;overflow-x:clip}
+@media(prefers-reduced-motion:reduce){body.dm-screen-shake{animation:none}}
+@media(max-width:360px){.cm-identity-summary .cm-counts{flex-basis:100%}.dm-form{gap:5px;padding-inline:7px}.dm-form>.btn{padding-inline:10px}}
+
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -1269,6 +1287,7 @@ function render(){
   else if (state.view === "song") app.innerHTML = viewSong();
   else if (state.view === "editor") { app.innerHTML = viewEditor(); updateDetect(); }
   renderSheet();
+  dmAttentionPaint();
   if (state.view === "blessings") blSetup(); else { document.body.classList.remove("bl-on"); if (blObs) { blObs.disconnect(); blObs = null; } }
 }
 
@@ -2918,13 +2937,14 @@ async function commAfterPosts(list){
   await pfAfter("post", ids);
 }
 async function commLoadProfile(id){
-  const [{data}, a, b] = await Promise.all([
+  const [{data}, a, b, photos] = await Promise.all([
     TEAM.client.from("community_profiles").select("*").eq("id", id).maybeSingle(),
     TEAM.client.from("follows").select("*", {count: "exact", head: true}).eq("followee", id),
-    TEAM.client.from("follows").select("*", {count: "exact", head: true}).eq("follower", id)]);
+    TEAM.client.from("follows").select("*", {count: "exact", head: true}).eq("follower", id),
+    TEAM.client.from("posts").select("id",{count:"exact",head:true}).eq("author",id).not("image_path","is",null)]);
   if (!data) { COMM.profiles[id] = Object.assign(COMM.profiles[id] || {}, {gone: true, full: true, loading: false}); commRerender("profile"); return; }
   commKeep([Object.assign(data, {full: true, loading: false})]);
-  COMM.counts[id] = {followers: a.count || 0, following: b.count || 0};
+  COMM.counts[id] = {followers: a.count || 0, following: b.count || 0, photos:photos.count??0};
   commLoadAuthorPosts(id);
   commRerender("profile");
 }
@@ -3838,30 +3858,46 @@ function pfClick(a, b){
 /* ---------- Mensagens (direct) ----------
    Conversa de duas pessoas. As regras do banco só deixam as duas lerem (nem o administrador lê).
    As mensagens chegam na hora pelo Realtime. Quem denuncia manda o texto junto. */
-const DM = {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
+const DM = {generation:0, attentionReady:false, attention:null, attentionSeen:new Set(), attentionBusy:false, attentionSent:{}, shakeAt:0, convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
 function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
 function dmUnread(c){ return !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
 function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
 function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
-function dmReset(){ if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
-async function dmLoad(){
+function dmReset(){ DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{attentionReady:false,attention:null,attentionSeen:new Set(),attentionBusy:false,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+async function dmLoad(incoming=null){
+  const generation=DM.generation, client=TEAM.client, owner=TEAM.user?.id;
+  if(!owner)return;
+  const current=()=>DM.generation===generation&&TEAM.client===client&&TEAM.user?.id===owner;
   const [c, r, k] = await Promise.all([
     TEAM.client.from("conversations").select("*").order("last_at", {ascending: false}).limit(200),
     TEAM.client.from("chat_reads").select("conversation_id,read_at").eq("user_id", TEAM.user.id),
     TEAM.client.from("chat_blocks").select("blocked_id").eq("user_id", TEAM.user.id)]);
+  if(!current())return;
   if (c.error) { DM.missing = /does not exist|schema cache/i.test(c.error.message || ""); DM.convs = []; dmRerender(); return; }
   DM.convs = c.data || [];
   (r.data || []).forEach(x => DM.reads[x.conversation_id] = x.read_at);
   DM.blocks = new Set((k.data || []).map(x => x.blocked_id));
   const need = [...new Set(DM.convs.map(dmOther))].filter(u => !COMM.profiles[u]);
-  if (need.length) { const {data} = await TEAM.client.from("community_profiles").select(PF_PROF).in("id", need); commKeep(data); }
+  if (need.length) { const {data} = await client.from("community_profiles").select(PF_PROF).in("id", need); if(!current())return; commKeep(data); }
+  if(!current())return;
   dmSubscribe(); dmRerender();
+  try{
+    const ready=await client.rpc('dm_attention_ready');if(!current())return;
+    DM.attentionReady=ready.data===true&&!ready.error;
+    if(DM.attentionReady){
+      const recent=await client.from('messages').select('id,conversation_id,author,text,created_at').eq('text',DM_ATTENTION_TEXT).order('created_at',{ascending:false}).limit(30);
+      if(!current())return;
+      const latest=(recent.data||[]).filter(m=>m.author!==owner&&(!DM.reads[m.conversation_id]||DM.reads[m.conversation_id]<m.created_at)).sort((a,b)=>b.created_at.localeCompare(a.created_at))[0];
+      if(latest&&latest.id!==incoming?.id)dmAttentionReceive(latest,false);
+    }
+  }catch(_){}finally{if(current())dmRerender();}
 }
 function dmSubscribe(){
   if (DM.ch) return;
+  const owner=TEAM.user.id,generation=DM.generation;
   DM.ch = TEAM.client.channel("dm-" + TEAM.user.id)
-    .on("postgres_changes", {event: "INSERT", schema: "public", table: "messages"}, p => dmIncoming(p.new))
-    .on("postgres_changes", {event: "DELETE", schema: "public", table: "messages"}, p => { const id = p.old && p.old.id; if (!id) return; Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender(); })
+    .on("postgres_changes", {event: "INSERT", schema: "public", table: "messages"}, p => {if(TEAM.user?.id===owner&&DM.generation===generation)dmIncoming(p.new);})
+    .on("postgres_changes", {event: "DELETE", schema: "public", table: "messages"}, p => { if(TEAM.user?.id!==owner||DM.generation!==generation)return; const id = p.old && p.old.id; if (!id) return; Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender(); })
     .subscribe();
 }
 function dmIncoming(m){
@@ -3869,7 +3905,8 @@ function dmIncoming(m){
   const list = DM.msgs[m.conversation_id];
   if (list && !list.some(x => x.id === m.id)) list.push(m);
   const c = DM.convs.find(x => x.id === m.conversation_id);
-  if (!c) { DM.convs = null; dmEnsure(); return; }
+  if (!c) { const generation=DM.generation; dmLoad(m).then(()=>{if(DM.generation===generation&&DM.convs?.some(c=>c.id===m.conversation_id))dmIncoming(m);}); return; }
+  dmAttentionReceive(m,true);
   Object.assign(c, {last_at: m.created_at, last_author: m.author, last_text: String(m.text).slice(0, 120)});
   DM.convs.sort((x, y) => x.last_at < y.last_at ? 1 : -1);
   if (state.view === "chat" && DM.open === m.conversation_id && m.author !== TEAM.user.id) dmMarkRead(m.conversation_id);
@@ -3902,11 +3939,14 @@ function dmOpen(id){
   closePix();
   if (state.view !== "chat") state.dmBack = state.view === "profile" ? "profile" : "chats";
   DM.open = id; state.view = "chat";
+  if(DM.attention?.conversation_id===id){DM.attention=null;dmAttentionPaint();}
   if (!DM.msgs[id]) dmLoadMsgs(id);
   dmMarkRead(id); render(); dmScroll(); dmSafeNotice(false);
 }
 async function dmLoadMsgs(id){
+  const owner=TEAM.user?.id,generation=DM.generation;
   const {data} = await TEAM.client.from("messages").select("id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
+  if(TEAM.user?.id!==owner||DM.generation!==generation)return;
   DM.msgs[id] = (data || []).reverse();
   if (state.view === "chat" && DM.open === id) dmRerender();
 }
@@ -3940,11 +3980,55 @@ function dmSafeNotice(force){
     <button class="btn primary" data-a="pix-close">Entendi</button></div>`;
   box.hidden = false;
 }
+const DM_ATTENTION_TEXT='✨ Chamou sua atenção!';
+const DM_CHAT_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-5.5 3v-3H5a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2Z"/><path d="M7.5 8.5h9m-9 4h6"/></svg>';
+const DM_ATTENTION_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="3"/><path d="m3 7-1 3 2 3-1 4m18-10 1 3-2 3 1 4M11 16h2"/></svg>';
 function dmIconBtn(){
-  dmEnsure();
-  const n = dmUnreadCount();
-  return `<button class="dm-icon" data-a="dm-list" aria-label="Mensagens${n ? ` (${n} não lida${n > 1 ? "s" : ""})` : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></svg>${n ? `<span class="badge">${n}</span>` : ""}</button>`;
+  dmEnsure();const n=dmUnreadCount();
+  return `<div class="dm-top-tools">${dmAttentionBadge()}<button class="dm-icon" data-a="dm-list" aria-label="Mensagens${n?` (${n} não lidas)`:''}">${DM_CHAT_ICON}${n?`<span class="badge">${n}</span>`:''}</button></div>`;
 }
+function dmAttentionBadge(){
+  const a=DM.attention;if(!a||!TEAM.user||DM.blocks.has(a.author))return '';
+  const p=COMM.profiles[a.author]||{},name=p.display_name||'Alguém';
+  return `<button class="dm-attention-badge" data-a="dm-attention-open" data-id="${esc(a.conversation_id)}" aria-label="${esc(name)} chamou sua atenção. Abrir conversa">${DM_ATTENTION_ICON}<span><b>${esc(name)}</b><small>Chamou você</small></span></button>`;
+}
+function dmAttentionPaint(){
+  let live=$('#dm-attention-live');
+  if(!TEAM.user||!DM.attention||DM.blocks.has(DM.attention.author)){live?.remove();return;}
+  if(!live){live=document.createElement('div');live.id='dm-attention-live';live.setAttribute('role','status');live.setAttribute('aria-live','polite');document.body.appendChild(live);}
+  const inHeader=!!document.querySelector('.dm-top-tools .dm-attention-badge');
+  live.className=inHeader?'dm-attention-announcer':'dm-attention-float';
+  live.innerHTML=inHeader?`${esc(COMM.profiles[DM.attention.author]?.display_name||'Alguém')} chamou sua atenção.`:dmAttentionBadge()+'<button data-a="dm-attention-dismiss" aria-label="Dispensar chamado">✕</button>';
+}
+function dmAttentionReceive(m,animate){
+  const owner=TEAM.user?.id,c=DM.convs?.find(c=>c.id===m.conversation_id);
+  if(!owner||!c||m.text!==DM_ATTENTION_TEXT||m.author===owner||!([c.a,c.b].includes(owner)&&[c.a,c.b].includes(m.author))||DM.blocks.has(m.author)||DM.attentionSeen.has(m.id))return;
+  DM.attentionSeen.add(m.id);if(DM.attentionSeen.size>300)DM.attentionSeen.delete(DM.attentionSeen.values().next().value);
+  DM.attention={id:m.id,author:m.author,conversation_id:m.conversation_id,created_at:m.created_at};
+  if(animate&&!document.hidden&&Date.now()-Date.parse(m.created_at)<30000&&Date.parse(m.created_at)<=Date.now()+5000&&Date.now()-DM.shakeAt>=10000){
+    DM.shakeAt=Date.now();
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      document.body.classList.remove('dm-screen-shake');void document.body.offsetWidth;document.body.classList.add('dm-screen-shake');
+      clearTimeout(DM.shakeTimer);DM.shakeTimer=setTimeout(()=>document.body.classList.remove('dm-screen-shake'),650);
+    }
+  }
+  dmAttentionPaint();
+}
+async function dmAttentionSend(){
+  const id=DM.open,c=DM.convs?.find(c=>c.id===id),owner=TEAM.user?.id;
+  if(!owner||!c||!DM.attentionReady||DM.attentionBusy||DM.blocks.has(dmOther(c)))return;
+  const stored=c.a===owner?c.attention_a_at:c.attention_b_at,last=Math.max(Date.parse(stored)||0,DM.attentionSent[id]||0);
+  if(Date.now()-last<60000){flash('Aguarde um minuto antes de chamar essa pessoa novamente.');return;}
+  const generation=DM.generation,client=TEAM.client;DM.attentionBusy=true;dmRerender();
+  try{
+    const {data,error}=await client.from('messages').insert({conversation_id:id,author:owner,text:DM_ATTENTION_TEXT}).select('id,conversation_id,author,text,created_at').single();
+    if(DM.generation!==generation||TEAM.user?.id!==owner)return;
+    if(error||!data){flash(error?.code==='23514'?'Aguarde um pouco antes de chamar novamente.':'Não consegui chamar agora. Confira se a conversa está disponível.');return;}
+    DM.attentionSent[id]=Date.now();dmIncoming(data);flash('Chamado enviado. A tela balança se a pessoa estiver com o Blessed aberto.');
+  }catch(_){if(DM.generation===generation)flash('Sem conexão. Tente novamente.');}
+  finally{if(DM.generation===generation){DM.attentionBusy=false;dmRerender();}}
+}
+
 function dmBtn(uid){ return COMM.me && uid !== TEAM.user.id ? `<button class="btn" data-a="dm-with" data-id="${esc(uid)}">✉ Mensagem</button>` : ""; }
 
 function viewChats(){
@@ -3968,13 +4052,13 @@ function viewChat(){
   let last = "", html = "";
   (list || []).forEach(m => { const day = dmDay(m.created_at); if (day !== last) { html += `<p class="dm-day">${day}</p>`; last = day; }
     const mine = m.author === TEAM.user.id;
-    html += `<div class="dm-msg${mine ? " me" : ""}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}</small></button></div>`; });
+    html += m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}</small></button></div>`; });
   return `<div class="dm-head"><button class="btn ghost" data-a="dm-back" aria-label="Voltar">‹</button>
       <button class="dm-who" data-a="cm-profile" data-id="${esc(o)}">${commAvatar(p, 40)}<span><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><small class="muted">@${esc(p.handle || "")}</small></span></button>
       <button class="btn ghost" data-a="dm-menu" data-id="${esc(o)}" aria-label="Opções da conversa">⋯</button></div>
     <div class="dm-list" id="dm-list">${list === undefined ? '<p class="muted">Carregando…</p>' : html || `<p class="dm-lock">🔒 Só você e ${esc((p.display_name || "a outra pessoa").split(" ")[0])} leem esta conversa. Diga oi! 👋</p>`}</div>
     ${blocked ? `<div class="dm-form"><p style="margin:0;flex:1">Você bloqueou esta pessoa.</p><button class="btn" data-a="dm-block" data-id="${esc(o)}">Desbloquear</button></div>`
-      : `<form class="dm-form" id="dm-form"><textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}`;
+      : `<form class="dm-form" id="dm-form">${DM.attentionReady?`<button class="dm-nudge-button" type="button" data-a="dm-attention-send" aria-label="Chamar atenção: balançar a tela da outra pessoa" title="Chamar atenção" ${DM.attentionBusy?"disabled":""}>${DM_ATTENTION_ICON}<small>Chamar</small></button>`:""}<textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}`;
 }
 function dmMsgMenu(id){
   const m = Object.values(DM.msgs).flat().find(x => x.id === id); if (!m) return;
@@ -4001,7 +4085,8 @@ async function dmBlock(uid){
   const res = on ? await TEAM.client.from("chat_blocks").delete().eq("user_id", TEAM.user.id).eq("blocked_id", uid)
                  : await TEAM.client.from("chat_blocks").insert({user_id: TEAM.user.id, blocked_id: uid});
   if (res.error) { flash("Não consegui agora."); return; }
-  if (on) DM.blocks.delete(uid); else DM.blocks.add(uid);
+  if (on) DM.blocks.delete(uid); else {DM.blocks.add(uid);if(DM.attention?.author===uid)DM.attention=null;}
+  dmAttentionPaint();
   flash(on ? "Desbloqueado." : "Bloqueado."); dmRerender();
 }
 async function dmDelete(id){
@@ -4024,7 +4109,10 @@ async function dmReportSend(id, reason){
   box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true"><h2>${error ? "Não deu certo" : "Obrigado"}</h2><p>${error ? "Não consegui enviar agora. Tente de novo." : "Sua denúncia foi enviada. Se quiser, bloqueie a pessoa no menu ⋯ da conversa."}</p><button class="btn primary" data-a="pix-close">Fechar</button></div>`;
 }
 function dmClick(a, b){
-  if (a === "dm-list") { state.view = "chats"; render(); scrollTo(0, 0); }
+  if(a === "dm-attention-send")dmAttentionSend();
+  else if(a === "dm-attention-open")dmOpen(b.dataset.id);
+  else if(a === "dm-attention-dismiss"){DM.attention=null;dmRerender();dmAttentionPaint();}
+  else if (a === "dm-list") { state.view = "chats"; render(); scrollTo(0, 0); }
   else if (a === "dm-open") dmOpen(b.dataset.id);
   else if (a === "dm-safe") dmSafeNotice(true);
   else if (a === "dm-with") dmWith(b.dataset.id);
@@ -4197,8 +4285,8 @@ function viewProfile(){
     <div class="cm-cover"${cover ? ` style="background-image:url(&quot;${esc(cover)}&quot;)"` : ""}></div>
     <div class="cm-id">${stProfileAvatar(p, 104)}
       <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id) + dmBtn(id)}</div></div>
-    <h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2>
-    <p class="muted" style="margin:0">@${esc(p.handle || "")}</p>
+    <div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2><p class="muted" style="margin:0">@${esc(p.handle || "")}</p></div>
+      <div class="cm-counts" aria-label="Atividade do perfil"><button data-a="cm-profile-photos"><b>${c.photos??(posts?posts.filter(id=>COMM.posts[id]?.image_path).length:'–')}</b><span>Fotos</span></button><button data-a="cm-connections" data-v="followers" data-id="${esc(id)}"><b>${c.followers??'–'}</b><span>Seguidores</span></button><button data-a="cm-connections" data-v="following" data-id="${esc(id)}"><b>${c.following??'–'}</b><span>Seguindo</span></button></div></div>
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
     ${(() => { if (isChurch(p)) return p.church || p.city ? `<p class="cm-church big">${commWhere(p)}</p>` : "";
@@ -4208,7 +4296,7 @@ function viewProfile(){
     ${(p.instruments || []).length ? `<div class="cm-chips">${p.instruments.map(i => `<span>${esc(i)}</span>`).join("")}</div>` : ""}
     ${p.bio ? `<p class="cm-bio">${esc(p.bio)}</p>` : ""}
     ${ig || yt ? `<div class="cm-links">${ig ? `<a href="https://instagram.com/${esc(ig)}" target="_blank" rel="noopener">Instagram ↗</a>` : ""}${yt ? `<a href="${esc(yt)}" target="_blank" rel="noopener">YouTube ↗</a>` : ""}</div>` : ""}
-    <div class="cm-counts"><span><b>${posts ? posts.length : "–"}</b> foto${posts && posts.length === 1 ? "" : "s"}</span><span><b>${c.followers ?? "–"}</b> seguidor${c.followers === 1 ? "" : "es"}</span><span><b>${c.following ?? "–"}</b> seguindo</span></div>
+
   </div>
   ${me ? commVerifyPanel(p) : ""}
   ${teamRole() === "admin" ? `<div class="actions" style="margin-bottom:12px">
@@ -4485,8 +4573,25 @@ function commTrackPlay(songId){
   clearTimeout(commTrackPlay.t);
   commTrackPlay.t = setTimeout(() => TEAM.client.from("community_profiles").update({recent: list}).eq("id", TEAM.user.id).then(() => {}), 3000);
 }
+let commConnectionsRequest=0;
+async function commConnections(id,kind){
+  const owner=TEAM.user?.id,client=TEAM.client,request=++commConnectionsRequest;
+  if(!owner||!['followers','following'].includes(kind))return;
+  closePix();const modal=$('#modal');modal.className='modal';
+  modal.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cm-connections-title"><h2 id="cm-connections-title">${kind==='followers'?'Seguidores':'Seguindo'}</h2><div id="cm-connections-list" role="status">Carregando…</div><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;modal.hidden=false;
+  const current=()=>TEAM.user?.id===owner&&TEAM.client===client&&request===commConnectionsRequest&&!modal.hidden&&!!$('#cm-connections-list');
+  try{
+    const field=kind==='followers'?'follower':'followee',filter=kind==='followers'?'followee':'follower';
+    const result=await client.from('follows').select(field).eq(filter,id).limit(100);if(!current())return;if(result.error)throw result.error;
+    const ids=[...new Set((result.data||[]).map(r=>r[field]))];let people=[];
+    if(ids.length){const result=await client.from('community_profiles').select(PF_PROF).in('id',ids);if(!current())return;if(result.error)throw result.error;people=result.data||[];commKeep(people);}
+    $('#cm-connections-list').innerHTML=people.length?people.map(p=>`<button class="cm-connection-person" data-a="cm-profile" data-id="${esc(p.id)}">${commAvatar(p,42)}<span><b>${esc(p.display_name||'Perfil')}${commBadge(p)}</b><small>@${esc(p.handle||'')}</small></span><span aria-hidden="true">›</span></button>`).join('')+(ids.length===100?'<p class="muted">Mostrando até 100 perfis.</p>':''):'<p class="muted">Ainda não há perfis nesta lista.</p>';
+  }catch(_){if(current())$('#cm-connections-list').textContent='Não consegui carregar. Feche e tente novamente.';}
+}
 function commClick(a, b){
-  if (a === "cm-demo") { commDemoInvite(); }
+  if(a === "cm-connections")commConnections(b.dataset.id,b.dataset.v);
+  else if(a === "cm-profile-photos"){state.pfTab="fotos";rerenderKeepScroll();$(".pf-tabs")?.scrollIntoView({block:"start",behavior:"smooth"});}
+  else if (a === "cm-demo") { commDemoInvite(); }
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tstyle") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.style = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "cm-pkind") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.kind = b.dataset.v; COMM.msg = ""; render(); }
