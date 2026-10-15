@@ -713,6 +713,8 @@ button{cursor:pointer}
 .tw-n{border:0;background:none;padding:0;color:var(--ink);font:700 15px var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
 .tw-m{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .tw-t{display:block;width:100%;border:0;background:none;padding:2px 0 0;text-align:left;color:var(--ink);font:400 16px/1.42 var(--f-body);white-space:pre-wrap;overflow-wrap:anywhere}
+.tw-t.clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.tw-more{border:0;background:none;padding:2px 0;color:#C58BFF;font:600 14px var(--f-body)}
 .tw-bar{display:flex;justify-content:space-between;max-width:420px;margin-top:8px}
 .tw-bar button{border:0;background:none;color:var(--muted);display:inline-flex;align-items:center;gap:5px;font:500 13px var(--f-body);padding:4px 2px;min-height:32px}
 .tw-bar svg{width:19px;height:19px}
@@ -2345,11 +2347,12 @@ const TW_REPOST = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 function twCard(id){
   const p = COMM.posts[id]; if (!p) return "";
   const a = COMM.profiles[p.author] || {}, liked = COMM.myLikes.has(id), saved = COMM.mySaves.has(id), shared = PF.mySh.has("post:" + id);
+  const txt = p.caption || "", long = txt.length > 280 || txt.split(String.fromCharCode(10)).length > 7, open = state.view === "post" || (COMM.twOpen || new Set()).has(id);
   return `<article class="tw">
     <button class="tw-av" data-a="cm-profile" data-id="${esc(p.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 44)}</button>
     <div class="tw-b">
       <p class="tw-h"><button class="tw-n" data-a="cm-profile" data-id="${esc(p.author)}">${esc(a.display_name || "")}</button>${commBadge(a)}<span class="tw-m">@${esc(a.handle || "")} · ${commAgo(p.created_at)}</span></p>
-      <button class="tw-t" data-a="cm-post" data-id="${esc(id)}">${esc(p.caption || "")}</button>
+      <button class="tw-t${long && !open ? " clamp" : ""}" data-a="cm-post" data-id="${esc(id)}">${esc(txt)}</button>${long && state.view !== "post" ? `<button class="tw-more" data-a="tw-more" data-id="${esc(id)}">${open ? "Mostrar menos" : "Mostrar mais"}</button>` : ""}
       ${pfWith("post", id)}
       <div class="tw-bar">
         <button data-a="cm-comments" data-id="${esc(id)}" aria-label="Comentar">${CM_ICONS.comment}<span>${COMM.ccount[id] || ""}</span></button>
@@ -5050,6 +5053,7 @@ document.addEventListener("click", ev => {
   if (a === "terms-accept") { termsAccept(); return; }
   if (a === "terms-accept-open") { termsOpen(true); return; }
   if (a === "cm-edit" && !termsGate()) return;
+  if (a === "tw-more") { const set = COMM.twOpen || (COMM.twOpen = new Set()); if (set.has(b.dataset.id)) set.delete(b.dataset.id); else set.add(b.dataset.id); rerenderKeepScroll(); return; }
   if (a.startsWith("cm-") && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("pf-") && pfClick(a, b)) return;
