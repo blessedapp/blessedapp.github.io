@@ -897,8 +897,8 @@ body.st-story-open{overflow:hidden}
 .dm-attention-float{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:120;display:flex;align-items:center;gap:5px;max-width:calc(100vw - 24px);padding:5px;background:#25122f;border:1px solid #9564b7;border-radius:17px;box-shadow:0 8px 30px #0008}.dm-attention-float>button:last-child{background:none;color:#fff;border:0;padding:10px;font:inherit}.dm-attention-announcer{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .dm-nudge-button{display:grid;place-items:center;gap:2px;align-self:center;flex:none;background:#382047;border:1px solid #83529e;border-radius:14px;padding:6px;color:#f1dbff;min-width:44px;cursor:pointer}.dm-nudge-button svg{width:23px;height:23px}.dm-nudge-button small{font-size:10px}.dm-nudge-button:disabled{opacity:.5}
 .dm-nudge-message{display:flex;align-items:center;gap:9px;align-self:center;border:1px solid #6f4288;border-radius:15px;background:#291b34;padding:10px 15px;margin:8px 0;color:#e8c7ff;font-size:13px}.dm-nudge-message svg{width:25px;height:25px}.dm-nudge-message span{display:grid;gap:3px}.dm-nudge-message small{font-size:10px;color:var(--muted)}
-@keyframes dm-screen-shake{0%,100%{transform:translate(0,0)}12%{transform:translate(-6px,2px)}25%{transform:translate(6px,-2px)}38%{transform:translate(-5px,-1px)}52%{transform:translate(5px,2px)}68%{transform:translate(-3px,-1px)}83%{transform:translate(2px,1px)}}
-body.dm-screen-shake{animation:dm-screen-shake .6s ease-in-out;overflow-x:clip}
+@keyframes dm-screen-shake{0%,100%{transform:translate(0,0)}8%{transform:translate(-9px,3px)}17%{transform:translate(9px,-3px)}26%{transform:translate(-8px,-2px)}35%{transform:translate(9px,3px)}44%{transform:translate(-8px,-3px)}53%{transform:translate(8px,2px)}62%{transform:translate(-7px,-2px)}71%{transform:translate(6px,2px)}80%{transform:translate(-4px,-1px)}90%{transform:translate(2px,1px)}}
+body.dm-screen-shake{animation:dm-screen-shake 1.1s ease-in-out;overflow-x:clip}
 @media(prefers-reduced-motion:reduce){body.dm-screen-shake{animation:none}}
 @media(max-width:360px){.cm-identity-summary .cm-counts{flex-basis:100%}.dm-form{gap:5px;padding-inline:7px}.dm-form>.btn{padding-inline:10px}}
 
@@ -4094,7 +4094,7 @@ function dmAttentionReceive(m,animate){
     DM.shakeAt=Date.now();ntfSound('attention');
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
       document.body.classList.remove('dm-screen-shake');void document.body.offsetWidth;document.body.classList.add('dm-screen-shake');
-      clearTimeout(DM.shakeTimer);DM.shakeTimer=setTimeout(()=>document.body.classList.remove('dm-screen-shake'),650);
+      clearTimeout(DM.shakeTimer);DM.shakeTimer=setTimeout(()=>document.body.classList.remove('dm-screen-shake'),1150);
     }
   }
   dmAttentionPaint();
