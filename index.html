@@ -2554,7 +2554,7 @@ const ST_AUDIO={owner:null,rows:[],loading:false,loaded:false,error:'',request:0
 function stAudioReset(){ST_AUDIO.request++;ST_AUDIO.owner=null;ST_AUDIO.rows=[];ST_AUDIO.loading=false;ST_AUDIO.loaded=false;ST_AUDIO.error='';}
 const stAudioNorm=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function stAudioUrl(key){
-  if(!/^story-audio\/[a-f0-9]{24}\.m4a$/.test(key||''))return '';
+  if(!/^(?:story-audio\/)?[a-f0-9]{24}\.m4a$/.test(key||''))return '';
   const base=blBase();try{const url=new URL(base);if(url.protocol!=='https:')return '';return base+'/'+key;}catch(_){return '';}
 }
 async function stAudioLoad(force=false){
@@ -2565,7 +2565,7 @@ async function stAudioLoad(force=false){
   try{
     const {data,error}=await actor.client.from('story_music_tracks').select('id,artist,title,object_key,duration_seconds').eq('ready',true).order('artist').limit(1000);
     if(error)throw error;if(!stCurrent(actor)||ST_AUDIO.request!==request)return;
-    ST_AUDIO.rows=(data||[]).filter(t=>/^[a-f0-9]{24}$/.test(t.id)&&t.object_key==='story-audio/'+t.id+'.m4a'&&t.duration_seconds===30);ST_AUDIO.loaded=true;
+    ST_AUDIO.rows=(data||[]).filter(t=>/^[a-f0-9]{24}$/.test(t.id)&&(t.object_key===t.id+'.m4a'||t.object_key==='story-audio/'+t.id+'.m4a')&&t.duration_seconds===30);ST_AUDIO.loaded=true;
   }catch(_){if(stCurrent(actor)&&ST_AUDIO.request===request)ST_AUDIO.error='Não consegui carregar a biblioteca. Tente novamente.';}
   finally{if(stCurrent(actor)&&ST_AUDIO.request===request){ST_AUDIO.loading=false;if(ST.panel?.kind==='compose')stRender();}}
 }
