@@ -919,6 +919,9 @@ body.dm-screen-shake{animation:dm-screen-shake 1.1s ease-in-out;overflow-x:clip}
 
 
 .pr-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0}.pr-summary b{font-size:22px}.pr-summary small{color:var(--muted);font-size:12px}.pr-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#6be0b1;box-shadow:0 0 12px #6be0b144}.pr-users{max-height:440px;overflow:auto}.pr-user{padding:12px 0;border-top:1px solid #ffffff12;display:flex;flex-direction:column;gap:4px;overflow-wrap:anywhere}.pr-user span{font-size:13px}.pr-user time{font-variant-numeric:tabular-nums}.pr-live{color:#85e1bb}
+.dm-form{flex-wrap:wrap}.dm-tools{display:flex;gap:8px;align-items:center;width:100%;padding-bottom:2px}.dmm-tool{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid #ffffff25;border-radius:13px;background:#ffffff09;color:inherit;padding:7px 10px;min-height:44px;font-size:12px}.dmm-tool svg{width:22px;height:22px}.dm-tools .dm-nudge-button{margin-left:auto;flex-direction:row;min-height:44px}.dm-tools .dm-nudge-button svg{width:22px;height:22px}.dm-list{bottom:calc(132px + env(safe-area-inset-bottom,0px));padding-bottom:12px}.dmm-bubble{min-width:150px;max-width:min(310px,76vw);padding:9px!important}.dmm-audio-bubble{width:min(310px,76vw)}.dmm-bubble audio{display:block;width:100%;max-width:100%;min-width:0}.dmm-bubble p{margin:8px 3px;white-space:pre-wrap;overflow-wrap:anywhere}.dmm-photo{border:0;padding:0;border-radius:13px;overflow:hidden;display:block;background:#0002;width:100%}.dmm-photo img{display:block;width:100%;max-height:350px;object-fit:contain}.dmm-meta{display:flex;align-items:center;justify-content:space-between;gap:8px}.dmm-meta small{margin:0!important}.dmm-meta button{min-height:34px;padding:4px 10px}.dmm-preview{display:block;width:100%;max-height:55vh;object-fit:contain;border-radius:14px;margin:10px 0}.dmm-preview-audio{width:100%;margin:12px 0}.dmm-editor{display:flex;flex-direction:column;gap:10px}.dmm-editor label{display:grid;gap:7px}.dmm-editor .actions{margin-top:5px}.dmm-recording{color:#f391ab;display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
+
+.dwp-on{background-size:cover;background-position:center;background-repeat:no-repeat}.dwp-on .dm-day{background:#171020dd;padding:4px 12px;border-radius:20px;color:#eee}.dwp-on .dm-lock{background:#171020dd;padding:14px;border-radius:14px;color:#eee}.dwp-example{height:220px;border-radius:16px;background-size:cover;background-position:center;padding:20px;display:flex;flex-direction:column;gap:20px;justify-content:center}.dwp-example span{align-self:center;color:#fff;font-size:12px;background:#171020cc;border-radius:20px;padding:5px 12px}.dwp-example b{align-self:flex-end;background:#8129b9;padding:12px;border-radius:14px;color:#fff}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -1317,6 +1320,8 @@ const chevron = '<svg class="chev" width="16" height="16" viewBox="0 0 16 16" ar
 
 /* ---------- views ---------- */
 function render(){
+  if(DMM.panel&&!dmmCurrent(DMM.panel))dmmClose();
+  if(DWP.edit&&!dwpCurrent(DWP.edit))dwpCloseEditor();
   const app = $("#app");
   app.className = state.view === "library" ? "wide" : "";
   if (state.view === "library") app.innerHTML = viewLibrary();
@@ -3975,12 +3980,53 @@ function pfClick(a, b){
 /* ---------- Mensagens (direct) ----------
    Conversa de duas pessoas. As regras do banco só deixam as duas lerem (nem o administrador lê).
    As mensagens chegam na hora pelo Realtime. Quem denuncia manda o texto junto. */
+/* Anexos do direct: bucket privado, revisão antes de enviar e captura só após um toque. */
+const DMM={ready:false,panel:null,urls:new Map(),signing:false};
+const DMM_FIELDS='id,conversation_id,author,text,created_at,media_kind,media_path,media_mime,media_bytes,media_seconds';
+const DMM_PHOTO_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="4"/><circle cx="8" cy="9" r="1.5"/><path d="m3 17 6-6 4 4 3-3 5 5"/></svg>';
+const DMM_MIC_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg>';
+function dmmCurrent(p){return p&&DMM.panel===p&&!p.cancelled&&TEAM.user?.id===p.owner&&TEAM.client===p.client&&DM.generation===p.generation&&DM.open===p.conv&&state.view==='chat';}
+function dmmClose(){const p=DMM.panel;if(!p)return;p.cancelled=true;clearInterval(p.timer);clearTimeout(p.limit);p.stream?.getTracks().forEach(t=>t.stop());if(p.recorder?.state==='recording'){try{p.recorder.stop();}catch(e){}}if(p.url)URL.revokeObjectURL(p.url);DMM.panel=null;const box=$('#modal');if(box?.querySelector('#dmm-title')){box.hidden=true;box.innerHTML='';}}
+function dmmPanel(kind){if(!DMM.ready||!TEAM.user||!termsGate()||DM.busy)return null;const c=DM.convs?.find(x=>x.id===DM.open);if(!c||DM.blocks.has(dmOther(c)))return null;closePix();if(DWP.edit?.busy||DMM.panel?.busy)return null;const p={kind,owner:TEAM.user.id,client:TEAM.client,generation:DM.generation,conv:DM.open,phase:'pick',error:'',busy:false,cancelled:false};DMM.panel=p;return p;}
+function dmmShow(p){if(!dmmCurrent(p))return;const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box dmm-editor" role="dialog" aria-modal="true" aria-labelledby="dmm-title"><h2 id="dmm-title">${p.kind==='photo'?'Enviar foto':'Mensagem de áudio'}</h2>${p.phase==='recording'?'<p class="dmm-recording" role="status">● Gravando <b id="dmm-seconds">00:00</b></p><button class="btn primary" data-a="dmm-stop">Parar gravação</button>':p.phase==='permission'?'<p role="status">Permita o microfone para começar.</p>':p.phase==='processing'?'<p role="status">Preparando sua foto…</p>':p.blob?`${p.kind==='photo'?`<img class="dmm-preview" src="${esc(p.url)}" alt="Foto escolhida para enviar"><label>Legenda opcional<textarea id="dmm-caption" ${p.busy?'disabled':''} maxlength="2000" rows="2" placeholder="Escreva uma legenda…">${esc(p.caption||'')}</textarea></label>`:`<audio class="dmm-preview-audio" src="${esc(p.url)}" controls preload="metadata"></audio><p class="muted">${p.seconds} segundos · ouça antes de enviar.</p>`}<div class="actions"><button class="btn primary" data-a="dmm-send" ${p.busy?'disabled':''}>${p.busy?'Enviando…':p.kind==='photo'?'Enviar foto':'Enviar áudio'}</button>${p.kind==='audio'?'<button class="btn ghost" data-a="dmm-again" '+(p.busy?'disabled':'')+'>Gravar novamente</button>':''}</div>`:p.kind==='photo'?'<p>Escolha uma foto da sua galeria.</p><button class="btn" data-a="dmm-pick">Escolher foto</button>':'<p>Grave até 2 minutos. Você poderá ouvir antes de enviar.</p><button class="btn primary" data-a="dmm-record">Começar gravação</button>'}${p.error?`<p class="confirm" role="alert">${esc(p.error)}</p>`:''}<button class="btn ghost" data-a="pix-close" ${p.busy?'disabled':''}>Cancelar</button><p class="muted" style="font-size:12px">Só as duas pessoas desta conversa têm acesso ao arquivo.</p></section>`;box.hidden=false;}
+function dmmPick(p){if(!dmmCurrent(p))return;const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=()=>{const f=input.files?.[0];if(f)dmmPhoto(p,f);};input.click();}
+async function dmmPreparePhoto(file,maxEdge=1920){if(!file.type.startsWith('image/')||file.size>25*1024*1024)throw Error('size');const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();if(!img.naturalWidth||img.naturalWidth*img.naturalHeight>60000000)throw Error('size');const ratio=Math.min(1,maxEdge/Math.max(img.naturalWidth,img.naturalHeight)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(img.naturalHeight*ratio));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.84));if(!blob||blob.size>10485760)throw Error('size');return blob;}finally{URL.revokeObjectURL(url);}}
+async function dmmPhoto(p,file){if(!dmmCurrent(p))return;p.phase='processing';p.error='';dmmShow(p);try{const blob=await dmmPreparePhoto(file);if(!dmmCurrent(p))return;if(p.url)URL.revokeObjectURL(p.url);Object.assign(p,{blob,mime:'image/jpeg',ext:'jpg',url:URL.createObjectURL(blob),phase:'preview'});}catch(e){if(dmmCurrent(p)){p.phase='pick';p.error='Não consegui abrir essa foto. Escolha uma imagem JPG ou PNG de até 25 MB.';}}finally{dmmShow(p);}}
+
+async function dmmRecord(p){if(!dmmCurrent(p)||p.phase==='permission'||p.phase==='recording')return;if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){p.error='Este navegador não grava áudio. Abra o Blessed no Safari ou Chrome atualizado.';dmmShow(p);return;}if(p.url)URL.revokeObjectURL(p.url);Object.assign(p,{url:null,blob:null,phase:'permission',error:''});dmmShow(p);let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});if(!dmmCurrent(p)){stream.getTracks().forEach(t=>t.stop());return;}const type=['audio/webm;codecs=opus','audio/mp4','audio/ogg;codecs=opus'].find(t=>MediaRecorder.isTypeSupported(t));if(!type)throw Error('format');const recorder=new MediaRecorder(stream,{mimeType:type,audioBitsPerSecond:96000});Object.assign(p,{stream,recorder,chunks:[],bytes:0,tooLarge:false,recordError:false,stopAt:null,start:Date.now(),phase:'recording',mime:type.split(';')[0],ext:type.startsWith('audio/mp4')?'m4a':type.startsWith('audio/ogg')?'ogg':'webm'});recorder.ondataavailable=e=>{if(e.data.size){p.bytes+=e.data.size;p.chunks.push(e.data);if(p.bytes>10485760){p.tooLarge=true;dmmStop(p);}}};recorder.onerror=()=>{p.recordError=true;dmmStop(p);};recorder.onstop=()=>{clearInterval(p.timer);clearTimeout(p.limit);stream.getTracks().forEach(t=>t.stop());if(!dmmCurrent(p))return;const blob=new Blob(p.chunks,{type:p.mime});p.chunks=[];if(p.tooLarge||p.recordError||!blob.size){p.phase='pick';p.error='Não consegui concluir o áudio. Tente gravar novamente.';}else Object.assign(p,{blob,url:URL.createObjectURL(blob),seconds:Math.max(1,Math.min(120,Math.ceil(((p.stopAt||Date.now())-p.start)/1000))),phase:'preview'});dmmShow(p);};recorder.start(1000);p.timer=setInterval(()=>{const el=$('#dmm-seconds');if(el)el.textContent=prClock(Math.min(120000,Date.now()-p.start)).slice(-5);},250);p.limit=setTimeout(()=>dmmStop(p),120000);stream.getTracks().forEach(t=>{t.onended=()=>dmmStop(p);});dmmShow(p);}catch(e){stream?.getTracks().forEach(t=>t.stop());if(dmmCurrent(p)){p.phase='pick';p.error=e.name==='NotAllowedError'?'O microfone não foi autorizado. Permita o acesso nas configurações do navegador e tente novamente.':e.name==='NotFoundError'?'Nenhum microfone foi encontrado.':'Não consegui iniciar a gravação. Confira o microfone e tente novamente.';dmmShow(p);}}}
+function dmmStop(p){if(p?.recorder?.state==='recording'){p.stopAt=Date.now();p.recorder.stop();p.stream?.getTracks().forEach(t=>t.stop());clearInterval(p.timer);clearTimeout(p.limit);}}
+async function dmmSend(p){if(!dmmCurrent(p)||!p.blob||p.busy||DM.busy)return;p.caption=($('#dmm-caption')?.value||'').trim().slice(0,2000);p.busy=true;p.error='';DM.busy=true;dmmShow(p);const path=p.owner+'/'+p.conv+'/'+crypto.randomUUID()+'.'+p.ext;let uploaded=false,committed=false;try{const up=await p.client.storage.from('chat-media').upload(path,p.blob,{contentType:p.mime,cacheControl:'0',upsert:false});if(up.error)throw up.error;uploaded=true;if(!dmmCurrent(p))return;const {data,error}=await p.client.from('messages').insert({conversation_id:p.conv,author:p.owner,text:p.caption||(p.kind==='photo'?'📷 Foto':'🎤 Áudio'),media_kind:p.kind,media_path:path,media_mime:p.mime,media_bytes:p.blob.size,media_seconds:p.kind==='audio'?p.seconds:null}).select(DMM_FIELDS).single();if(error)throw error;committed=true;if(dmmCurrent(p)){p.busy=false;DM.busy=false;closePix();dmIncoming(data);ntfSound('sent');}}catch(e){if(dmmCurrent(p)){p.busy=false;p.error=navigator.onLine?'Não foi possível enviar. Confira sua conexão e tente novamente.':'Sem internet. Sua prévia continua aqui para tentar novamente.';dmmShow(p);}}finally{if(uploaded&&!committed&&TEAM.user?.id===p.owner&&DM.generation===p.generation)await p.client.storage.from('chat-media').remove([path]).catch(()=>{});if(TEAM.user?.id===p.owner&&DM.generation===p.generation)DM.busy=false;}}
+function dmmCached(path){const item=DMM.urls.get(path);return item&&item.until>Date.now()?item.url:null;}
+function dmmFile(m,url){return m.media_kind==='photo'?`<button class="dmm-photo" data-a="dmm-view" data-id="${esc(m.id)}" aria-label="Abrir foto enviada"><img src="${esc(url)}" loading="lazy" alt="Foto enviada na conversa" data-dmm-id="${esc(m.id)}"></button>`:`<audio data-dmm-audio="${esc(m.id)}" data-dmm-id="${esc(m.id)}" src="${esc(url)}" controls preload="metadata"></audio>`;}
+function dmmMessage(m,mine){const url=dmmCached(m.media_path),label=m.media_kind==='photo'?'Foto':'Áudio';return `<div class="dm-msg${mine?' me':''}"><div class="dm-b dmm-bubble${m.media_kind==='audio'?' dmm-audio-bubble':''}"><div class="dmm-file" data-dmm-file="${esc(m.id)}">${url?dmmFile(m,url):`<button class="btn ghost" data-a="dmm-fetch" data-id="${esc(m.id)}">Carregar ${label.toLowerCase()}</button>`}</div>${m.text&&m.text!=='📷 Foto'&&m.text!=='🎤 Áudio'?`<p>${esc(m.text).replace(/\n/g,'<br>')}</p>`:''}<div class="dmm-meta"><small>${m.media_kind==='audio'?(m.media_seconds||0)+'s · ':''}${dmTime(m.created_at)}</small><button data-a="dm-msg" data-id="${esc(m.id)}" class="btn ghost" aria-label="Opções da ${label.toLowerCase()}">⋯</button></div></div></div>`;}
+async function dmmHydrate(target){if(!TEAM.user||state.view!=='chat')return;const owner=TEAM.user.id,generation=DM.generation,conv=DM.open,client=TEAM.client;const rows=(DM.msgs[conv]||[]).filter(m=>m.media_path&&(target?m.id===target:true)).slice(-30);const need=rows.filter(m=>!dmmCached(m.media_path));if(!need.length||DMM.signing)return;DMM.signing=true;try{const {data,error}=await client.storage.from('chat-media').createSignedUrls(need.map(m=>m.media_path),900);if(owner!==TEAM.user?.id||generation!==DM.generation)return;if(!error)for(const r of data||[])if(r.signedUrl&&r.path){DMM.urls.set(r.path,{url:r.signedUrl,until:Date.now()+840000});}while(DMM.urls.size>350)DMM.urls.delete(DMM.urls.keys().next().value);if(state.view==='chat'&&DM.open===conv)for(const m of rows){const url=dmmCached(m.media_path),el=document.querySelector('[data-dmm-file="'+CSS.escape(m.id)+'"]');if(url&&el&&!el.querySelector('audio,img'))el.innerHTML=dmmFile(m,url);}}catch(e){}finally{if(generation===DM.generation)DMM.signing=false;}}
+function dmmRememberAudio(){return [...document.querySelectorAll('audio[data-dmm-audio]')].map(el=>({id:el.dataset.dmmAudio,time:el.currentTime,paused:el.paused,rate:el.playbackRate}));}
+function dmmRestoreAudio(list){for(const old of list){const el=document.querySelector('audio[data-dmm-audio="'+CSS.escape(old.id)+'"]');if(!el)continue;const resume=()=>{el.currentTime=old.time;el.playbackRate=old.rate;if(!old.paused)el.play().catch(()=>{});};if(el.readyState>=1)resume();else el.addEventListener('loadedmetadata',resume,{once:true});}}
+function dmmClick(a,b){if(a==='dmm-photo'){const p=dmmPanel('photo');if(p){dmmShow(p);dmmPick(p);}}else if(a==='dmm-audio'){const p=dmmPanel('audio');if(p)dmmShow(p);}else if(a==='dmm-pick')dmmPick(DMM.panel);else if(a==='dmm-record'||a==='dmm-again')dmmRecord(DMM.panel);else if(a==='dmm-stop')dmmStop(DMM.panel);else if(a==='dmm-send')dmmSend(DMM.panel);else if(a==='dmm-fetch')dmmHydrate(b.dataset.id);else if(a==='dmm-view'){const m=(DM.msgs[DM.open]||[]).find(m=>m.id===b.dataset.id),url=m&&dmmCached(m.media_path);if(url){closePix();const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true" aria-label="Foto da conversa"><img class="dmm-preview" src="${esc(url)}" alt="Foto da conversa"><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;box.hidden=false;}}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&DMM.panel?.phase==='recording')dmmStop(DMM.panel);});
+window.addEventListener('pagehide',()=>dmmClose());
+document.addEventListener('error',e=>{const id=e.target?.dataset?.dmmId;if(!id)return;const m=(DM.msgs[DM.open]||[]).find(x=>x.id===id);if(m)DMM.urls.delete(m.media_path);const el=e.target.closest('.dmm-file');if(el)el.innerHTML=`<button class="btn ghost" data-a="dmm-fetch" data-id="${esc(id)}">Carregar arquivo novamente</button>`;},true);
+
+/* Papel de parede local, separado por conta e conversa. Não envia a imagem ao destinatário. */
+const DWP={key:null,url:null,request:0,edit:null};
+function dwpKey(){return TEAM.user&&DM.open?TEAM.user.id+':'+DM.open:null;}
+function dwpCloseEditor(){const p=DWP.edit;if(p?.url)URL.revokeObjectURL(p.url);DWP.edit=null;const box=$('#modal');if(box?.querySelector('#dwp-title')){box.hidden=true;box.innerHTML='';}}
+function dwpReset(){dwpCloseEditor();if(DWP.url)URL.revokeObjectURL(DWP.url);DWP.url=null;DWP.key=null;DWP.request++;}
+function dwpStore(mode,key,blob){return new Promise((resolve,reject)=>{let db;const open=indexedDB.open('blessed-chat-wallpaper',1);open.onupgradeneeded=()=>open.result.createObjectStore('wallpapers');open.onerror=()=>reject(Error('storage'));open.onsuccess=()=>{db=open.result;let tx,request;try{tx=db.transaction('wallpapers',mode==='get'?'readonly':'readwrite');const store=tx.objectStore('wallpapers');request=mode==='get'?store.get(key):mode==='delete'?store.delete(key):store.put(blob,key);tx.oncomplete=()=>{const result=request.result;db.close();resolve(result);};tx.onerror=tx.onabort=()=>{db.close();reject(Error('storage'));};}catch(e){db.close();reject(e);}};});}
+function dwpPaint(){const list=$('#dm-list');if(!list||DWP.key!==dwpKey())return;list.style.backgroundImage=DWP.url?'linear-gradient(#0c0b0e99,#0c0b0eb8),url("'+DWP.url+'")':'';list.classList.toggle('dwp-on',!!DWP.url);}
+async function dwpLoad(){const key=dwpKey();if(!key||state.view!=='chat')return;if(DWP.key===key){dwpPaint();return;}if(DWP.url)URL.revokeObjectURL(DWP.url);DWP.key=key;DWP.url=null;const request=++DWP.request;try{const blob=await dwpStore('get',key);if(request!==DWP.request||key!==dwpKey()||state.view!=='chat')return;if(blob instanceof Blob)DWP.url=URL.createObjectURL(blob);dwpPaint();}catch(e){/* Sem imagem salva: conversa continua com o fundo padrão. */}}
+function dwpCurrent(p){return p&&DWP.edit===p&&p.key===dwpKey()&&p.owner===TEAM.user?.id&&p.generation===DM.generation&&state.view==='chat';}
+function dwpMenu(){closePix();if(DMM.panel?.busy)return;DWP.edit={key:dwpKey(),owner:TEAM.user?.id,generation:DM.generation,busy:false};dwpShow(DWP.edit);}
+function dwpShow(p){if(!dwpCurrent(p))return;const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box dmm-editor" role="dialog" aria-modal="true" aria-labelledby="dwp-title"><h2 id="dwp-title">Papel de parede</h2><p class="muted">Escolha uma foto da galeria para esta conversa. Só você verá, neste aparelho.</p>${p.url?`<div class="dwp-example" style="background-image:linear-gradient(#0c0b0e88,#0c0b0eaa),url('${esc(p.url)}')"><span>Assim ficará sua conversa</span><b>Uma nova mensagem ✨</b></div>`:''}${p.error?`<p class="confirm" role="alert">${esc(p.error)}</p>`:''}<button class="btn" data-a="dwp-pick" ${p.busy?'disabled':''}>Escolher foto da galeria</button>${p.blob?`<button class="btn primary" data-a="dwp-save" ${p.busy?'disabled':''}>${p.busy?'Salvando…':'Usar nesta conversa'}</button>`:''}<button class="btn ghost" data-a="dwp-clear" ${p.busy?'disabled':''}>Restaurar fundo padrão</button><button class="btn ghost" data-a="pix-close" ${p.busy?'disabled':''}>Cancelar</button></section>`;box.hidden=false;}
+function dwpPick(){const p=DWP.edit;if(!dwpCurrent(p)||p.busy)return;const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=async()=>{const file=input.files?.[0];if(!file)return;p.busy=true;p.error='';dwpShow(p);try{const blob=await dmmPreparePhoto(file,1600);if(!dwpCurrent(p))return;if(p.url)URL.revokeObjectURL(p.url);p.blob=blob;p.url=URL.createObjectURL(blob);}catch(e){if(dwpCurrent(p))p.error='Não consegui abrir essa foto. Escolha uma imagem JPG ou PNG de até 25 MB.';}finally{if(dwpCurrent(p)){p.busy=false;dwpShow(p);}}};input.click();}
+async function dwpSave(clear=false){const p=DWP.edit;if(!dwpCurrent(p)||p.busy||(!clear&&!p.blob))return;p.busy=true;p.error='';dwpShow(p);try{await dwpStore(clear?'delete':'put',p.key,p.blob);if(!dwpCurrent(p))return;if(DWP.url)URL.revokeObjectURL(DWP.url);DWP.url=clear?null:URL.createObjectURL(p.blob);DWP.key=p.key;DWP.request++;p.busy=false;closePix();dwpPaint();flash(clear?'Fundo padrão restaurado.':'Papel de parede salvo neste aparelho ✓');}catch(e){if(dwpCurrent(p)){p.busy=false;p.error='Não consegui salvar neste aparelho. Verifique o espaço disponível e tente novamente.';dwpShow(p);}}}
+
 const DM = {generation:0, attentionReady:false, attention:null, attentionSeen:new Set(), attentionBusy:false, attentionSent:{}, shakeAt:0, convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
 function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
 function dmUnread(c){ return !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
 function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
 function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
-function dmReset(){ DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{attentionReady:false,attention:null,attentionSeen:new Set(),attentionBusy:false,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+function dmReset(){ dwpReset();dmmClose();DMM.ready=false;DMM.urls.clear();DMM.signing=false;DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{attentionReady:false,attention:null,attentionSeen:new Set(),attentionBusy:false,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
 async function dmLoad(incoming=null){
   const generation=DM.generation, client=TEAM.client, owner=TEAM.user?.id;
   if(!owner)return;
@@ -3997,6 +4043,7 @@ async function dmLoad(incoming=null){
   const need = [...new Set(DM.convs.map(dmOther))].filter(u => !COMM.profiles[u]);
   if (need.length) { const {data} = await client.from("community_profiles").select(PF_PROF).in("id", need); if(!current())return; commKeep(data); }
   if(!current())return;
+  try{const media=await client.rpc("dm_media_ready");if(!current())return;DMM.ready=media.data===true&&!media.error;}catch(e){}
   dmSubscribe(); dmRerender();
   if(state.deepConversation){const target=state.deepConversation;state.deepConversation=null;if(DM.convs.some(c=>c.id===target))dmOpen(target);}
   try{
@@ -4033,8 +4080,10 @@ function dmIncoming(m){
 // redesenha sem perder o que está sendo digitado
 function dmRerender(){
   if (!["chat", "chats", "community", "profile"].includes(state.view)) { const nav = $(".tabbar"), cur = nav && nav.querySelector('[aria-current="page"]'); if (nav) nav.outerHTML = tabbar(cur ? cur.dataset.v : ""); return; }
+  const playing=dmmRememberAudio();
   const el = $("#dm-in"), draft = el ? el.value : null, focus = el && document.activeElement === el;
   if (state.view === "chat") { render(); dmScroll(); } else rerenderKeepScroll();
+  dmmRestoreAudio(playing);
   const n = $("#dm-in"); if (n && draft !== null) { n.value = draft; if (focus) n.focus(); }
 }
 function dmScroll(){ const l = $("#dm-list"); if (l) l.scrollTop = l.scrollHeight; }
@@ -4063,7 +4112,7 @@ function dmOpen(id){
 }
 async function dmLoadMsgs(id){
   const owner=TEAM.user?.id,generation=DM.generation;
-  const {data} = await TEAM.client.from("messages").select("id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
+  const {data} = await TEAM.client.from("messages").select(DMM.ready?DMM_FIELDS:"id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
   if(TEAM.user?.id!==owner||DM.generation!==generation)return;
   DM.msgs[id] = (data || []).reverse();
   if (state.view === "chat" && DM.open === id) dmRerender();
@@ -4170,13 +4219,14 @@ function viewChat(){
   let last = "", html = "";
   (list || []).forEach(m => { const day = dmDay(m.created_at); if (day !== last) { html += `<p class="dm-day">${day}</p>`; last = day; }
     const mine = m.author === TEAM.user.id;
-    html += m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}</small></button></div>`; });
+    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}</small></button></div>`; });
+  setTimeout(()=>{dmmHydrate();dwpLoad();});
   return `<div class="dm-head"><button class="btn ghost" data-a="dm-back" aria-label="Voltar">‹</button>
       <button class="dm-who" data-a="cm-profile" data-id="${esc(o)}">${commAvatar(p, 40)}<span><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><small class="muted">@${esc(p.handle || "")}</small></span></button>
       <button class="btn ghost" data-a="dm-menu" data-id="${esc(o)}" aria-label="Opções da conversa">⋯</button></div>
     <div class="dm-list" id="dm-list">${list === undefined ? '<p class="muted">Carregando…</p>' : html || `<p class="dm-lock">🔒 Só você e ${esc((p.display_name || "a outra pessoa").split(" ")[0])} leem esta conversa. Diga oi! 👋</p>`}</div>
     ${blocked ? `<div class="dm-form"><p style="margin:0;flex:1">Você bloqueou esta pessoa.</p><button class="btn" data-a="dm-block" data-id="${esc(o)}">Desbloquear</button></div>`
-      : `<form class="dm-form" id="dm-form">${DM.attentionReady?`<button class="dm-nudge-button" type="button" data-a="dm-attention-send" aria-label="Chamar atenção: balançar a tela da outra pessoa" title="Chamar atenção" ${DM.attentionBusy?"disabled":""}>${DM_ATTENTION_ICON}<small>Chamar</small></button>`:""}<textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}`;
+      : `<form class="dm-form" id="dm-form"><div class="dm-tools">${DMM.ready?`<button type="button" class="dmm-tool" data-a="dmm-photo" aria-label="Enviar foto da galeria">${DMM_PHOTO_ICON}<span>Foto</span></button><button type="button" class="dmm-tool" data-a="dmm-audio" aria-label="Gravar mensagem de áudio">${DMM_MIC_ICON}<span>Áudio</span></button>`:''}${DM.attentionReady?`<button class="dm-nudge-button" type="button" data-a="dm-attention-send" aria-label="Chamar atenção: balançar a tela da outra pessoa" title="Chamar atenção" ${DM.attentionBusy?"disabled":""}>${DM_ATTENTION_ICON}<small>Chamar</small></button>`:""}</div><textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}`;
 }
 function dmMsgMenu(id){
   const m = Object.values(DM.msgs).flat().find(x => x.id === id); if (!m) return;
@@ -4190,6 +4240,7 @@ function dmMsgMenu(id){
 function dmConvMenu(uid){
   const p = COMM.profiles[uid] || {}, on = DM.blocks.has(uid), box = $("#modal"); box.className = "modal";
   box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmc-t"><h2 id="dmc-t">${esc(p.display_name || "Conversa")}</h2><div style="display:grid;gap:8px">
+    <button class="btn" data-a="dwp-menu">Papel de parede da conversa</button>
     <button class="btn" data-a="cm-profile" data-id="${esc(uid)}">Ver perfil</button>
     <button class="btn ${on ? "" : "danger"}" data-a="dm-block" data-id="${esc(uid)}">${on ? "Desbloquear" : "Bloquear (para de receber mensagens)"}</button>
     <button class="btn" data-a="cm-report" data-k="profile" data-id="${esc(uid)}">Denunciar perfil</button></div>
@@ -4208,9 +4259,13 @@ async function dmBlock(uid){
   flash(on ? "Desbloqueado." : "Bloqueado."); dmRerender();
 }
 async function dmDelete(id){
+  const actor=TEAM.user?.id,generation=DM.generation,client=TEAM.client;
+  const msg=Object.values(DM.msgs).flat().find(x=>x.id===id);
   closePix();
   const {error} = await TEAM.client.from("messages").delete().eq("id", id);
   if (error) { flash("Não consegui apagar agora."); return; }
+  if(TEAM.user?.id!==actor||DM.generation!==generation)return;
+  if(msg?.media_path&&msg.author===actor){DMM.urls.delete(msg.media_path);await client.storage.from("chat-media").remove([msg.media_path]).catch(()=>{});}
   Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender();
 }
 function dmReportMenu(id){
@@ -4227,6 +4282,8 @@ async function dmReportSend(id, reason){
   box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true"><h2>${error ? "Não deu certo" : "Obrigado"}</h2><p>${error ? "Não consegui enviar agora. Tente de novo." : "Sua denúncia foi enviada. Se quiser, bloqueie a pessoa no menu ⋯ da conversa."}</p><button class="btn primary" data-a="pix-close">Fechar</button></div>`;
 }
 function dmClick(a, b){
+  if(a.startsWith("dwp-")){if(a==="dwp-menu")dwpMenu();else if(a==="dwp-pick")dwpPick();else if(a==="dwp-save")dwpSave();else if(a==="dwp-clear")dwpSave(true);return true;}
+  if(a.startsWith("dmm-")){dmmClick(a,b);return true;}
   if(a === "dm-attention-send")dmAttentionSend();
   else if(a === "dm-attention-open")dmOpen(b.dataset.id);
   else if(a === "dm-attention-dismiss"){DM.attention=null;dmRerender();dmAttentionPaint();}
@@ -4956,7 +5013,7 @@ function openPix(){
   m.hidden = false;
   const btn = m.querySelector("[data-a=pix-cc]"); if (btn) btn.focus();
 }
-function closePix(){ stClose(); BS.pick = null; PF.bcOpen = null; const m = $("#modal"); const wasAsk = BIBLE_ASK.open; BIBLE_ASK.open = false; m.hidden = true; m.innerHTML = ""; if (wasAsk && BIBLE_ASK.focus && BIBLE_ASK.focus.isConnected) BIBLE_ASK.focus.focus(); }
+function closePix(){ if(DMM.panel?.busy||DWP.edit?.busy){flash("Aguarde o envio terminar.");return;}dwpCloseEditor();dmmClose();stClose(); BS.pick = null; PF.bcOpen = null; const m = $("#modal"); const wasAsk = BIBLE_ASK.open; BIBLE_ASK.open = false; m.hidden = true; m.innerHTML = ""; if (wasAsk && BIBLE_ASK.focus && BIBLE_ASK.focus.isConnected) BIBLE_ASK.focus.focus(); }
 function copyPix(full){
   const text = full ? pixPayload() : PIX_KEY;
   const msg = $("#pix-msg"), show = t => { msg.textContent = t; msg.hidden = false; };
@@ -6274,7 +6331,7 @@ document.addEventListener("click", ev => {
   if (a.startsWith("cm-") && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("pf-") && pfClick(a, b)) return;
-  if (a.startsWith("dm-") && dmClick(a, b)) return;
+  if ((a.startsWith("dm-") || a.startsWith("dmm-") || a.startsWith("dwp-")) && dmClick(a, b)) return;
   if (a.startsWith("ct-") && ctClick(a, b)) return;
   if (a.startsWith("aj-") && ajClick(a, b)) return;
   if (a === "pr-refresh") { prRead(true); return; }
