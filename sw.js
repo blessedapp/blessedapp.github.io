@@ -1,8 +1,8 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610151005";
+const CACHE = "cifra-campo-202610151017";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
-const FILES = ["./", "index.html", "tema-vidro.css?v=20261014-lilas", "manifest.json", "info.json", "img/icon-192.png?v=lilas", "img/icon-512.png?v=lilas", "img/apple-touch-icon.png"];
+const FILES = ["img/fonts/caveat.ttf", "./", "index.html", "tema-vidro.css?v=20261014-lilas", "manifest.json", "info.json", "img/icon-192.png?v=lilas", "img/icon-512.png?v=lilas", "img/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
   // a Bíblia fica num cache próprio que não é apagado a cada versão (o texto não muda)
