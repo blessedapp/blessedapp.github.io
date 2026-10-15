@@ -856,6 +856,10 @@ body.st-story-open{overflow:hidden}
 @media(min-width:780px){.st-fullscreen{place-items:center;background:#08060bef}.st-fullscreen .st-box{max-width:520px;border-left:1px solid #ffffff15;border-right:1px solid #ffffff15}.st-gallery-grid{gap:6px;padding:0 12px}}
 @media(max-height:700px){.st-lut-option{width:53px;height:70px}.st-camera-bottom{padding-top:20px}.st-shutter{height:60px;width:60px;border-radius:18px}.st-shutter>span{border-radius:12px}.st-shutter-row{padding-top:6px}.st-camera-head{padding-top:calc(8px + env(safe-area-inset-top,0px))}}
 
+.st-viewer{position:relative}.st-social-bar{display:flex;gap:10px;margin:4px 0}.st-metric,.st-heart{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;min-height:46px;border:1px solid #c38be645;border-radius:14px;background:#a65ad012;color:#ead2fa}.st-metric{flex:1;flex-wrap:wrap}.st-metric small{font-size:11px}.st-metric>span,.st-heart>span:first-child{font-size:23px}.st-heart{width:100%}.st-hearted{background:#a75ad32e;border-color:#d296fb;color:#e7baff}.st-social-error{font-size:12px;line-height:1.5;color:#e9caef}.st-audience{position:absolute;inset:auto 0 0;z-index:4;display:flex;flex-direction:column;gap:12px;max-height:85%;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));border:1px solid #ae75d244;border-radius:22px 22px 0 0;background:#1b1126;box-shadow:0 -20px 90px #000b;overflow:auto}.st-audience h3{margin:4px 0 0;font-size:20px}.st-audience .muted{margin:0;font-size:12px}.st-audience-people{overflow:auto;min-height:40px}.st-audience-person{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff0c}.st-audience-person>span{display:grid;gap:4px;font-size:13px}.st-audience-person small{font-size:11px;color:#bca7cb}.st-audience-heart{margin-left:auto;color:#d69eff}.st-audience .inst{flex-shrink:0}.st-audience .inst button{font-size:12px}.st-viewer:has(.st-audience) .st-stage{pointer-events:none}
+
+.st-music-edit{display:grid;gap:10px;padding:14px;border:1px solid #b981da44;border-radius:16px;background:#ac69cb0c}.st-music-edit>label{font-size:14px;font-weight:700}.st-music-edit select,.st-music-cut input{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font-size:16px}.st-music-cut{display:flex;gap:10px}.st-music-cut>label{display:grid;gap:6px;min-width:0;flex:1;font-size:12px}.st-music-card{flex-shrink:0;display:grid;gap:8px;margin:0 12px;padding:10px;border:1px solid #d0a3ed44;border-radius:14px;background:#1c1027;color:#f6e8ff}.st-music-card .muted{margin:0;font-size:11px;line-height:1.4}.st-music-edit .st-music-card{margin:0}.st-music-label{display:flex;align-items:center;gap:9px;min-width:0}.st-music-label>span{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:10px;background:#aa64d42b;color:#e2b0ff;font-size:21px}.st-music-label>div{display:grid;gap:3px;min-width:0}.st-music-label b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.st-music-label small{font-size:9px;color:#c6a6d6}.st-music-link{justify-self:start;color:#dfb2f9;font-size:10px}.st-music-card iframe{display:block;width:100%;min-width:200px;height:200px;min-height:200px;border:0;border-radius:10px}.st-music-card #st-music-host:has(>div:empty){display:none}.st-music-dot{position:absolute;z-index:2;top:12px;right:12px;display:grid;place-items:center;width:26px;height:26px;border-radius:9px;background:#23112ddd;color:#edc5ff;border:1px solid #e4b7ff77;font-size:17px}.st-viewer:has(.st-music-card){overflow-y:auto}.st-viewer:has(.st-music-card)>.st-stage{flex:none;min-height:160px;height:clamp(160px,24svh,230px)}.st-viewer:has(.st-music-card)>*{flex-shrink:0}.st-viewer .st-music-card .btn{justify-self:start;font-size:12px;padding:7px 10px}.st-social-bar{padding:0 12px}.st-viewer #st-social{flex-shrink:0}
+
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -2076,9 +2080,9 @@ addEventListener("pagehide",bsFlush);
 
 /* STORIES-24H-START: o banco define o vencimento; imagens ficam em bucket privado. */
 const ST_THEMES = {lilas:["#62278d","#22112f"],rosa:["#8b365c","#2b1421"],noite:["#26324f","#10141e"]};
-const ST = {owner:null,generation:0,rows:[],seen:{},loading:false,ready:false,missing:false,error:"",loadedAt:0,serverTime:0,receivedAt:0,panel:null,timer:null,expiryTimer:null,lastCleanup:0};
+const ST = {owner:null,generation:0,rows:[],seen:{},loading:false,ready:false,missing:false,interactions:false,music:false,error:"",loadedAt:0,serverTime:0,receivedAt:0,panel:null,timer:null,expiryTimer:null,lastCleanup:0};
 function stClock(){ return ST.serverTime ? ST.serverTime + (performance.now() - ST.receivedAt) : Date.now(); }
-function stReset(){ stMediaReset(); const visible=!!ST.panel; stClose(); clearTimeout(ST.expiryTimer); ST.expiryTimer=null; if(visible){const m=$("#modal");if(m){m.hidden=true;m.innerHTML="";}} ST.owner = null; ST.generation++; ST.rows=[]; ST.seen={}; ST.loading=false; ST.ready=false; ST.missing=false; ST.error=""; ST.loadedAt=0; ST.serverTime=0; ST.lastCleanup=0; }
+function stReset(){ stMediaReset(); const visible=!!ST.panel; stClose(); clearTimeout(ST.expiryTimer); ST.expiryTimer=null; if(visible){const m=$("#modal");if(m){m.hidden=true;m.innerHTML="";}} ST.owner = null; ST.generation++; ST.rows=[]; ST.seen={}; ST.loading=false; ST.ready=false; ST.missing=false; ST.interactions=false; ST.music=false; ST.error=""; ST.loadedAt=0; ST.serverTime=0; ST.lastCleanup=0; }
 function stActor(){
   const owner = TEAM.user && TEAM.user.id;
   if (ST.owner !== owner) { stReset(); ST.owner = owner; const seen=owner?lsGet("blessed-stories-seen:"+owner,{}):{}; ST.seen=seen&&typeof seen==="object"&&!Array.isArray(seen)?seen:{}; }
@@ -2093,7 +2097,7 @@ async function stLoad(force = false){
   try {
     const {data,error} = await a.client.rpc("story_feed"); if (error) throw error; if (!stCurrent(a)) return;
     if (!data || !Array.isArray(data.stories) || !Number.isFinite(Date.parse(data.server_time))) throw new Error("invalid feed");
-    ST.serverTime = Date.parse(data.server_time); ST.receivedAt=performance.now();
+    ST.interactions=!!data.interactions; ST.music=!!data.music; ST.serverTime = Date.parse(data.server_time); ST.receivedAt=performance.now();
     ST.rows = data.stories.filter(x=>x && x.id && x.author && Date.parse(x.expires_at)>ST.serverTime);
     const activeIds=new Set(ST.rows.map(x=>x.id));Object.keys(ST.seen).forEach(id=>{if(!activeIds.has(id))delete ST.seen[id];});lsSet("blessed-stories-seen:"+a.owner,ST.seen);
     const authors = [...new Set(ST.rows.map(x=>x.author))].filter(id=>!COMM.profiles[id]).slice(0,50);
@@ -2134,7 +2138,7 @@ function stProfileAvatar(profile,size){
   return `<button class="st-profile-avatar${rows.length?" st-active":""}" data-a="${own?"st-menu":"st-open"}" data-id="${esc(profile.id)}" aria-label="${own?"Meu story: ver ou publicar":"Ver stories"}">${commAvatar(profile,size)}${own?'<i aria-hidden="true">＋</i>':""}</button>`;
 }
 function stClose(){
-  clearTimeout(ST.timer); ST.timer=null; document.body.classList?.remove("st-story-open"); const panel=ST.panel; stCameraStop(panel); ST.panel=null;
+  clearTimeout(ST.timer); ST.timer=null; document.body.classList?.remove("st-story-open"); const panel=ST.panel; stMusicStop(panel); stCameraStop(panel); ST.panel=null;
   if (panel && panel.video && panel.wasPlaying && panel.video.isConnected && state.view === "blessings" && stCurrent(panel.actor)) panel.video.play().catch(()=>{});
   if (panel && panel.focus && panel.focus.isConnected) panel.focus.focus();
 }
@@ -2155,22 +2159,23 @@ function stNew(){
 }
 function stRender(first=false){
   const p=ST.panel; if(!p||!stPanelCurrent(p))return; const m=$("#modal"), active=document.activeElement, id=active&&active.id, position=active&&active.selectionStart;
+  if(p.kind==="compose")stMusicStop(p);
   const full=["gallery","camera","compose"].includes(p.kind);document.body.classList?.toggle("st-story-open",full);m.className="modal st-modal"+(full?" st-fullscreen":""); let body="";
   if(p.kind==="menu") body=`<div class="modal-box st-box st-story-menu" role="dialog" aria-modal="true" aria-labelledby="st-title"><small class="st-brand-label">BLESSED · STORIES</small><h2 id="st-title">Seu story</h2><p>O que você quer fazer?</p><button class="btn primary" data-a="st-new">＋ Publicar</button><button class="btn" data-a="st-open" data-id="${esc(p.actor.owner)}" ${stActive(p.actor.owner).length?'':'disabled'}>Ver meus stories${stActive(p.actor.owner).length?' · '+stActive(p.actor.owner).length:''}</button>${!stActive(p.actor.owner).length?'<small class="muted">Você ainda não tem stories ativos.</small>':''}<button class="btn ghost" id="st-close" data-a="st-close">Fechar</button></div>`;
   else if(p.kind==="gallery") { body=stGalleryView(p); }
   else if(p.kind==="compose") {
     const d=p.draft, colors=ST_THEMES[d.theme]||ST_THEMES.lilas;
-    body=`<div class="modal-box st-box st-compose" role="dialog" aria-modal="true" aria-labelledby="st-title"><div class="st-head"><h2 id="st-title">Novo story</h2><button class="btn ghost" id="st-close" data-a="st-close" ${p.busy?"disabled":""} aria-label="Fechar">✕</button></div><p class="muted">Texto ou foto · visível por 24 horas</p><div class="st-preview${d.image?" st-with-image":""}" style="--st-from:${colors[0]};--st-to:${colors[1]}">${d.image?`<img src="${esc(d.image)}" alt="Prévia da foto do story">`:""}<p id="st-preview-caption">${esc(d.caption||"Compartilhe uma palavra, um momento ou um versículo.")}</p></div><label class="bs-label" for="st-caption">${d.image?"Legenda":"Seu texto"}</label><textarea id="st-caption" maxlength="700" rows="3" placeholder="Escreva seu story…" ${p.busy?"disabled":""}>${esc(d.caption)}</textarea>${d.image?stLutControls(d.lut||'natural',d.strength??40,'photo'):''}<div class="actions"><button class="btn" data-a="st-gallery" ${p.busy?"disabled":""}>Galeria</button>${d.original?'<button class="btn" data-a="st-save-original">Salvar original</button>':""}<button class="btn" data-a="st-camera" ${p.busy?"disabled":""}>Abrir câmera</button><label class="btn file-btn">${d.image?"Trocar foto":"Escolher foto"}<input id="st-file" type="file" accept="image/jpeg,image/png,image/webp" ${p.busy?"disabled":""}></label>${d.image?`<button class="btn ghost" data-a="st-remove-image" ${p.busy?"disabled":""}>Tirar foto</button>`:""}</div><div class="inst" role="group" aria-label="Fundo do story">${Object.keys(ST_THEMES).map(k=>`<button data-a="st-theme" data-v="${k}" aria-pressed="${d.theme===k}" ${p.busy?"disabled":""}>${{lilas:"Lilás",rosa:"Rosa",noite:"Noite"}[k]}</button>`).join("")}</div>${p.error||ST.error?`<p role="status" class="st-status">${esc(p.error||ST.error)}</p>`:""}${!ST.ready?`<button class="btn" data-a="st-reload" ${ST.loading?"disabled":""}>${ST.loading?"Conectando…":"Tentar conexão novamente"}</button>`:""}<button class="btn primary" data-a="st-send" ${p.busy||p.lutLoading||!ST.ready?"disabled":""}>${p.busy?"Publicando…":"Publicar por 24 horas"}</button></div>`;
+    body=`<div class="modal-box st-box st-compose" role="dialog" aria-modal="true" aria-labelledby="st-title"><div class="st-head"><h2 id="st-title">Novo story</h2><button class="btn ghost" id="st-close" data-a="st-close" ${p.busy?"disabled":""} aria-label="Fechar">✕</button></div><p class="muted">Texto ou foto · visível por 24 horas</p><div class="st-preview${d.image?" st-with-image":""}" style="--st-from:${colors[0]};--st-to:${colors[1]}">${d.image?`<img src="${esc(d.image)}" alt="Prévia da foto do story">`:""}<p id="st-preview-caption">${esc(d.caption||"Compartilhe uma palavra, um momento ou um versículo.")}</p></div><label class="bs-label" for="st-caption">${d.image?"Legenda":"Seu texto"}</label><textarea id="st-caption" maxlength="700" rows="3" placeholder="Escreva seu story…" ${p.busy?"disabled":""}>${esc(d.caption)}</textarea>${stMusicEdit(p)}${d.image?stLutControls(d.lut||'natural',d.strength??40,'photo'):''}<div class="actions"><button class="btn" data-a="st-gallery" ${p.busy?"disabled":""}>Galeria</button>${d.original?'<button class="btn" data-a="st-save-original">Salvar original</button>':""}<button class="btn" data-a="st-camera" ${p.busy?"disabled":""}>Abrir câmera</button><label class="btn file-btn">${d.image?"Trocar foto":"Escolher foto"}<input id="st-file" type="file" accept="image/jpeg,image/png,image/webp" ${p.busy?"disabled":""}></label>${d.image?`<button class="btn ghost" data-a="st-remove-image" ${p.busy?"disabled":""}>Tirar foto</button>`:""}</div><div class="inst" role="group" aria-label="Fundo do story">${Object.keys(ST_THEMES).map(k=>`<button data-a="st-theme" data-v="${k}" aria-pressed="${d.theme===k}" ${p.busy?"disabled":""}>${{lilas:"Lilás",rosa:"Rosa",noite:"Noite"}[k]}</button>`).join("")}</div>${p.error||ST.error?`<p role="status" class="st-status">${esc(p.error||ST.error)}</p>`:""}${!ST.ready?`<button class="btn" data-a="st-reload" ${ST.loading?"disabled":""}>${ST.loading?"Conectando…":"Tentar conexão novamente"}</button>`:""}<button class="btn primary" data-a="st-send" ${p.busy||p.lutLoading||!ST.ready?"disabled":""}>${p.busy?"Publicando…":"Publicar por 24 horas"}</button></div>`;
   } else if(p.kind==="camera") { body=stCameraView(p);
   } else if(p.kind==="viewer") {
     const x=ST.rows.find(s=>s.id===p.ids[p.index]); if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
     const author=COMM.profiles[x.author]||{}, colors=ST_THEMES[x.theme]||ST_THEMES.lilas;
-    body=`<div class="st-viewer st-box" role="dialog" aria-modal="true" aria-label="Story de ${esc(author.display_name||"alguém")}" style="--st-from:${colors[0]};--st-to:${colors[1]}"><div class="st-progress" aria-label="Story ${p.index+1} de ${p.ids.length}">${p.ids.map((_,i)=>`<span><i id="st-progress-${i}" style="transform:scaleX(${i<p.index?1:0})"></i></span>`).join("")}</div><header class="st-head"><button class="st-author" data-a="cm-profile" data-id="${esc(x.author)}">${commAvatar(author,36)}<span><b>${esc(author.display_name||"Perfil")}</b><small>${commAgo(x.created_at)} · Story</small></span></button><button class="btn ghost" id="st-pause" data-a="st-pause" aria-label="${p.paused?"Continuar":"Pausar"}">${p.paused?"▶":"Ⅱ"}</button><button class="btn ghost" id="st-close" data-a="st-close" aria-label="Fechar story">✕</button></header><div class="st-stage${x.image_path?" st-photo":""}">${p.url?`<img id="st-viewer-image" src="${esc(p.url)}" alt="Foto do story">`:""}<p>${esc(x.caption||"")}</p>${p.loading?'<small id="st-image-status" class="st-loading" role="status">Carregando foto…</small>':""}${p.error?`<small class="st-loading" role="status">${esc(p.error)}</small>`:""}</div><footer class="st-footer"><button class="btn ghost" data-a="st-prev" ${p.index===0?"disabled":""}>‹ Anterior</button><small>Visível por 24 horas</small><button class="btn ghost" data-a="st-next">Próximo ›</button></footer>${x.author===p.actor.owner||teamRole()==="admin"?`<button class="lnk2 st-delete" data-a="st-delete" data-id="${esc(x.id)}">Apagar story</button>`:""}</div>`;
+    body=`<div class="st-viewer st-box" role="dialog" aria-modal="true" aria-label="Story de ${esc(author.display_name||"alguém")}" style="--st-from:${colors[0]};--st-to:${colors[1]}"><div class="st-progress" aria-label="Story ${p.index+1} de ${p.ids.length}">${p.ids.map((_,i)=>`<span><i id="st-progress-${i}" style="transform:scaleX(${i<p.index?1:0})"></i></span>`).join("")}</div><header class="st-head"><button class="st-author" data-a="cm-profile" data-id="${esc(x.author)}">${commAvatar(author,36)}<span><b>${esc(author.display_name||"Perfil")}</b><small>${commAgo(x.created_at)} · Story</small></span></button><button class="btn ghost" id="st-pause" data-a="st-pause" aria-label="${p.paused?"Continuar":"Pausar"}">${p.paused?"▶":"Ⅱ"}</button><button class="btn ghost" id="st-close" data-a="st-close" aria-label="Fechar story">✕</button></header><div class="st-stage${x.image_path?" st-photo":""}">${p.url?`<img id="st-viewer-image" src="${esc(p.url)}" alt="Foto do story">`:""}<p>${esc(x.caption||"")}</p>${p.loading?'<small id="st-image-status" class="st-loading" role="status">Carregando foto…</small>':""}${p.error?`<small class="st-loading" role="status">${esc(p.error)}</small>`:""}${x.music_video?'<span class="st-music-dot" aria-label="Story com clipe musical">♫</span>':''}</div>${x.music_video?stMusicCard(stMusicData(p),p.loading):''}<footer class="st-footer"><button class="btn ghost" data-a="st-prev" ${p.index===0?"disabled":""}>‹ Anterior</button><small>Visível por 24 horas</small><button class="btn ghost" data-a="st-next">Próximo ›</button></footer><div id="st-social">${stSocialView(p,x)}</div>${x.author===p.actor.owner||teamRole()==="admin"?`<button class="lnk2 st-delete" data-a="st-delete" data-id="${esc(x.id)}">Apagar story</button>`:""}</div>`;
   }
   m.innerHTML=body; m.hidden=false;
   const prior=id&&document.getElementById(id); if(!first&&prior){prior.focus();if(typeof position==="number"&&prior.setSelectionRange)try{prior.setSelectionRange(position,position);}catch(_){}}
   else if(first){const close=$("#st-close");if(close)close.focus();}
-  if(p.kind==="viewer"&&p.url){const img=$("#st-viewer-image");if(img){const loaded=()=>{if(!stPanelCurrent(p))return;p.loading=false;p.lastTick=performance.now();const el=$("#st-image-status");if(el)el.hidden=true;};img.addEventListener("load",loaded,{once:true});img.addEventListener("error",()=>{if(stPanelCurrent(p)){p.loading=false;p.error="Não consegui abrir esta foto.";const el=$("#st-image-status");if(el)el.textContent=p.error;}},{once:true});if(img.complete&&img.naturalWidth)loaded();}}
+  if(p.kind==="viewer"&&p.url){const img=$("#st-viewer-image");if(img){const loaded=()=>{if(!stPanelCurrent(p))return;p.loading=false;p.lastTick=performance.now();const el=$("#st-image-status");if(el)el.hidden=true;const play=$('[data-a="st-music-play"]');if(play)play.disabled=!!p.musicStarting;};img.addEventListener("load",loaded,{once:true});img.addEventListener("error",()=>{if(stPanelCurrent(p)){p.loading=false;p.error="Não consegui abrir esta foto.";const el=$("#st-image-status");if(el)el.textContent=p.error;}},{once:true});if(img.complete&&img.naturalWidth)loaded();}}
 }
 async function stPick(file){
   const p=ST.panel;if(!p||p.kind!=="compose"||p.busy||!stPanelCurrent(p))return;
@@ -2186,11 +2191,11 @@ async function stSend(){
   const caption=p.draft.caption.trim();if(!caption&&!p.draft.image){p.error="Escreva um texto ou escolha uma foto.";stRender();return;}
   if([...caption].length>700){p.error="Use até 700 caracteres.";stRender();return;}
   if(stActive(p.actor.owner).length>=20){p.error="Você já tem 20 stories ativos. Aguarde um vencer ou apague um deles.";stRender();return;}
-  p.busy=true;p.error="";stRender();const id=blessedId(),path=p.draft.image?p.actor.owner+"/"+id+".jpg":null;let uploaded=false;
+  stMusicStop(p);p.busy=true;p.error="";stRender();const id=blessedId(),path=p.draft.image?p.actor.owner+"/"+id+".jpg":null;let uploaded=false;
   try{
     if(path){const blob=await(await fetch(p.draft.image)).blob();if(!stPanelCurrent(p))return;const {error}=await p.actor.client.storage.from("stories").upload(path,blob,{contentType:"image/jpeg",cacheControl:"0",upsert:false});if(error)throw error;uploaded=true;}
     if(!stCurrent(p.actor))return;
-    const {data,error}=await p.actor.client.from("stories").insert({id,author:p.actor.owner,caption,image_path:path,theme:p.draft.theme}).select("id,author,caption,image_path,theme,created_at,expires_at").single();
+    const {data,error}=await p.actor.client.from("stories").insert({id,author:p.actor.owner,caption,image_path:path,theme:p.draft.theme,...(ST.music&&p.draft.music?{music_video:p.draft.music.video,music_title:p.draft.music.title,music_start:p.draft.music.start,music_duration:p.draft.music.duration}:{})}).select("*").single();
     if(error)throw error;if(!stCurrent(p.actor))return;
     ST.rows.unshift(data);ST.loadedAt=0;if(stPanelCurrent(p)){closePix();flash("Story publicado. Ele fica visível por 24 horas.");}
     await stLoad(true);
@@ -2202,10 +2207,11 @@ async function stOpen(author){
   const p=stPanel("viewer");if(!p)return;p.ids=ids;p.index=0;p.paused=false;p.request=0;await stShow(p,0);
 }
 async function stShow(p,index){
-  if(!stPanelCurrent(p))return;clearTimeout(ST.timer);p.index=index;p.url="";p.loading=false;p.elapsed=0;p.lastTick=performance.now();p.loadStarted=p.lastTick;p.error="";const request=++p.request;
+  if(!stPanelCurrent(p))return;stMusicStop(p);clearTimeout(ST.timer);p.index=index;p.url="";p.loading=false;p.elapsed=0;p.lastTick=performance.now();p.loadStarted=p.lastTick;p.error="";p.audience=null;p.reactions={};p.reactionLoading=!!ST.interactions;p.heartBusy=false;p.viewRecorded=false;p.viewPending=false;p.viewElapsed=0;p.musicError=false;p.musicEnded=false;p.musicWaiting=false;p.musicStarted=false;p.musicPlaying=false;const request=++p.request;
   const x=ST.rows.find(s=>s.id===p.ids[index]);if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
+  p.musicWaiting=!!x.music_video;
   ST.seen[x.id]=x.expires_at;lsSet("blessed-stories-seen:"+p.actor.owner,ST.seen);
-  if(x.image_path)p.loading=true;stRender(true);stTick();
+  if(x.image_path)p.loading=true;stRender(true);stTick();stSocialLoad(p);
   if(x.image_path){
     const ttl=Math.floor(Math.min(60,(Date.parse(x.expires_at)-stClock())/1000));if(ttl<1){stNext(1);return;}
     try{const {data,error}=await p.actor.client.storage.from("stories").createSignedUrl(x.image_path,ttl);if(error||!data||!data.signedUrl)throw error||new Error("url");if(stPanelCurrent(p)&&p.request===request){p.url=data.signedUrl;stRender();}}
@@ -2215,10 +2221,11 @@ async function stShow(p,index){
 function stTick(){
   clearTimeout(ST.timer);const p=ST.panel;if(!p||p.kind!=="viewer"||!stPanelCurrent(p))return;const x=ST.rows.find(s=>s.id===p.ids[p.index]);
   if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
-  const now=performance.now();if(!p.paused&&!p.loading&&!document.hidden)p.elapsed+=now-p.lastTick;p.lastTick=now;
+  const now=performance.now();if(!p.loading&&!p.error&&!document.hidden)p.viewElapsed=(p.viewElapsed||0)+now-p.lastTick;if(!p.paused&&!p.audience&&!p.loading&&!document.hidden&&!p.musicWaiting&&(!x.music_video||p.musicPlaying||p.musicEnded||p.musicError))p.elapsed+=now-p.lastTick;p.lastTick=now;
+  if(!p.loading&&!p.error&&!document.hidden&&p.viewElapsed>=1000)stRecordView(p,x);
   if(p.loading&&now-p.loadStarted>15000){p.loading=false;p.error="Não consegui carregar a foto. Você pode seguir para o próximo story.";stRender();}
-  const bar=document.getElementById("st-progress-"+p.index);if(bar)bar.style.transform="scaleX("+Math.min(1,p.elapsed/8000)+")";
-  if(p.elapsed>=8000){stNext(1);return;}ST.timer=setTimeout(stTick,200);
+  const bar=document.getElementById("st-progress-"+p.index);if(bar)bar.style.transform="scaleX("+Math.min(1,p.elapsed/(x.music_video?(x.music_duration||15)*1000:8000))+")";
+  if(!p.audience&&!p.paused&&p.elapsed>=(x.music_video?(x.music_duration||15)*1000:8000)){stNext(1);return;}ST.timer=setTimeout(stTick,200);
 }
 function stNext(direction){
   const p=ST.panel;if(!p||p.kind!=="viewer")return;let index=p.index+direction;
@@ -2227,13 +2234,13 @@ function stNext(direction){
 }
 async function stDelete(id){
   const p=ST.panel,x=ST.rows.find(s=>s.id===id);if(!p||p.busy||!x||!stPanelCurrent(p)||(x.author!==p.actor.owner&&teamRole()!=="admin")||!confirm("Apagar este story agora?"))return;
-  p.busy=true;try{
+  stMusicStop(p);p.busy=true;try{
     if(x.image_path){const media=await p.actor.client.storage.from("stories").remove([x.image_path]);if(media.error)throw media.error;}
     const {error}=await p.actor.client.from("stories").delete().eq("id",id).eq("author",x.author);if(error)throw error;if(!stCurrent(p.actor))return;
     ST.rows=ST.rows.filter(s=>s.id!==id);if(stPanelCurrent(p)){closePix();flash("Story apagado.");}if(state.view==="community"||state.view==="profile")rerenderKeepScroll();
   }catch(_){if(stPanelCurrent(p)){p.busy=false;p.error="Não consegui apagar agora. Tente novamente.";stRender();}}
 }
-function stInput(target){const p=ST.panel;
+function stInput(target){const p=ST.panel;if(stMusicInput(target))return true;
   if(['st-camera-intensity','st-photo-intensity'].includes(target.id)&&p){
     const strength=Math.max(0,Math.min(100,Number(target.value)||0));
     if(target.id==='st-camera-intensity'&&p.camera&&!p.camera.busy){p.camera.strength=strength;const output=$('#st-camera-strength');if(output)output.textContent=strength+'%';stCameraApplyTone(p.camera);}
@@ -2241,13 +2248,15 @@ function stInput(target){const p=ST.panel;
   }
 if(target.id!=="st-caption"||!p||p.kind!=="compose")return false;p.draft.caption=target.value.slice(0,700);const el=$("#st-preview-caption");if(el)el.textContent=p.draft.caption||"Compartilhe uma palavra, um momento ou um versículo.";return true;}
 function stClick(action,button){
-  if(stCameraClick(action,button))return true;
+  if(action==='st-music-play'){stMusicStart();return true;}
+  if(stSocialClick(action,button)||stCameraClick(action,button))return true;
   if(action==="st-menu")stMenu();else if(action==="st-new")stNew();else if(action==="st-open")stOpen(button.dataset.id);
   else if(action==="st-close")closePix();else if(action==="st-send")stSend();else if(action==="st-reload")stLoad(true);
   else if(action==="st-theme"){const p=ST.panel;if(p&&p.kind==="compose"&&!p.busy&&ST_THEMES[button.dataset.v]){p.draft.theme=button.dataset.v;stRender();}}
   else if(action==="st-remove-image"){const p=ST.panel;if(p&&p.kind==="compose"&&!p.busy){p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.draft.image=null;p.draft.original=null;p.photoSource=null;stRender();}}
   else if(action==="st-next")stNext(1);else if(action==="st-prev")stNext(-1);
-  else if(action==="st-pause"){const p=ST.panel;if(p&&p.kind==="viewer"){p.paused=!p.paused;p.lastTick=performance.now();const control=$("#st-pause");if(control){control.textContent=p.paused?"▶":"Ⅱ";control.setAttribute("aria-label",p.paused?"Continuar":"Pausar");}}}
+  else if(action==="st-pause"){const p=ST.panel;if(p&&p.kind==="viewer"){p.paused=p.musicPlayer?!!p.musicPlaying:!p.paused;p.lastTick=performance.now();stPauseControl(p);stMusicPause(p,p.paused);}}
+
   else if(action==="st-delete")stDelete(button.dataset.id);
   else if(action==="st-bible"){const file=BIBLE.story&&BIBLE.story.file;stNew();if(file)stPick(file);}
   else return false;return true;
@@ -2267,9 +2276,9 @@ function stGalleryView(p){
 }
 function stGalleryOpen(){
   const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;
-  stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.kind='gallery';p.error='';stRender(true);
+  stMusicStop(p);stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.kind='gallery';p.error='';stRender(true);
 }
-function stTextOpen(){const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.photoSource=null;p.draft.image=null;p.draft.original=null;p.kind='compose';stRender(true);}
+function stTextOpen(){const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;stMusicStop(p);stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.photoSource=null;p.draft.image=null;p.draft.original=null;p.kind='compose';stRender(true);}
 async function stFileCanvas(file,maxSide){
   const url=URL.createObjectURL(file),image=new Image();
   try{image.src=url;await image.decode();const scale=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight));const canvas=stCanvas(image.naturalWidth*scale,image.naturalHeight*scale);canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);return canvas;}
@@ -2295,7 +2304,7 @@ async function stGalleryChoose(files){
 async function stGalleryUse(id){const p=ST.panel,item=ST_MEDIA.items.find(x=>x.id===id);if(!p||!item||!stPanelCurrent(p)||p.busy)return;p.kind='compose';await stPick(item.file);}
 function stNativeOpen(){
   const p=ST.panel;if(!p||!stPanelCurrent(p)||p.busy)return;
-  p.picking=true;stCameraStop(p);const input=$('#st-native-camera');if(input)input.click();
+  p.picking=true;stMusicStop(p);stCameraStop(p);const input=$('#st-native-camera');if(input)input.click();
 }
 function stNativeCancel(){const p=ST.panel;if(!p||!p.picking)return;p.picking=false;p.kind='gallery';stRender(true);}
 async function stNativeChoose(file){const p=ST.panel;if(!p||!stPanelCurrent(p))return;if(!file){stNativeCancel();return;}p.picking=false;stCameraStop(p);p.kind='compose';await stPick(file);}
@@ -2374,7 +2383,7 @@ function stCameraView(p){
 async function stCameraOpen(facing='user'){
   const p=ST.panel;if(!p||!stPanelCurrent(p)||!['gallery','compose','camera'].includes(p.kind)||p.busy)return;
   if(!navigator.mediaDevices?.getUserMedia){p.kind='gallery';p.error='Você pode usar a câmera do aparelho ou escolher uma foto.';stRender();return;}
-  const previous=p.camera,filter=previous?.filter||'natural',strength=previous?.strength??40;stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.kind='camera';p.picking=false;
+  const previous=p.camera,filter=previous?.filter||'natural',strength=previous?.strength??40;stMusicStop(p);stCameraStop(p);p.photoRequest=(p.photoRequest||0)+1;p.lutLoading=false;p.kind='camera';p.picking=false;
   const c={facing,filter,strength,stopped:false,busy:false,rendered:0,lutImage:null,loading:false};p.camera=c;stRender(true);
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:facing},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30},resizeMode:{ideal:'none'}}});
@@ -2463,6 +2472,113 @@ function stCameraClick(action,button){
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&ST.panel?.kind==='camera'&&!ST.panel.picking)stCameraBack();});
 /* STORIES-CAMERA-END */
 
+
+/* STORIES-SOCIAL-START: listas privadas ao autor; curtidas e vistos confirmados pelo banco. */
+function stSocialCurrent(p,request){return stPanelCurrent(p)&&p.kind==='viewer'&&p.request===request;}
+function stSocialView(p,x){
+  if(!ST.interactions)return '';
+  const own=x.author===p.actor.owner,r=p.reactions||{},disabled=p.reactionLoading||p.heartBusy;
+  return `<div class="st-social-bar">${own?`<button class="st-metric" data-a="st-audience" data-v="views" ${disabled?'disabled':''}><span aria-hidden="true">◉</span><b>${p.reactionLoading?'…':Number(r.views_count)||0}</b><small>Visto por</small></button><button class="st-metric" data-a="st-audience" data-v="likes" ${disabled?'disabled':''}><span aria-hidden="true">♡</span><b>${p.reactionLoading?'…':Number(r.likes_count)||0}</b><small>Curtido por</small></button>`:`<button class="st-heart${r.liked?' st-hearted':''}" data-a="st-heart" aria-pressed="${!!r.liked}" ${disabled?'disabled':''}><span aria-hidden="true">${r.liked?'♥':'♡'}</span><span>${p.heartBusy?'Salvando…':r.liked?'Você curtiu':'Curtir este momento'}</span></button>`}</div>${p.reactionError?`<p class="st-social-error" role="status">${esc(p.reactionError)} <button class="lnk2" data-a="st-reactions-retry">Tentar novamente</button></p>`:''}${own&&p.audience?stAudienceView(p):''}`;
+}
+function stAudienceView(p){
+  const r=p.reactions||{},key=p.audience==='likes'?'likes':'views',list=Array.isArray(r[key])?r[key]:[],total=Number(key==='likes'?r.likes_count:r.views_count)||0;
+  return `<section class="st-audience" aria-label="Pessoas neste momento"><div class="st-head"><div><small class="st-brand-label">BLESSED · CONEXÕES</small><h3>Quem esteve aqui</h3></div><button class="btn ghost" data-a="st-audience-close" aria-label="Fechar lista">✕</button></div><p class="muted">Só você vê estas listas.</p><div class="inst" role="group" aria-label="Interações do story"><button data-a="st-audience" data-v="views" aria-pressed="${key==='views'}">Visto por · ${Number(r.views_count)||0}</button><button data-a="st-audience" data-v="likes" aria-pressed="${key==='likes'}">Curtido por · ${Number(r.likes_count)||0}</button></div><div class="st-audience-people">${list.length?list.map(item=>{const person=COMM.profiles[item.person]||{id:item.person,display_name:'Pessoa da comunidade'};return `<div class="st-audience-person">${commAvatar(person,36)}<span><b>${esc(person.display_name||'Pessoa da comunidade')}</b>${person.handle?`<small>@${esc(person.handle)}</small>`:''}</span>${key==='likes'?'<span class="st-audience-heart" aria-label="Curtiu">♥</span>':''}</div>`;}).join(''):`<p class="muted">${key==='likes'?'As curtidas deste momento aparecem aqui.':'As pessoas aparecem aqui depois de verem seu story.'}</p>`}</div>${total>list.length?`<small class="muted">Mostrando as ${list.length} interações mais recentes.</small>`:''}<button class="btn" data-a="st-reactions-retry" ${p.reactionLoading?'disabled':''}>${p.reactionLoading?'Atualizando…':'Atualizar'}</button></section>`;
+}
+function stSocialRender(p){
+  if(!stPanelCurrent(p)||p.kind!=='viewer')return;const x=ST.rows.find(s=>s.id===p.ids[p.index]),el=$('#st-social');if(x&&el)el.innerHTML=stSocialView(p,x);
+}
+async function stSocialLoad(p){
+  if(!ST.interactions||!stPanelCurrent(p)||p.kind!=='viewer')return;
+  const request=p.request,serial=p.socialRequest=(p.socialRequest||0)+1,id=p.ids[p.index];p.reactionLoading=true;p.reactionError='';stSocialRender(p);
+  const current=()=>stSocialCurrent(p,request)&&p.socialRequest===serial;
+  try{
+    const {data,error}=await p.actor.client.rpc('story_reactions',{target:id});if(error)throw error;if(!current())return;if(!data||!Array.isArray(data.views)||!Array.isArray(data.likes))throw new Error('invalid reactions');
+    p.reactions=data;
+    const people=[...new Set(data.views.concat(data.likes).map(v=>v.person))].filter(id=>id&&!COMM.profiles[id]).slice(0,200);
+    if(people.length){const profiles=await p.actor.client.from('community_profiles').select('id,handle,display_name,avatar_path,theme').in('id',people);if(!current())return;if(!profiles.error)commKeep(profiles.data||[]);}
+  }catch(_){if(current())p.reactionError='Não consegui carregar as interações.';}
+  finally{if(current()){p.reactionLoading=false;stSocialRender(p);}}
+}
+async function stRecordView(p,x){
+  if(!ST.interactions||x.author===p.actor.owner||p.viewRecorded||p.viewPending)return;
+  const request=p.request;p.viewPending=true;
+  try{const {error}=await p.actor.client.rpc('story_visit',{target:x.id});if(error)throw error;if(stSocialCurrent(p,request))p.viewRecorded=true;}
+  catch(_){if(stSocialCurrent(p,request))p.viewRecorded=true;/* Não conta localmente nem repete a cada quadro. Reabrir tenta de novo. */}
+  finally{if(stSocialCurrent(p,request))p.viewPending=false;}
+}
+async function stHeart(){
+  const p=ST.panel;if(!p||p.kind!=='viewer'||!ST.interactions||p.heartBusy||p.reactionLoading||!stPanelCurrent(p))return;
+  const x=ST.rows.find(s=>s.id===p.ids[p.index]);if(!x||x.author===p.actor.owner||Date.parse(x.expires_at)<=stClock())return;
+  const request=p.request,enabled=!p.reactions?.liked;p.heartBusy=true;p.reactionError='';stSocialRender(p);
+  try{const {error}=await p.actor.client.rpc('story_heart',{target:x.id,enabled});if(error)throw error;if(!stSocialCurrent(p,request))return;p.reactions={...p.reactions,liked:enabled};}
+  catch(_){if(stSocialCurrent(p,request))p.reactionError='Não consegui salvar sua curtida. Tente novamente.';}
+  finally{if(stSocialCurrent(p,request)){p.heartBusy=false;stSocialRender(p);}}
+}
+function stSocialClick(action,button){
+  const p=ST.panel;if(action==='st-heart'){stHeart();return true;}
+  if(action==='st-reactions-retry'){if(p?.kind==='viewer')stSocialLoad(p);return true;}
+  if(action==='st-audience'){
+    if(p?.kind==='viewer'){const x=ST.rows.find(s=>s.id===p.ids[p.index]);if(x?.author===p.actor.owner){if(!p.audience){p.musicWasPlaying=p.musicPlaying;if(p.musicPlaying)stMusicPause(p,true);}p.audience=button.dataset.v==='likes'?'likes':'views';p.lastTick=performance.now();stSocialRender(p);}}return true;
+  }
+  if(action==='st-audience-close'){if(p?.kind==='viewer'){p.audience=null;p.lastTick=performance.now();if(p.musicWasPlaying&&!p.paused)stMusicPause(p,false);stSocialRender(p);}return true;}return false;
+}
+/* STORIES-SOCIAL-END */
+
+/* STORIES-MUSIC-START: referência ao clipe; player oficial visível, sem extrair áudio. */
+let stYoutubeAPI=null;
+function stMusicVideos(){return songsAll().filter(song=>ytId(song.youtube)).sort((a,b)=>(a.artist||'').localeCompare(b.artist||'')||(a.name||'').localeCompare(b.name||''));}
+function stMusicData(p){
+  if(p.kind==='compose')return p.draft.music||null;
+  const x=ST.rows.find(s=>s.id===p.ids?.[p.index]);return x?.music_video?{video:x.music_video,title:x.music_title,start:x.music_start||0,duration:x.music_duration||15}:null;
+}
+function stMusicCard(music,loading=false){
+  if(!music||!/^[A-Za-z0-9_-]{11}$/.test(music.video))return '';
+  return `<section class="st-music-card" aria-label="Clipe deste story"><div class="st-music-label"><span aria-hidden="true">♫</span><div><small>BLESSED · TRILHA DO MOMENTO</small><b>${esc(music.title||'Clipe musical')}</b><small>${Math.floor(music.start/60)}:${String(music.start%60).padStart(2,'0')} · ${music.duration} segundos</small></div></div><div id="st-music-host"><div id="st-music-player"></div></div><button class="btn" data-a="st-music-play" ${loading?'disabled':''}>▶ Tocar trecho</button><p id="st-music-status" class="muted" role="status">Toque para ouvir com o clipe visível.</p><a class="st-music-link" href="https://www.youtube.com/watch?v=${music.video}&t=${music.start}s" target="_blank" rel="noopener">Abrir clipe no YouTube ↗</a></section>`;
+}
+function stMusicEdit(p){
+  if(!ST.music)return '';
+  const music=p.draft.music,items=stMusicVideos();
+  return `<section class="st-music-edit"><label for="st-music-select">♫ Trilha do momento</label><select id="st-music-select" ${p.busy?'disabled':''}><option value="">Sem música</option>${items.map(song=>`<option value="${esc(song.id)}" ${music?.video===ytId(song.youtube)?'selected':''}>${esc((song.artist?song.artist+' · ':'')+song.name)}</option>`).join('')}</select>${!items.length?'<p class="muted">Salve o link do clipe em uma música do repertório para escolhê-lo aqui.</p>':''}${music?`<div class="st-music-cut"><label>Início (segundos)<input id="st-music-start" type="number" inputmode="numeric" min="0" max="86400" step="1" value="${music.start}" ${p.busy?'disabled':''}></label><label>Trecho<select id="st-music-duration" ${p.busy?'disabled':''}>${[5,10,15,20,30].map(n=>`<option value="${n}" ${music.duration===n?'selected':''}>${n} segundos</option>`).join('')}</select></label></div>${stMusicCard(music)}`:''}</section>`;
+}
+function stMusicAPI(){
+  if(window.YT?.Player)return Promise.resolve();if(stYoutubeAPI)return stYoutubeAPI;
+  stYoutubeAPI=new Promise((resolve,reject)=>{
+    const prior=window.onYouTubeIframeAPIReady,script=document.createElement('script');let timer;
+    window.onYouTubeIframeAPIReady=()=>{clearTimeout(timer);if(typeof prior==='function')prior();window.YT?.Player?resolve():reject(new Error('player unavailable'));};
+    script.src='https://www.youtube.com/iframe_api';script.async=true;script.onerror=()=>{clearTimeout(timer);script.remove();reject(new Error('player load'));};timer=setTimeout(()=>{script.remove();reject(new Error('player timeout'));},15000);document.head.appendChild(script);
+  }).catch(error=>{stYoutubeAPI=null;throw error;});return stYoutubeAPI;
+}
+function stMusicStop(p){if(!p)return;p.musicRequest=(p.musicRequest||0)+1;try{p.musicPlayer?.destroy();}catch(_){}p.musicPlayer=null;p.musicPlaying=false;p.musicStarting=false;}
+function stMusicStatus(message){const el=$('#st-music-status');if(el){el.hidden=false;el.textContent=message;}}
+function stMusicPause(p,paused){try{if(paused){p.musicPlayer?.pauseVideo();p.musicPlaying=false;}else p.musicPlayer?.playVideo();}catch(_){}p.lastTick=performance.now();}
+async function stMusicStart(){
+  const p=ST.panel;if(!p||!stPanelCurrent(p)||!['compose','viewer'].includes(p.kind)||p.busy||p.loading||p.musicStarting)return;
+  const music=stMusicData(p);if(!music)return;
+  if(p.musicPlayer){if(p.musicEnded){try{p.musicPlayer.seekTo(music.start,true);}catch(_){}p.elapsed=0;p.musicEnded=false;p.musicWaiting=true;p.musicStarted=false;}if(p.kind==='viewer'){p.paused=false;stPauseControl(p);}stMusicPause(p,false);return;}
+  stMusicStop(p);const request=p.musicRequest,kind=p.kind,current=()=>stPanelCurrent(p)&&p.musicRequest===request&&p.kind===kind;
+  if(p.kind==='viewer'){p.paused=false;stPauseControl(p);}p.musicError=false;p.musicStarting=true;const button=$('[data-a="st-music-play"]');if(button)button.disabled=true;stMusicStatus('Abrindo clipe…');
+  const mini=$('#miniyt');if(mini){mini.hidden=true;mini.innerHTML='';}
+  try{
+    await stMusicAPI();if(!current())return;
+    p.musicPlayer=new window.YT.Player('st-music-player',{host:'https://www.youtube-nocookie.com',width:'100%',height:200,videoId:music.video,playerVars:{autoplay:1,playsinline:1,rel:0,start:music.start,end:music.start+music.duration,origin:location.origin},events:{
+      onReady(event){if(!current())return;p.musicStarting=false;const iframe=event.target.getIframe();iframe.title=music.title||'Clipe do story';iframe.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; fullscreen');if(button){button.disabled=false;button.textContent='▶ Ouvir trecho';}stMusicStatus('Se o som não começar, toque em ▶ no clipe.');event.target.playVideo();},
+      onAutoplayBlocked(){if(current())stMusicStatus('Toque em ▶ no clipe para ouvir.');},
+      onStateChange(event){if(!current())return;const playing=event.data===1;if(playing&&(document.hidden||p.audience)){event.target.pauseVideo();return;}p.musicPlaying=playing;p.lastTick=performance.now();if(playing){p.musicWaiting=false;if(!p.musicStarted){p.musicStarted=true;p.elapsed=0;}if(p.kind==='viewer'){p.paused=false;stPauseControl(p);}if(button)button.hidden=true;const status=$('#st-music-status');if(status)status.hidden=true;}else if(event.data===0){if(p.kind==='viewer'){p.musicWaiting=false;p.musicEnded=true;p.elapsed=music.duration*1000;}else stMusicStatus('Trecho concluído.');}else if(event.data===2)stMusicStatus('Clipe pausado.');},
+      onError(){if(!current())return;p.musicWaiting=false;p.musicError=true;p.musicPlaying=false;stMusicStatus('Este clipe não pôde tocar aqui. Você pode abrir no YouTube.');}
+    }});
+  }catch(_){if(current()){p.musicWaiting=false;p.musicError=true;stMusicStatus('Não consegui abrir o clipe. Tente novamente ou abra no YouTube.');}}
+  finally{if(current()){p.musicStarting=false;if(button)button.disabled=false;}}
+}
+function stPauseControl(p){const control=$('#st-pause');if(control){control.textContent=p.paused?'▶':'Ⅱ';control.setAttribute('aria-label',p.paused?'Continuar':'Pausar');}}
+function stMusicInput(target){
+  const p=ST.panel;if(!p||p.kind!=='compose'||p.busy||!['st-music-select','st-music-start','st-music-duration'].includes(target.id))return false;
+  stMusicStop(p);
+  if(target.id==='st-music-select'){const song=stMusicVideos().find(s=>s.id===target.value);p.draft.music=song?{video:ytId(song.youtube),title:((song.artist?song.artist+' · ':'')+song.name).slice(0,120),start:0,duration:15}:null;}
+  else if(p.draft.music){if(target.id==='st-music-start')p.draft.music.start=Math.max(0,Math.min(86400,Math.floor(Number(target.value)||0)));else p.draft.music.duration=[5,10,15,20,30].includes(Number(target.value))?Number(target.value):15;}
+  stRender();return true;
+}
+document.addEventListener('visibilitychange',()=>{const p=ST.panel;if(document.hidden&&p?.musicPlayer){stMusicPause(p,true);if(p.kind==='viewer'){p.paused=true;stPauseControl(p);}}});
+/* STORIES-MUSIC-END */
 
 /* STORIES-24H-END */
 
