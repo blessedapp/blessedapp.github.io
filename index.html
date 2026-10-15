@@ -730,6 +730,9 @@ button{cursor:pointer}
 .terms .terms-body{max-height:58vh;overflow-y:auto;padding-right:4px;margin-bottom:12px}
 .terms h3{font-size:15px;margin:14px 0 4px}.terms p,.terms li{font-size:14px;line-height:1.45;margin:0 0 6px}.terms ul{padding-left:18px;margin:0 0 6px}
 .terms-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}.terms-check input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:#B05CF0}
+.cm-wheel{position:relative;width:34px;height:34px;border-radius:50%;background:conic-gradient(red,#ff0,lime,cyan,blue,#f0f,red);border:2px solid rgba(255,255,255,.35);cursor:pointer;display:inline-block;overflow:hidden}
+.cm-wheel.on{box-shadow:0 0 0 3px var(--bg,#0C0B0E),0 0 0 5px var(--c,#fff)}
+.cm-wheel input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
 /* Mensagens */
 .dm-icon{position:relative;margin-left:auto;margin-right:10px;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:#fff;display:grid;place-items:center}.dm-icon svg{width:23px;height:23px}
 .dm-icon .badge{position:absolute;top:-5px;right:-5px;margin:0}.top .dm-icon + .cm-me{margin-left:0}
@@ -1991,7 +1994,9 @@ const BL_ICON = `<svg class="bl-ic" viewBox="0 0 512 512" aria-hidden="true"><de
    Tabelas e fotos: supabase-comunidade.sql (fotos numa pasta privada, abertas por link temporário). */
 const COMM = {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(),
   likes: {}, myLikes: new Set(), counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
-const THEMES = {red: "#E50914", teal: "#46D3C3", gold: "#F5B451", violet: "#B99AF7", blue: "#4F8CFF", pink: "#FF5FA2"};
+// cores prontas + qualquer cor escolhida na roda (guardada como #RRGGBB)
+const THEMES = new Proxy({red: "#E50914", pink: "#FF5FA2", lilac: "#B05CF0", violet: "#B99AF7", blue: "#4F8CFF", teal: "#46D3C3", green: "#3DDC84", gold: "#F5B451", orange: "#FF8A3D", white: "#F4F1F8"},
+  {get: (t, k) => typeof k === "string" && /^#[0-9a-f]{6}$/i.test(k) ? k : t[k]});
 const INSTRUMENTS = ["Teclado", "Violão", "Guitarra", "Baixo", "Bateria", "Voz", "Back vocal", "Ministro de louvor", "Violino", "Sax", "Flauta", "Percussão"];
 const REPORT_REASONS = ["Conteúdo impróprio", "Não tem a ver com música ou louvor", "Perfil falso", "Mostra telefone, endereço ou dados pessoais", "Outro motivo"];
 function commOn(){ return teamAvailable() && !!TEAM.client; }
@@ -3425,7 +3430,7 @@ function viewProfileEdit(){
     <label>Observações sobre os cultos (opcional)<textarea id="cm-schedule" maxlength="300" rows="2" placeholder="Ex.: Santa ceia no 1º domingo do mês">${esc(e.schedule || "")}</textarea></label>` : ""}
     <fieldset class="cm-field"${church || member ? " hidden" : ""}><legend>O que você toca</legend><div class="cm-chips pick">${INSTRUMENTS.map(i => `<button type="button" data-a="cm-inst" data-v="${esc(i)}" aria-pressed="${(e.instruments || []).includes(i)}">${esc(i)}</button>`).join("")}</div></fieldset>
     <label>${church ? "Sobre a igreja" : "Sobre você"}<textarea id="cm-bio" maxlength="300" rows="3" placeholder="${church ? "Ex.: Igreja acolhedora no centro de Olinda. Ministério de louvor com 12 músicos." : member ? "Ex.: Membro da igreja há 10 anos, amo o louvor de domingo." : "Ex.: Tecladista há 5 anos, apaixonada por louvor congregacional."}">${esc(e.bio || "")}</textarea></label>
-    <fieldset class="cm-field"><legend>Cor do seu perfil</legend><div class="cm-swatches">${Object.entries(THEMES).map(([k, c]) => `<button type="button" data-a="cm-theme" data-v="${k}" aria-pressed="${e.theme === k}" aria-label="Cor ${k}" style="background:${c}"></button>`).join("")}</div></fieldset>
+    <fieldset class="cm-field"><legend>Cor do seu perfil</legend><div class="cm-swatches">${Object.entries(THEMES).map(([k, c]) => `<button type="button" data-a="cm-theme" data-v="${k}" aria-pressed="${e.theme === k}" aria-label="Cor ${k}" style="background:${c}"></button>`).join("")}<label class="cm-wheel${/^#/.test(e.theme || "") ? " on" : ""}" title="Escolher qualquer cor" style="${/^#/.test(e.theme || "") ? `--c:${e.theme}` : ""}"><input id="cm-theme-any" type="color" value="${/^#/.test(e.theme || "") ? e.theme : "#b05cf0"}" aria-label="Escolher qualquer cor"></label></div><p class="muted" style="font-size:12px;margin:6px 0 0">Toque na roda colorida para escolher qualquer cor.</p></fieldset>
     <fieldset class="cm-field"${member ? " hidden" : ""}><legend>${church ? "Músicas que tocamos" : "Músicas que eu toco"}</legend>
       ${(e.songs || []).map((s, i) => `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b>${esc(s.name)}</b> <span class="muted" style="font-size:13px">${esc(s.artist || "")}</span></span>${s.key ? `<span class="tag">${esc(s.key)}</span>` : ""}<button type="button" class="btn ghost" data-a="cm-song-del" data-i="${i}" aria-label="Tirar ${esc(s.name)}">✕</button></div>`).join("")}
       <div class="cm-addsong"><input id="cm-song" list="cm-songs" placeholder="Nome da música — artista"><select id="cm-song-key" aria-label="Tom que você toca"><option value="">Tom</option>${KEYS.map(k => `<option>${k}</option>`).join("")}</select><button type="button" class="btn" data-a="cm-song-add">Adicionar</button></div>
@@ -5256,6 +5261,7 @@ document.addEventListener("submit", ev => {
   ev.preventDefault(); teamAuth(state.loginTab === "up" ? "signup" : "in");
 });
 document.addEventListener("change", ev => {
+  if (ev.target.id === "cm-theme-any" && state.cmEdit) { commReadEdit(); state.cmEdit.theme = ev.target.value.toLowerCase(); rerenderKeepScroll(); return; }
   if (ev.target.id === "pf-tag-q") { pfPick(ev.target.value); return; }
   if (ev.target.id === "bl-file") { if (ev.target.files && ev.target.files[0]) blPickFile(ev.target.files[0]); return; }
   if (commChange(ev.target)) return;
