@@ -704,6 +704,15 @@ button{cursor:pointer}
 .cm-post-text{display:block;width:100%;text-align:left;border:1px solid var(--glass-edge,var(--line));background:var(--glass-surface,var(--surface));border-radius:18px;padding:18px 18px 20px;color:var(--ink);font:500 19px/1.45 var(--f-body);white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:var(--glass-highlight,none)}
 .cm-grid-tx{display:grid;place-items:center;padding:8px;background:linear-gradient(150deg,rgba(150,70,230,.55),rgba(40,20,60,.92))!important;color:#fff;font:600 12px/1.3 var(--f-body);text-align:center;overflow:hidden}
 .cm-grid-tx span{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}
+.cm-mix{display:grid;gap:3px}
+.cm-txrow{display:grid;gap:6px;width:100%;text-align:left;border:1px solid var(--glass-edge,var(--line));border-radius:14px;padding:12px 14px;font:inherit;box-shadow:var(--glass-highlight,none)}
+.cm-txrow-h{display:flex;align-items:center;gap:8px;min-width:0}.cm-txrow-h b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cm-txrow-h small{margin-left:auto;font-size:11px;opacity:.7}
+.cm-txrow-t{font-size:16px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.cm-tx-in{border-radius:16px!important;font-size:18px!important;line-height:1.45!important;padding:14px!important;border:1px solid var(--glass-edge,var(--line))!important}
+.cm-tx-in::placeholder{color:currentColor;opacity:.6}
+.cm-tx-colors{display:grid;gap:6px}.cm-tx-colors>div{display:flex;gap:10px;flex-wrap:wrap}
+.cm-swatch{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.25);padding:0}
+.cm-swatch[aria-pressed="true"]{box-shadow:0 0 0 3px var(--bg,#0C0B0E),0 0 0 5px #C58BFF;border-color:#fff}
 /* Mensagens */
 .dm-icon{position:relative;margin-left:auto;margin-right:10px;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:#fff;display:grid;place-items:center}.dm-icon svg{width:23px;height:23px}
 .dm-icon .badge{position:absolute;top:-5px;right:-5px;margin:0}.top .dm-icon + .cm-me{margin-left:0}
@@ -1967,7 +1976,7 @@ async function commLoadPeople(){
   COMM.people = error ? [] : data; commKeep(COMM.people); commRerender("community");
 }
 async function commLoadPosts(which){
-  let q = TEAM.client.from("posts").select("id,author,image_path,caption,song,created_at").order("created_at", {ascending: false}).limit(which === "explore" ? (COMM.exploreLimit || 24) : 30);
+  let q = TEAM.client.from("posts").select("*").order("created_at", {ascending: false}).limit(which === "explore" ? (COMM.exploreLimit || 24) : 30);
   if (which === "feed") q = q.in("author", [...COMM.following, TEAM.user.id]);
   const {data, error} = await q;
   const list = error ? [] : data;
@@ -1977,7 +1986,7 @@ async function commLoadPosts(which){
   commRerender("community");
 }
 async function commLoadAuthorPosts(id){
-  const {data} = await TEAM.client.from("posts").select("id,author,image_path,caption,song,created_at").eq("author", id).order("created_at", {ascending: false}).limit(90);
+  const {data} = await TEAM.client.from("posts").select("*").eq("author", id).order("created_at", {ascending: false}).limit(90);
   (data || []).forEach(p => COMM.posts[p.id] = p);
   COMM.byAuthor[id] = (data || []).map(p => p.id);
   await commAfterPosts(data || []);
@@ -2163,7 +2172,7 @@ function commPostCard(id){
   if (!u && !tx) commSign([p.image_path]);
   return `<article class="cm-post">
     <button class="cm-post-h" data-a="cm-profile" data-id="${esc(p.author)}">${commAvatar(a, 38)}<span style="min-width:0"><b>${esc(a.display_name || "")}${commBadge(a)}</b><span class="muted">${commWhere(a) || "@" + esc(a.handle || "")}</span></span></button>
-    ${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}">${esc(p.caption || "")}</button>` : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}
+    ${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}" style="${txStyle(p)}">${esc(p.caption || "")}</button>` : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}
     <div class="cm-bar">
       <button class="cm-act" data-a="cm-comments" data-id="${esc(id)}" aria-label="Comentar">${CM_ICONS.comment}<span>${COMM.ccount[id] || 0}</span></button>
       <button class="cm-act like" data-a="cm-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${liked ? CM_ICONS.heartOn : CM_ICONS.heart}<span>${COMM.likes[id] || 0}</span></button>
@@ -2236,7 +2245,7 @@ async function commToggleSave(id){
 async function commLoadSaved(){
   const {data} = await TEAM.client.from("post_saves").select("post_id,created_at").eq("user_id", TEAM.user.id).order("created_at", {ascending: false}).limit(90);
   const ids = (data || []).map(r => r.post_id), need = ids.filter(id => !COMM.posts[id]);
-  if (need.length) { const {data: ps} = await TEAM.client.from("posts").select("id,author,image_path,caption,song,created_at").in("id", need); (ps || []).forEach(p => COMM.posts[p.id] = p); await commAfterPosts(ps || []); }
+  if (need.length) { const {data: ps} = await TEAM.client.from("posts").select("*").in("id", need); (ps || []).forEach(p => COMM.posts[p.id] = p); await commAfterPosts(ps || []); }
   COMM.savedIds = ids.filter(id => COMM.posts[id]); ids.forEach(id => COMM.mySaves.add(id));
   commRerender("profile");
 }
@@ -2253,7 +2262,7 @@ function commOpenDeep(){
   state.deepPost = null;
   const show = () => { state.postId = id; state.cmBack = "community"; state.view = "post"; render(); scrollTo(0, 0); };
   if (COMM.posts[id]) return show();
-  TEAM.client.from("posts").select("id,author,image_path,caption,song,created_at").eq("id", id).maybeSingle().then(async ({data}) => {
+  TEAM.client.from("posts").select("*").eq("id", id).maybeSingle().then(async ({data}) => {
     if (!data) { flash("Essa foto não está mais disponível."); return; }
     COMM.posts[data.id] = data; await commAfterPosts([data]); show();
   });
@@ -2265,9 +2274,32 @@ function commGridUrl(p){
   if (COMM_NOFILE.has(th)) { if (!COMM.urls[p.image_path]) commSign([p.image_path]); return commUrl(p.image_path); }
   commSign([th]); return "";
 }
-function commGrid(ids){
-  return `<div class="cm-grid">${ids.map(id => { const p = COMM.posts[id], u = commGridUrl(p); if (p && !p.image_path) return `<button class="cm-grid-tx" data-a="cm-post" data-id="${esc(id)}"><span>${esc((p.caption || "").slice(0, 120))}</span></button>`; return `<button data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }).join("")}</div>`;
+/* ---------- Posts de texto: cores e lista mista (fotos em grade, textos em faixa) ---------- */
+const TX_STYLES = {
+  vidro: {l: "Vidro", bg: "var(--glass-surface,var(--surface))", fg: "var(--ink)"},
+  lilas: {l: "Lilás", bg: "linear-gradient(135deg,#9B45F0,#4A1A8A)", fg: "#fff"},
+  azul: {l: "Azul", bg: "linear-gradient(135deg,#3A7BFF,#15307C)", fg: "#fff"},
+  rosa: {l: "Rosa", bg: "linear-gradient(135deg,#FF5AA0,#8A1D57)", fg: "#fff"},
+  dourado: {l: "Dourado", bg: "linear-gradient(135deg,#F7C25E,#9A5A12)", fg: "#1E1206"},
+  verde: {l: "Verde", bg: "linear-gradient(135deg,#25C99F,#0D5A4A)", fg: "#fff"},
+  preto: {l: "Preto", bg: "#09080B", fg: "#fff"},
+  branco: {l: "Branco", bg: "#F6F2FA", fg: "#1A1022"}
+};
+function txStyle(p){ const t = TX_STYLES[(p && p.style) || "vidro"] || TX_STYLES.vidro; return "background:" + t.bg + ";color:" + t.fg; }
+function txCard(p){ const a = COMM.profiles[p.author] || {};
+  return `<button class="cm-txrow" data-a="cm-post" data-id="${esc(p.id)}" style="${txStyle(p)}"><span class="cm-txrow-h">${commAvatar(a, 26)}<b>${esc(a.display_name || "")}</b><small>${commAgo(p.created_at)}</small></span><span class="cm-txrow-t">${esc(p.caption || "")}</span></button>`; }
+// mantém a ordem: fotos seguidas viram grade, cada texto vira uma faixa larga
+function mixBlocks(items, isText, cell, text){
+  let out = "", buf = [];
+  const flush = () => { if (buf.length) { out += `<div class="cm-grid">${buf.join("")}</div>`; buf = []; } };
+  items.forEach(x => { if (isText(x)) { flush(); out += text(x); } else buf.push(cell(x)); });
+  flush(); return out;
 }
+function commGrid(ids){
+  const txt = id => COMM.posts[id] && !COMM.posts[id].image_path;
+  return `<div class="cm-mix">${mixBlocks(ids, txt, id => { const p = COMM.posts[id], u = commGridUrl(p); return `<button data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }, id => txCard(COMM.posts[id]))}</div>`;
+}
+
 function commPersonCard(p){
   const s = [p.display_name, p.handle, p.church, p.city, (p.instruments || []).join(" "), isChurch(p) ? "igreja" : ""].join(" ").toLowerCase();
   return `<div class="cm-person" data-s="${esc(s)}" style="--acc:${THEMES[p.theme] || THEMES.red}">${isChurch(p) ? `<span class="cm-kind">${PPL_ICONS.igreja}Igreja</span>` : ""}
@@ -2697,7 +2729,7 @@ function blClick(a, b){
    Marcação: quem posta marca pessoas na própria foto/vídeo (a pessoa marcada pode se desmarcar).
    Compartilhar: guarda no próprio perfil uma foto ou Blessing de outra pessoa (aba Compartilhados). */
 const PF = {bl: {}, tags: {}, shares: {}, tagsOf: {}, mySh: new Set(), myShLoaded: false, bcom: {}, bccount: {}, bcOpen: null, bcBusy: false, missing: false};
-const PF_BSEL = "id,author,video_key,thumb_key,caption,duration,created_at", PF_PSEL = "id,author,image_path,caption,song,created_at";
+const PF_BSEL = "id,author,video_key,thumb_key,caption,duration,created_at", PF_PSEL = "*";
 const PF_PROF = "id,handle,display_name,avatar_path,theme,verified,official,kind";
 function pfMissing(error){ if (error && /does not exist|schema cache/i.test(error.message || "")) PF.missing = true; return !!error; }
 
@@ -2760,7 +2792,7 @@ function pfTabs(id, me, posts){
     const empty = {blessings: me ? "Você ainda não postou Blessings." : "Ainda não postou Blessings.",
       tags: me ? "Quando alguém marcar você numa foto ou Blessing, aparece aqui." : "Ninguém marcou esta pessoa ainda.",
       shares: me ? "Numa foto ou Blessing, toque em compartilhar e escolha “No meu perfil”." : "Ainda não compartilhou nada."}[tab];
-    body = list === null ? '<p class="muted">Carregando…</p>' : list.length ? `<div class="cm-grid">${list.map(pfCell).join("")}</div>` : `<p class="muted">${empty}</p>`;
+    body = list === null ? '<p class="muted">Carregando…</p>' : list.length ? `<div class="cm-mix">${mixBlocks(list, x => x.k === "post" && COMM.posts[x.id] && !COMM.posts[x.id].image_path, pfCell, x => txCard(COMM.posts[x.id]))}</div>` : `<p class="muted">${empty}</p>`;
   }
   return `<div class="inst cm-seg pf-tabs" role="group" aria-label="O que ver no perfil">${seg("fotos", "Fotos")}${blOn() ? seg("blessings", "Blessings") : ""}${seg("tags", "Marcações")}${seg("shares", "Compartilhados")}</div>${body}`;
 }
@@ -2770,9 +2802,9 @@ function pfTagPicker(){
   if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
   const sel = state.tagPick || [];
   const opts = (COMM.people || []).filter(p => p.id !== TEAM.user.id && !sel.includes(p.id)).map(p => `<option value="@${esc(p.handle)}">${esc(p.display_name)}</option>`).join("");
-  return `<div class="pf-tagpick"><span class="muted" style="font-size:13px">👥 Marcar pessoas (opcional)</span>
+  return `<div class="pf-tagpick"><span class="muted" style="font-size:13px">👥 Marcar pessoas ou igrejas (opcional)</span>
     ${sel.length ? `<div class="cm-chips">${sel.map(u => `<button type="button" class="pf-chip" data-a="pf-unpick" data-id="${esc(u)}" aria-label="Tirar ${esc((COMM.profiles[u] || {}).display_name || "")}">${esc((COMM.profiles[u] || {}).display_name || "")} ✕</button>`).join("")}</div>` : ""}
-    ${sel.length < 10 ? `<input id="pf-tag-q" list="pf-tag-list" placeholder="Digite o nome ou o @ da pessoa" autocomplete="off" aria-label="Marcar pessoa"><datalist id="pf-tag-list">${opts}</datalist>` : ""}</div>`;
+    ${sel.length < 10 ? `<input id="pf-tag-q" list="pf-tag-list" placeholder="Nome ou @ da pessoa ou da igreja" autocomplete="off" aria-label="Marcar pessoa"><datalist id="pf-tag-list">${opts}</datalist>` : ""}</div>`;
 }
 function pfKeepDrafts(){ const c = $("#cm-caption"); if (c && state.cmPost) state.cmPost.caption = c.value; const b = $("#bl-cap"); if (b) BLS.capDraft = b.value; }
 function pfPick(v){
@@ -3340,8 +3372,9 @@ function viewPostNew(){
   <div class="inst cm-seg" role="group" aria-label="Tipo de post"><button type="button" data-a="cm-pkind" data-v="foto" aria-pressed="${!tx}">📷 Foto</button><button type="button" data-a="cm-pkind" data-v="texto" aria-pressed="${tx}">✍️ Texto</button></div>
   <form class="form" id="cm-post-form">
     ${tx ? "" : (d.data ? `<img class="cm-preview" src="${esc(d.data)}" alt="Foto escolhida">` : "") + `<label class="btn ${d.data ? "" : "primary"} file-btn">${d.data ? "Trocar foto" : "📷 Escolher foto"}<input id="cm-post-file" type="file" accept="image/*"></label>`}
-    <label>${tx ? "Seu texto" : "Legenda"}<textarea id="cm-caption" maxlength="500" rows="${tx ? 6 : 3}" placeholder="${tx ? "O que Deus colocou no seu coração hoje? Um versículo, um testemunho, um pedido de oração…" : "Ex.: Ensaio de domingo, tocando Restitui em F#!"}">${esc(d.caption || "")}</textarea></label>
+    <label>${tx ? "Seu texto" : "Legenda"}<textarea id="cm-caption" maxlength="500" rows="${tx ? 6 : 3}" ${tx ? `class="cm-tx-in" style="${txStyle({style: d.style})}"` : ""} placeholder="${tx ? "O que Deus colocou no seu coração hoje? Um versículo, um testemunho, um pedido de oração…" : "Ex.: Ensaio de domingo, tocando Restitui em F#!"}">${esc(d.caption || "")}</textarea></label>
     ${mySongs.length ? `<label>Música (opcional)<select id="cm-post-song"><option value="">Nenhuma</option>${mySongs.map((s, i) => `<option value="${i}" ${String(d.song) === String(i) ? "selected" : ""}>${esc(s.name)}${s.key ? " (" + esc(s.key) + ")" : ""}</option>`).join("")}</select></label>` : ""}
+    ${tx ? `<div class="cm-tx-colors" role="group" aria-label="Cor do texto"><span class="muted" style="font-size:13px">Cor do cartão</span><div>${Object.entries(TX_STYLES).map(([k, t]) => `<button type="button" class="cm-swatch" data-a="cm-tstyle" data-v="${k}" aria-pressed="${(d.style || "vidro") === k}" aria-label="${t.l}" title="${t.l}" style="background:${t.bg}"></button>`).join("")}</div></div>` : ""}
     ${pfTagPicker()}
     <p class="muted" style="font-size:13px;margin:0">Só quem está logado vê. Não poste telefone, endereço nem fotos de outras pessoas sem permissão.</p>
     ${COMM.msg ? `<p class="confirm">${esc(COMM.msg)}</p>` : ""}
@@ -3420,7 +3453,7 @@ async function commPublish(){
   try {
     const path = d.kind === "texto" ? null : await commUpload(d.data, "post");
     if (path) try { const tb = await commResize(await (await fetch(d.data)).blob(), 400, 40000); await commUpload(tb, "", commThumb(path)); } catch(e) {}
-    const {data, error} = await TEAM.client.from("posts").insert({author: TEAM.user.id, image_path: path, caption: d.caption.trim().slice(0, 500) || null, song}).select("*").single();
+    const {data, error} = await TEAM.client.from("posts").insert({author: TEAM.user.id, image_path: path, caption: d.caption.trim().slice(0, 500) || null, song, ...(path ? {} : {style: d.style || "vidro"})}).select("*").single();
     if (error) throw error;
     COMM.posts[data.id] = data; COMM.likes[data.id] = 0;
     await pfSaveTags("post", data.id);
@@ -3489,7 +3522,7 @@ async function commLoadReports(){
   const {data, error} = await TEAM.client.from("reports").select("*").eq("resolved", false).order("created_at", {ascending: false}).limit(100);
   COMM.reports = error ? [] : data;
   const posts = COMM.reports.filter(r => r.target_kind === "post" && !COMM.posts[r.target_id]).map(r => r.target_id);
-  if (posts.length) { const {data: ps} = await TEAM.client.from("posts").select("id,author,image_path,caption,song,created_at").in("id", posts); (ps || []).forEach(p => COMM.posts[p.id] = p); await commAfterPosts(ps || []); }
+  if (posts.length) { const {data: ps} = await TEAM.client.from("posts").select("*").in("id", posts); (ps || []).forEach(p => COMM.posts[p.id] = p); await commAfterPosts(ps || []); }
   const people = COMM.reports.filter(r => r.target_kind === "profile" && !COMM.profiles[r.target_id]).map(r => r.target_id);
   if (people.length) { const {data: pr} = await TEAM.client.from("community_profiles").select("id,handle,display_name,church,city,instruments,avatar_path,cover_path,theme,created_at,verified,official,kind,schedule,services").in("id", people); commKeep(pr); }
   commRerender("team");
@@ -3529,6 +3562,7 @@ function commTrackPlay(songId){
 function commClick(a, b){
   if (a === "cm-demo") { commDemoInvite(); }
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
+  else if (a === "cm-tstyle") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.style = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "cm-pkind") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.kind = b.dataset.v; COMM.msg = ""; render(); }
   else if (a === "cm-tab") { state.cmTab = b.dataset.v; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; state.pfTab = "fotos"; delete PF.bl[b.dataset.id]; delete PF.tags[b.dataset.id]; delete PF.shares[b.dataset.id]; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
