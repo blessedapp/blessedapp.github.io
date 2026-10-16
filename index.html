@@ -3543,8 +3543,8 @@ function vpLite(){try{return !!(navigator.connection&&navigator.connection.saveD
 function visitorPanel(){return `<section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
 function vpScene(c,i){
  const cap=`<div class="vp-cap"><h2>${esc(c.t)}</h2><p>${esc(c.s)}</p></div>`;
- if(c.k==="v")return `<div class="vp-s" data-i="${i}"><div class="vp-stage"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4"></video><div class="vp-hearts"></div></div>${cap}</div>`;
- if(c.k==="c")return `<div class="vp-s ch" data-i="${i}"><div class="vp-stage"><div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div></div>${cap}</div>`;
+ if(c.k==="v")return `<div class="vp-s" data-i="${i}"><div class="vp-stage"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div></div>${cap}</div>`;
+ if(c.k==="c")return `<div class="vp-s ch" data-i="${i}"><div class="vp-stage"><div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div></div>${cap}</div>`;
  if(c.k==="n"){const N=[[48,42,"#e0589a"],[272,40,"#4aa8ff"],[34,118,"#ffb347"],[286,124,"#5fd38d"],[110,152,"#ff7a59"],[214,150,"#b085ff"]];
   const ln=N.map((n,j)=>`<line x1="160" y1="90" x2="${n[0]}" y2="${n[1]}" style="--n:${j}"/>`).join("");
   const dots=N.map((n,j)=>`<circle class="dot" cx="160" cy="90" r="3" style="--n:${j};--dx:${n[0]-160}px;--dy:${n[1]-90}px"/>`).join("");
