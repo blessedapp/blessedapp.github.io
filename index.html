@@ -4888,7 +4888,7 @@ function commDemoInvite(){
    por um link temporário que a função "blessings" do Supabase assina. No feed só baixa o vídeo que está na tela
    (o próximo baixa só o começo); com "economia de dados" ligada, o vídeo só toca quando a pessoa toca nele. */
 const BLS = {list: null, items: {}, likes: {}, my: new Set(), more: true, loading: false, muted: false, blocked: false, up: null, file: null, msg: "", focus: null};
-const BL_MAX_S = 90, BL_MAX_TXT = "1 min 30 s", BL_SIDE = 720, BL_VBPS = 2200000, BL_BUDGET = 13 * 8e6; // 13 MB no máximo por vídeo (o servidor aceita 15 MB)
+const BL_MAX_S = 60, BL_MAX_TXT = "1 minuto", BL_SIDE = 720, BL_VBPS = 2200000, BL_BUDGET = 13 * 8e6; // 13 MB no máximo por vídeo (o servidor aceita 15 MB)
 function blBase(){ return String((window.CC_SUPABASE && window.CC_SUPABASE.blessings) || "").replace(/\/$/, ""); }
 function blOn(){ return commOn() && !!blBase(); }
 function blUrl(key){ return key ? blBase() + "/" + key.split("/").map(encodeURIComponent).join("/") : ""; }
@@ -4966,7 +4966,7 @@ function blTeaser(){
   const tiles = DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
     return `<button class="bl-tile" data-a="cm-demo" style="background-image:url('${esc(x.img)}')"><em class="cm-demo-tag">Exemplo</em><span class="bl-tile-play">${BL_ICONS.play}</span><b>${esc(a.n)}</b></button>`; }).join("");
   return `<section class="cm-hero"><p class="cm-kicker">Vídeos curtos de louvor</p><h2>Blessings</h2>
-      <p>Trechos de ensaio, solos, momentos do culto e testemunhos em vídeos de até 1 min 30 s. Leves para o seu plano de dados: o app comprime antes de enviar.</p>
+      <p>Trechos de ensaio, solos, momentos do culto e testemunhos em vídeos de até 1 minuto. Leves para o seu plano de dados: o app comprime antes de enviar.</p>
       <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
     <p class="cm-demo-note">👀 Exemplos de como fica. Os vídeos de verdade aparecem quando você entra.</p>
     <div class="bl-tiles">${tiles}</div>`;
