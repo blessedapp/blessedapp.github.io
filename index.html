@@ -938,6 +938,7 @@ body.dm-screen-shake{animation:none}}
 html:has(body.dm-chat-open),body.dm-chat-open{overflow:hidden;overscroll-behavior:none}body.dm-chat-open #app{padding:0;min-height:0}.dm-shell{--dm-safe-top:env(safe-area-inset-top,0px);--dm-safe-bottom:env(safe-area-inset-bottom,0px);position:fixed;top:var(--dm-y,0px);left:0;right:0;width:100%;max-width:720px;height:var(--dm-vh,100vh);height:var(--dm-vh,100dvh);margin:0 auto;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;background:var(--bg);z-index:10}.dm-shell>.dm-head{position:relative;inset:auto;width:100%;max-width:none;flex:none;margin:0;padding:calc(8px + var(--dm-safe-top)) 8px 8px}.dm-shell>.dm-list{position:relative;inset:auto;width:100%;max-width:none;margin:0;flex:1 1 auto;min-height:0;border-radius:0;padding:14px 12px;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scroll-padding-bottom:12px}.dm-shell>.dm-form{position:relative;inset:auto;width:100%;max-width:none;flex:none;margin:0;border-radius:0;padding:8px 10px max(6px,var(--dm-safe-bottom));gap:8px}.dm-shell #dm-in{font-size:16px;line-height:1.35;min-height:44px}.dm-chat-open.dm-keyboard-open .dm-form{padding-bottom:8px}body.dm-chat-open.dm-screen-shake{animation:none}.dm-chat-open.dm-screen-shake .dm-shell{animation:dm-screen-shake 2s linear}@media(prefers-reduced-motion:reduce){.dm-chat-open.dm-screen-shake .dm-shell{animation:none}}
 .bb-version-line{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 14px;font-size:12px;color:var(--muted)}.bb-version-line a{padding:7px 10px;border:1px solid #b977dc55;border-radius:12px;color:#dfbaf7;background:#7a3c9822;text-decoration:none}
 .dm-receipt{display:inline-flex;align-items:center;vertical-align:middle;margin-left:5px;color:#c7bfce;line-height:1}.dm-receipt svg{width:22px;height:15px}.dm-receipt.read{color:#dfa8ff;filter:drop-shadow(0 0 3px #cf8bff44)}
+.pl-editor{border:1px solid #bd8ce044;border-radius:16px;padding:12px;margin:12px 0;min-width:0}.pl-editor legend{font-weight:600;font-size:14px}.pl-editor label{display:grid;gap:6px}.pl-editor input{width:100%;min-width:0;font-size:16px}.pl-editor>small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:8px}.pl-editor p{font-size:12px}.pl-link{display:flex;align-items:center;gap:6px;width:fit-content;max-width:100%;padding:7px 10px;margin:5px 10px;border:1px solid #ba85df55;border-radius:12px;background:#5a2f7040;color:#eacbff;text-decoration:none;font-size:12px;position:relative;z-index:1}.pl-link span{min-width:0;overflow-wrap:anywhere}.pl-link small{white-space:nowrap;font-size:10px;opacity:.85}.pl-editor .pl-link{margin:8px 0}.bl-info .pl-link{margin-left:0}.st-viewer>.pl-link{flex-shrink:0;margin-top:0}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -2317,12 +2318,12 @@ function stRender(first=false){
   else if(p.kind==="gallery") { body=stGalleryView(p); }
   else if(p.kind==="compose") {
     const d=p.draft, colors=ST_THEMES[d.theme]||ST_THEMES.lilas;
-    body=`<div class="modal-box st-box st-compose" role="dialog" aria-modal="true" aria-labelledby="st-title"><div class="st-head"><h2 id="st-title">Novo story</h2><button class="btn ghost" id="st-close" data-a="st-close" ${p.busy?"disabled":""} aria-label="Fechar">✕</button></div><p class="muted">Texto ou foto · visível por 24 horas</p><div class="st-preview${d.image?" st-with-image":""}" style="--st-from:${colors[0]};--st-to:${colors[1]}">${d.image?`<img src="${esc(d.image)}" alt="Prévia da foto do story">`:""}<p id="st-preview-caption">${esc(d.caption||"Compartilhe uma palavra, um momento ou um versículo.")}</p></div><label class="bs-label" for="st-caption">${d.image?"Legenda":"Seu texto"}</label><textarea id="st-caption" maxlength="700" rows="3" placeholder="Escreva seu story…" ${p.busy?"disabled":""}>${esc(d.caption)}</textarea>${stMusicEdit(p)}${d.image?stLutControls(d.lut||'natural',d.strength??40,'photo'):''}<div class="actions"><button class="btn" data-a="st-gallery" ${p.busy?"disabled":""}>Galeria</button>${d.original?'<button class="btn" data-a="st-save-original">Salvar original</button>':""}<button class="btn" data-a="st-camera" ${p.busy?"disabled":""}>Abrir câmera</button><label class="btn file-btn">${d.image?"Trocar foto":"Escolher foto"}<input id="st-file" type="file" accept="image/jpeg,image/png,image/webp" ${p.busy?"disabled":""}></label>${d.image?`<button class="btn ghost" data-a="st-remove-image" ${p.busy?"disabled":""}>Tirar foto</button>`:""}</div><div class="inst" role="group" aria-label="Fundo do story">${Object.keys(ST_THEMES).map(k=>`<button data-a="st-theme" data-v="${k}" aria-pressed="${d.theme===k}" ${p.busy?"disabled":""}>${{lilas:"Lilás",rosa:"Rosa",noite:"Noite"}[k]}</button>`).join("")}</div>${p.error||ST.error?`<p role="status" class="st-status">${esc(p.error||ST.error)}</p>`:""}${!ST.ready?`<button class="btn" data-a="st-reload" ${ST.loading?"disabled":""}>${ST.loading?"Conectando…":"Tentar conexão novamente"}</button>`:""}<button class="btn primary" data-a="st-send" ${p.busy||p.lutLoading||!ST.ready?"disabled":""}>${p.busy?"Publicando…":"Publicar por 24 horas"}</button></div>`;
+    body=`<div class="modal-box st-box st-compose" role="dialog" aria-modal="true" aria-labelledby="st-title"><div class="st-head"><h2 id="st-title">Novo story</h2><button class="btn ghost" id="st-close" data-a="st-close" ${p.busy?"disabled":""} aria-label="Fechar">✕</button></div><p class="muted">Texto ou foto · visível por 24 horas</p><div class="st-preview${d.image?" st-with-image":""}" style="--st-from:${colors[0]};--st-to:${colors[1]}">${d.image?`<img src="${esc(d.image)}" alt="Prévia da foto do story">`:""}<p id="st-preview-caption">${esc(d.caption||"Compartilhe uma palavra, um momento ou um versículo.")}</p></div><label class="bs-label" for="st-caption">${d.image?"Legenda":"Seu texto"}</label><textarea id="st-caption" maxlength="700" rows="3" placeholder="Escreva seu story…" ${p.busy?"disabled":""}>${esc(d.caption)}</textarea>${placeEditor("story")}${stMusicEdit(p)}${d.image?stLutControls(d.lut||'natural',d.strength??40,'photo'):''}<div class="actions"><button class="btn" data-a="st-gallery" ${p.busy?"disabled":""}>Galeria</button>${d.original?'<button class="btn" data-a="st-save-original">Salvar original</button>':""}<button class="btn" data-a="st-camera" ${p.busy?"disabled":""}>Abrir câmera</button><label class="btn file-btn">${d.image?"Trocar foto":"Escolher foto"}<input id="st-file" type="file" accept="image/jpeg,image/png,image/webp" ${p.busy?"disabled":""}></label>${d.image?`<button class="btn ghost" data-a="st-remove-image" ${p.busy?"disabled":""}>Tirar foto</button>`:""}</div><div class="inst" role="group" aria-label="Fundo do story">${Object.keys(ST_THEMES).map(k=>`<button data-a="st-theme" data-v="${k}" aria-pressed="${d.theme===k}" ${p.busy?"disabled":""}>${{lilas:"Lilás",rosa:"Rosa",noite:"Noite"}[k]}</button>`).join("")}</div>${p.error||ST.error?`<p role="status" class="st-status">${esc(p.error||ST.error)}</p>`:""}${!ST.ready?`<button class="btn" data-a="st-reload" ${ST.loading?"disabled":""}>${ST.loading?"Conectando…":"Tentar conexão novamente"}</button>`:""}<button class="btn primary" data-a="st-send" ${p.busy||p.lutLoading||!ST.ready?"disabled":""}>${p.busy?"Publicando…":"Publicar por 24 horas"}</button></div>`;
   } else if(p.kind==="camera") { body=stCameraView(p);
   } else if(p.kind==="viewer") {
     const x=ST.rows.find(s=>s.id===p.ids[p.index]); if(!x||Date.parse(x.expires_at)<=stClock()){stNext(1);return;}
     const author=COMM.profiles[x.author]||{}, colors=ST_THEMES[x.theme]||ST_THEMES.lilas;
-    body=`<div class="st-viewer st-box" role="dialog" aria-modal="true" aria-label="Story de ${esc(author.display_name||"alguém")}" style="--st-from:${colors[0]};--st-to:${colors[1]}"><div class="st-progress" aria-label="Story ${p.index+1} de ${p.ids.length}">${p.ids.map((_,i)=>`<span><i id="st-progress-${i}" style="transform:scaleX(${i<p.index?1:0})"></i></span>`).join("")}</div><header class="st-head"><button class="st-author" data-a="cm-profile" data-id="${esc(x.author)}">${commAvatar(author,36)}<span><b>${esc(author.display_name||"Perfil")}</b><small>${commAgo(x.created_at)} · Story</small></span></button><button class="btn ghost" id="st-pause" data-a="st-pause" aria-label="${p.paused?"Continuar":"Pausar"}">${p.paused?"▶":"Ⅱ"}</button><button class="btn ghost" id="st-close" data-a="st-close" aria-label="Fechar story">✕</button></header><div class="st-stage${x.image_path?" st-photo":""}">${p.url?`<img id="st-viewer-image" src="${esc(p.url)}" alt="Foto do story">`:""}<p>${esc(x.caption||"")}</p>${p.loading?'<small id="st-image-status" class="st-loading" role="status">Carregando foto…</small>':""}${p.error?`<small class="st-loading" role="status">${esc(p.error)}</small>`:""}${x.music_video?'<span class="st-music-dot" aria-label="Story com clipe musical">♫</span>':''}</div>${x.music_video||x.music_track?stMusicCard(stMusicData(p),p.loading):''}<footer class="st-footer"><button class="btn ghost" data-a="st-prev" ${p.index===0?"disabled":""}>‹ Anterior</button><small>Visível por 24 horas</small><button class="btn ghost" data-a="st-next">Próximo ›</button></footer><div id="st-social">${stSocialView(p,x)}</div>${x.author===p.actor.owner||teamRole()==="admin"?`<button class="lnk2 st-delete" data-a="st-delete" data-id="${esc(x.id)}">Apagar story</button>`:""}</div>`;
+    body=`<div class="st-viewer st-box" role="dialog" aria-modal="true" aria-label="Story de ${esc(author.display_name||"alguém")}" style="--st-from:${colors[0]};--st-to:${colors[1]}"><div class="st-progress" aria-label="Story ${p.index+1} de ${p.ids.length}">${p.ids.map((_,i)=>`<span><i id="st-progress-${i}" style="transform:scaleX(${i<p.index?1:0})"></i></span>`).join("")}</div><header class="st-head"><button class="st-author" data-a="cm-profile" data-id="${esc(x.author)}">${commAvatar(author,36)}<span><b>${esc(author.display_name||"Perfil")}</b><small>${commAgo(x.created_at)} · Story</small></span></button><button class="btn ghost" id="st-pause" data-a="st-pause" aria-label="${p.paused?"Continuar":"Pausar"}">${p.paused?"▶":"Ⅱ"}</button><button class="btn ghost" id="st-close" data-a="st-close" aria-label="Fechar story">✕</button></header>${placeLink(x.place)}<div class="st-stage${x.image_path?" st-photo":""}">${p.url?`<img id="st-viewer-image" src="${esc(p.url)}" alt="Foto do story">`:""}<p>${esc(x.caption||"")}</p>${p.loading?'<small id="st-image-status" class="st-loading" role="status">Carregando foto…</small>':""}${p.error?`<small class="st-loading" role="status">${esc(p.error)}</small>`:""}${x.music_video?'<span class="st-music-dot" aria-label="Story com clipe musical">♫</span>':''}</div>${x.music_video||x.music_track?stMusicCard(stMusicData(p),p.loading):''}<footer class="st-footer"><button class="btn ghost" data-a="st-prev" ${p.index===0?"disabled":""}>‹ Anterior</button><small>Visível por 24 horas</small><button class="btn ghost" data-a="st-next">Próximo ›</button></footer><div id="st-social">${stSocialView(p,x)}</div>${x.author===p.actor.owner||teamRole()==="admin"?`<button class="lnk2 st-delete" data-a="st-delete" data-id="${esc(x.id)}">Apagar story</button>`:""}</div>`;
   }
   m.innerHTML=body; m.hidden=false;
   const prior=id&&document.getElementById(id); if(!first&&prior){prior.focus();if(typeof position==="number"&&prior.setSelectionRange)try{prior.setSelectionRange(position,position);}catch(_){}}
@@ -2347,7 +2348,7 @@ async function stSend(){
   try{
     if(path){const blob=await(await fetch(p.draft.image)).blob();if(!stPanelCurrent(p))return;const {error}=await p.actor.client.storage.from("stories").upload(path,blob,{contentType:"image/jpeg",cacheControl:"0",upsert:false});if(error)throw error;uploaded=true;}
     if(!stCurrent(p.actor))return;
-    const {data,error}=await p.actor.client.from("stories").insert({id,author:p.actor.owner,caption,image_path:path,theme:p.draft.theme,...(ST.music&&p.draft.music?(p.draft.music.track?{music_track:p.draft.music.track,music_title:p.draft.music.title,music_start:0,music_duration:p.draft.music.duration}:{music_video:p.draft.music.video,music_title:p.draft.music.title,music_start:p.draft.music.start,music_duration:p.draft.music.duration}):{})}).select("*").single();
+    const {data,error}=await p.actor.client.from("stories").insert({id,author:p.actor.owner,caption,image_path:path,theme:p.draft.theme,...placePayload(p.draft),...(ST.music&&p.draft.music?(p.draft.music.track?{music_track:p.draft.music.track,music_title:p.draft.music.title,music_start:0,music_duration:p.draft.music.duration}:{music_video:p.draft.music.video,music_title:p.draft.music.title,music_start:p.draft.music.start,music_duration:p.draft.music.duration}):{})}).select("*").single();
     if(error)throw error;if(!stCurrent(p.actor))return;
     ST.rows.unshift(data);ST.loadedAt=0;if(stPanelCurrent(p)){closePix();flash("Story publicado. Ele fica visível por 24 horas.");}
     await stLoad(true);
@@ -2973,7 +2974,7 @@ const REPORT_REASONS = ["Conteúdo impróprio", "Não tem a ver com música ou l
 function commOn(){ return teamAvailable() && !!TEAM.client; }
 function commIn(){ return commOn() && !!TEAM.user && teamRole() !== "blocked"; }
 function commMissing(error){ return !!error && (error.code === "42P01" || error.code === "PGRST205" || /does not exist|schema cache/i.test(error.message || "")); }
-function commReset(){ bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
+function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
 function commRerender(...views){ if (views.includes(state.view) || state.view === "library" || state.view === "setlist") rerenderKeepScroll(); }
 function commUrl(p){ return p ? COMM.urls[p] || "" : ""; }
 // Miniatura (~400 px) guardada ao lado da foto: a grade e os stories usam ela; a foto cheia só baixa ao abrir.
@@ -3182,7 +3183,7 @@ function pcJoin(label='Participar'){return `<button class="btn primary" data-a="
 function pcPerson(p,page){return `<button class="pc-person" data-a="pc-profile" data-id="${esc(p.id)}">${pcAvatar(p,page,52)}<span><b>${esc(p.display_name||'')}${commBadge(p)}</b><small>@${esc(p.handle||'')}</small>${p.church||p.city?`<small>${commWhere(p)}</small>`:''}</span><span aria-hidden="true">›</span></button>`;}
 function pcPost(p,page,detail=false){
  const author=page.people.find(a=>a.id===p.author)||{},photo=page.urls[detail?p.image_path:commThumb(p.image_path||'')]||page.urls[p.image_path];
- return `<article class="cm-post pc-post"><button class="cm-post-h" data-a="pc-profile" data-id="${esc(p.author)}">${pcAvatar(author,page,38)}<span><b>${esc(author.display_name||'')}${commBadge(author)}</b><small>@${esc(author.handle||'')}</small></span></button>${p.image_path?photo?`<button class="cm-post-img" data-a="pc-post" data-id="${esc(p.id)}"><img src="${esc(photo)}" alt="Publicação de ${esc(author.display_name||'')}" loading="lazy"></button>`:'<p class="muted">Imagem indisponível.</p>':`<button class="cm-post-text" data-a="pc-post" data-id="${esc(p.id)}" style="${txStyle(p)}">${esc(p.caption||'')}</button>`}${p.image_path&&p.caption?`<p class="cm-cap">${esc(p.caption)}</p>`:''}<div class="cm-bar"><button class="cm-act" data-a="pc-interact" aria-label="Curtir">${CM_ICONS.heart}</button><button class="cm-act" data-a="pc-interact" aria-label="Comentar">${CM_ICONS.comment}</button><span class="muted">${commAgo(p.created_at)}</span></div></article>`;
+ return `<article class="cm-post pc-post"><button class="cm-post-h" data-a="pc-profile" data-id="${esc(p.author)}">${pcAvatar(author,page,38)}<span><b>${esc(author.display_name||'')}${commBadge(author)}</b><small>@${esc(author.handle||'')}</small></span></button>${placeLink(p.place)}${p.image_path?photo?`<button class="cm-post-img" data-a="pc-post" data-id="${esc(p.id)}"><img src="${esc(photo)}" alt="Publicação de ${esc(author.display_name||'')}" loading="lazy"></button>`:'<p class="muted">Imagem indisponível.</p>':`<button class="cm-post-text" data-a="pc-post" data-id="${esc(p.id)}" style="${txStyle(p)}">${esc(p.caption||'')}</button>`}${p.image_path&&p.caption?`<p class="cm-cap">${esc(p.caption)}</p>`:''}<div class="cm-bar"><button class="cm-act" data-a="pc-interact" aria-label="Curtir">${CM_ICONS.heart}</button><button class="cm-act" data-a="pc-interact" aria-label="Comentar">${CM_ICONS.comment}</button><span class="muted">${commAgo(p.created_at)}</span></div></article>`;
 }
 function pcStatus(page){return page.loading&&!page.posts.length&&!page.people.length?'<p class="muted" role="status">Carregando a comunidade…</p>':page.error?`<div class="panel"><p role="status">${esc(page.error)}</p><button class="btn" data-a="pc-retry" data-person="${esc(page.person)}" data-entry="${esc(page.entry)}">Tentar novamente</button></div>`:'';}
 function pcCommunity(){
@@ -3242,7 +3243,7 @@ function commPostCard(id){
   if (!u && !tx) commSign([p.image_path]);
   return `<article class="cm-post">
     <button class="cm-post-h" data-a="cm-profile" data-id="${esc(p.author)}">${commAvatar(a, 38)}<span style="min-width:0"><b>${esc(a.display_name || "")}${commBadge(a)}</b><span class="muted">${commWhere(a) || "@" + esc(a.handle || "")}</span></span></button>
-    ${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}" style="${txStyle(p)}">${esc(p.caption || "")}</button>` : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}
+    ${placeLink(p.place)}${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}" style="${txStyle(p)}">${esc(p.caption || "")}</button>` : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}
     <div class="cm-bar">
       <button class="cm-act" data-a="cm-comments" data-id="${esc(id)}" aria-label="Comentar">${CM_ICONS.comment}<span>${COMM.ccount[id] || 0}</span></button>
       <button class="cm-act like" data-a="cm-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${liked ? CM_ICONS.heartOn : CM_ICONS.heart}<span>${COMM.likes[id] || 0}</span></button>
@@ -3366,7 +3367,7 @@ function twCard(id){
     <div class="tw-b">
       <p class="tw-h"><button class="tw-n" data-a="cm-profile" data-id="${esc(p.author)}">${esc(a.display_name || "")}</button>${commBadge(a)}<span class="tw-m">@${esc(a.handle || "")} · ${commAgo(p.created_at)}</span></p>
       <button class="tw-t${long && !open ? " clamp" : ""}" data-a="cm-post" data-id="${esc(id)}">${esc(txt)}</button>${long && state.view !== "post" ? `<button class="tw-more" data-a="tw-more" data-id="${esc(id)}">${open ? "Mostrar menos" : "Mostrar mais"}</button>` : ""}
-      ${pfWith("post", id)}
+      ${placeLink(p.place)}${pfWith("post", id)}
       <div class="tw-bar">
         <button data-a="cm-comments" data-id="${esc(id)}" aria-label="Comentar">${CM_ICONS.comment}<span>${COMM.ccount[id] || ""}</span></button>
         <button class="${shared ? "on rp" : ""}" data-a="pf-share" data-k="post" data-id="${esc(id)}" aria-label="Compartilhar no meu perfil">${TW_REPOST}</button>
@@ -3499,7 +3500,7 @@ async function blLoad(){
   if (BLS.loading || !BLS.more) return;
   BLS.loading = true;
   const from = (BLS.list || []).length;
-  const {data, error} = await TEAM.client.from("blessings").select("id,author,video_key,thumb_key,caption,duration,created_at")
+  const {data, error} = await TEAM.client.from("blessings").select("*")
     .order("created_at", {ascending: false}).range(from, from + 9);
   BLS.loading = false;
   if (error) { BLS.list = BLS.list || []; BLS.more = false; BLS.err = /does not exist|schema cache/i.test(error.message || "") ? "missing" : "net"; blRefresh(true); return; }
@@ -3528,7 +3529,7 @@ async function blAfter(list){
 async function blOpen(id){
   state.view = "blessings"; BLS.focus = id;
   if (!BLS.items[id]) {
-    const {data} = await TEAM.client.from("blessings").select("id,author,video_key,thumb_key,caption,duration,created_at").eq("id", id).maybeSingle();
+    const {data} = await TEAM.client.from("blessings").select("*").eq("id", id).maybeSingle();
     if (!data) { flash("Esse Blessing não está mais disponível."); BLS.focus = null; }
     else { await blAfter([data]); BLS.items[id] = data; }
   }
@@ -3551,7 +3552,7 @@ function blItemHtml(id, i){
     </div>
     <div class="bl-info">
       <button class="bl-who" data-a="cm-profile" data-id="${esc(x.author)}"><b>${esc(a.display_name || "Alguém")}</b>${commBadge(a)}<span class="muted"> · ${commAgo(x.created_at)}</span></button>
-      ${x.caption ? `<p class="bl-cap">${esc(x.caption)}</p>` : ""}${pfWith("blessing", id)}
+      ${placeLink(x.place)}${x.caption ? `<p class="bl-cap">${esc(x.caption)}</p>` : ""}${pfWith("blessing", id)}
     </div>
   </section>`;
 }
@@ -3677,6 +3678,21 @@ async function blDelete(id){
   flash("Blessing apagado.");
 }
 
+/* Lugares são opcionais e estáticos; o mapa só abre ao tocar no link. */
+const PLACE={owner:null,ready:null,loading:false,seq:0};
+function placeReset(){PLACE.owner=null;PLACE.ready=null;PLACE.loading=false;PLACE.seq++;if(state.cmPost)state.cmPost.place=null;BLS.place=null;}
+function placeValue(value){if(!value||typeof value!=='object'||Array.isArray(value))return null;const label=String(value.label||'').replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,120);if(!label)return null;const p={label};if(typeof value.lat==='number'&&typeof value.lng==='number'&&Number.isFinite(value.lat)&&Number.isFinite(value.lng)&&Math.abs(value.lat)<=90&&Math.abs(value.lng)<=180){p.lat=+value.lat.toFixed(4);p.lng=+value.lng.toFixed(4);}return p;}
+function placeURL(value){const p=placeValue(value);return p?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.lat!==undefined?p.lat+','+p.lng:p.label):'';}
+function placeLink(value){const p=placeValue(value);return p?`<a class="pl-link" href="${esc(placeURL(p))}" target="_blank" rel="noopener noreferrer" aria-label="Abrir ${esc(p.label)} no mapa">📍 <span>${esc(p.label)}</span><small>Ver mapa ↗</small></a>`:'';}
+function placeDraft(kind){return kind==='post'?(state.view==='post-new'?state.cmPost:null):kind==='story'?(ST.panel?.kind==='compose'?ST.panel.draft:null):kind==='blessing'?(state.view==='bl-new'?BLS:null):null;}
+function placeBusy(kind){return kind==='post'?COMM.busy:kind==='story'?ST.panel?.busy:BLS.up?.busy;}
+function placePayload(draft){const p=placeValue(draft?.place);return PLACE.owner===TEAM.user?.id&&PLACE.ready===true&&p?{place:p}:{};}
+async function placeEnsure(){const owner=TEAM.user?.id;if(!owner)return;if(PLACE.owner!==owner){PLACE.owner=owner;PLACE.ready=null;PLACE.loading=false;PLACE.seq++;}if(PLACE.loading||PLACE.ready!==null)return;PLACE.loading=true;try{const {data,error}=await TEAM.client.rpc('publication_places_ready');if(owner!==TEAM.user?.id||PLACE.owner!==owner)return;PLACE.ready=!error&&data===true;}catch(_){if(PLACE.owner===owner)PLACE.ready=false;}finally{if(PLACE.owner===owner){PLACE.loading=false;for(const kind of ['post','story','blessing'])placePaint(kind);}}}
+function placeEditor(kind){const d=placeDraft(kind);if(!d)return '';if(PLACE.owner!==TEAM.user?.id||PLACE.ready===null)queueMicrotask(placeEnsure);const ready=PLACE.owner===TEAM.user?.id&&PLACE.ready===true,p=placeValue(d.place);return `<fieldset class="pl-editor" data-pl-kind="${kind}" ${placeBusy(kind)?'disabled':''}><legend>📍 Marcar lugar · opcional</legend>${ready?`<label for="pl-name-${kind}">Nome do lugar ou cidade<input id="pl-name-${kind}" data-pl-input="${kind}" maxlength="120" value="${esc(p?.label||'')}" placeholder="Ex.: nome da igreja, praça ou cidade" autocomplete="off"></label><div class="actions"><button type="button" class="btn" data-pl-action="gps" data-pl-kind="${kind}">Usar posição atual</button><button type="button" class="btn ghost" data-pl-action="clear" data-pl-kind="${kind}">Remover lugar</button></div>${placeLink(p)}<small>O lugar ficará visível na publicação. A posição do celular só é usada se você escolher essa opção.</small>${d._placeStatus?`<p role="status">${esc(d._placeStatus)}</p>`:''}`:`<p class="muted">${PLACE.loading||PLACE.ready===null?'Preparando marcação de lugares…':'A marcação de lugares aguarda ativação.'}</p>`}</fieldset>`;}
+function placePaint(kind){const el=document.querySelector('.pl-editor[data-pl-kind="'+kind+'"]');if(el)el.outerHTML=placeEditor(kind);}
+document.addEventListener('input',e=>{const kind=e.target.dataset.plInput;if(!kind)return;const d=placeDraft(kind);if(!d||placeBusy(kind))return;PLACE.seq++;d.place=placeValue({label:e.target.value});d._placeStatus='';const box=e.target.closest('.pl-editor'),old=box?.querySelector('.pl-link'),markup=placeLink(d.place);if(old)old.outerHTML=markup;else if(markup)box?.querySelector('.actions')?.insertAdjacentHTML('afterend',markup);});
+document.addEventListener('click',e=>{const button=e.target.closest('[data-pl-action]');if(!button)return;e.preventDefault();const kind=button.dataset.plKind,d=placeDraft(kind),owner=TEAM.user?.id;if(!owner||!d||placeBusy(kind)||PLACE.ready!==true)return;const request=++PLACE.seq;if(button.dataset.plAction==='clear'){d.place=null;d._placeStatus='';placePaint(kind);return;}if(!navigator.geolocation){d._placeStatus='Este navegador não oferece localização. Você pode escrever o nome do lugar.';placePaint(kind);return;}d._placeStatus='Aguardando sua permissão para usar a posição…';placePaint(kind);const current=()=>owner===TEAM.user?.id&&PLACE.seq===request&&placeDraft(kind)===d&&!placeBusy(kind);navigator.geolocation.getCurrentPosition(position=>{if(!current())return;d.place=placeValue({label:d.place?.label||'Local marcado',lat:position.coords.latitude,lng:position.coords.longitude});d._placeStatus='Confira o ponto no mapa antes de publicar.';placePaint(kind);},error=>{if(!current())return;d._placeStatus=error.code===1?'Permissão não concedida. Você pode escrever o nome do lugar.':'Não consegui obter a posição. Você pode escrever o nome do lugar.';placePaint(kind);},{enableHighAccuracy:false,timeout:12000,maximumAge:60000});});
+
 /* ----- Postar ----- */
 function viewBlessingNew(){
   if (!commIn()) { state.view = "blessings"; return viewBlessings(); }
@@ -3690,7 +3706,7 @@ function viewBlessingNew(){
         : `<label class="bl-pick"><input id="bl-file" type="file" accept="video/*" hidden>${BL_ICONS.plus}<b>Escolher vídeo</b><span class="muted">Até ${BL_MAX_S} segundos. Vídeo em pé fica melhor.</span></label>`}
       <label style="display:block;margin-top:14px"><span class="muted" style="font-size:13px">Legenda</span>
         <textarea id="bl-cap" maxlength="300" rows="3" placeholder="Conte o que está rolando (opcional)" ${u.busy ? "disabled" : ""}>${esc(u.cap || BLS.capDraft || "")}</textarea></label>
-      ${u.busy ? "" : `<div style="margin-top:12px">${pfTagPicker()}</div>`}
+      ${u.busy ? "" : `<div style="margin-top:12px">${pfTagPicker()}</div>${placeEditor("blessing")}`}
       ${u.busy ? `<div class="bl-prog" role="status"><span style="width:${Math.round((u.p || 0) * 100)}%"></span></div><p class="muted" style="margin:6px 0 0">${esc(u.stage || "")} ${Math.round((u.p || 0) * 100)}%</p><p class="muted" style="font-size:13px;margin:4px 0 0">Deixe esta tela aberta até terminar.</p>` : ""}
       ${BLS.msg ? `<p class="bl-msg">${esc(BLS.msg)}</p>` : ""}
       <div class="actions" style="margin-top:14px">${f && !u.busy ? `<button class="btn primary" data-a="bl-send">Publicar</button><button class="btn ghost" data-a="bl-repick">Trocar vídeo</button>` : ""}</div>
@@ -3758,6 +3774,7 @@ function blPut(url, blob, type, onProg){
 }
 async function blSend(){
   const f = BLS.file; if (!f || (BLS.up && BLS.up.busy)) return;
+  const place=placePayload(BLS),placeOwner=TEAM.user?.id;
   const cap = ($("#bl-cap") ? $("#bl-cap").value : "").trim().slice(0, 300);
   // o áudio precisa ser ligado aqui, no toque do botão
   let ac = null; try { ac = new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch(e) {}
@@ -3768,6 +3785,7 @@ async function blSend(){
   try {
     if (!navigator.onLine) throw new Error("Conecte-se à internet para postar.");
     const out = await blCompress(f, ac || {createMediaElementSource(){ throw 0; }}, p => prog("Deixando o vídeo leve…", p * .6));
+    if(TEAM.user?.id!==placeOwner)throw new Error("Sua conta mudou. Entre novamente para publicar.");
     let thumb = out.thumb;
     for (let i = 0; i < 20 && (!thumb || thumb === "pending"); i++) await new Promise(r => setTimeout(r, 100));
     if (!thumb || thumb === "pending") throw new Error("Não consegui criar a capa do vídeo. Tente de novo.");
@@ -3786,10 +3804,11 @@ async function blSend(){
       }
       throw e;
     }
-    const {data, error} = await TEAM.client.from("blessings").insert({author: TEAM.user.id, video_key: s.video.key, thumb_key: s.thumb.key, caption: cap || null, duration: Math.round(out.duration * 10) / 10}).select().single();
+    if(TEAM.user?.id!==placeOwner)throw new Error("Sua conta mudou. Entre novamente para publicar.");
+    const {data, error} = await TEAM.client.from("blessings").insert({author: TEAM.user.id, video_key: s.video.key, thumb_key: s.thumb.key, caption: cap || null, duration: Math.round(out.duration * 10) / 10,...place}).select().single();
     if (error) throw new Error("O vídeo subiu, mas não consegui publicar. Tente de novo.");
     BLS.items[data.id] = data; BLS.likes[data.id] = 0; PF.bccount[data.id] = 0; PF.tagsOf["blessing:" + data.id] = [];
-    await pfSaveTags("blessing", data.id); BLS.capDraft = ""; delete PF.bl[TEAM.user.id];
+    await pfSaveTags("blessing", data.id); BLS.capDraft = ""; BLS.place=null; delete PF.bl[TEAM.user.id];
     BLS.list = [data.id].concat((BLS.list || []).filter(x => x !== data.id));
     blClearFile(); BLS.up = null; BLS.focus = data.id; state.view = "blessings"; render(); scrollTo(0, 0);
     flash("Blessing publicado 🙌");
@@ -3808,7 +3827,7 @@ function blClick(a, b){
   else if (a === "bl-open") { closePix(); blOpen(b.dataset.id); }
   else if (a === "bl-reload") { blReset(); render(); }
   else if (a === "bl-new" && TEAM.user && !termsGate()) {}
-  else if (a === "bl-new") { if (!TEAM.user) { state.view = "blessings"; render(); return true; } BLS.msg = ""; BLS.capDraft = ""; state.tagPick = []; state.view = "bl-new"; render(); scrollTo(0, 0); }
+  else if (a === "bl-new") { if (!TEAM.user) { state.view = "blessings"; render(); return true; } BLS.msg = ""; BLS.capDraft = ""; BLS.place=null; BLS._placeStatus=""; state.tagPick = []; state.view = "bl-new"; render(); scrollTo(0, 0); }
   else if (a === "bl-repick") { blClearFile(); BLS.msg = ""; render(); }
   else if (a === "bl-cancel") { if (BLS.up && BLS.up.busy) return true; blClearFile(); BLS.msg = ""; state.view = "blessings"; render(); scrollTo(0, 0); }
   else if (a === "bl-send") blSend();
@@ -3819,7 +3838,7 @@ function blClick(a, b){
    Marcação: quem posta marca pessoas na própria foto/vídeo (a pessoa marcada pode se desmarcar).
    Compartilhar: guarda no próprio perfil uma foto ou Blessing de outra pessoa (aba Compartilhados). */
 const PF = {bl: {}, tags: {}, shares: {}, tagsOf: {}, mySh: new Set(), myShLoaded: false, bcom: {}, bccount: {}, bcOpen: null, bcBusy: false, missing: false};
-const PF_BSEL = "id,author,video_key,thumb_key,caption,duration,created_at", PF_PSEL = "*";
+const PF_BSEL = "*", PF_PSEL = "*";
 const PF_PROF = "id,handle,display_name,avatar_path,theme,verified,official,kind";
 function pfMissing(error){ if (error && /does not exist|schema cache/i.test(error.message || "")) PF.missing = true; return !!error; }
 
@@ -4831,7 +4850,7 @@ function viewPostNew(){
     <label>${tx ? "Seu texto" : "Legenda"}<textarea id="cm-caption" maxlength="500" rows="${tx ? 6 : 3}" ${tx ? 'class="cm-tx-in"' : ""} placeholder="${tx ? "O que Deus colocou no seu coração hoje? Um versículo, um testemunho, um pedido de oração…" : "Ex.: Ensaio de domingo, tocando Restitui em F#!"}">${esc(d.caption || "")}</textarea></label>
     ${mySongs.length ? `<label>Música (opcional)<select id="cm-post-song"><option value="">Nenhuma</option>${mySongs.map((s, i) => `<option value="${i}" ${String(d.song) === String(i) ? "selected" : ""}>${esc(s.name)}${s.key ? " (" + esc(s.key) + ")" : ""}</option>`).join("")}</select></label>` : ""}
     ${false ? `<div class="cm-tx-colors" role="group" aria-label="Cor do texto"><span class="muted" style="font-size:13px">Cor do cartão</span><div>${Object.entries(TX_STYLES).map(([k, t]) => `<button type="button" class="cm-swatch" data-a="cm-tstyle" data-v="${k}" aria-pressed="${(d.style || "vidro") === k}" aria-label="${t.l}" title="${t.l}" style="background:${t.bg}"></button>`).join("")}</div></div>` : ""}
-    ${pfTagPicker()}
+    ${pfTagPicker()}${placeEditor("post")}
     <p class="muted" style="font-size:13px;margin:0">Publicações da comunidade podem ser vistas por visitantes. Não poste telefone, endereço nem fotos de outras pessoas sem permissão.</p>
     ${COMM.msg ? `<p class="confirm">${esc(COMM.msg)}</p>` : ""}
     <button class="btn primary big-paste" type="submit" ${COMM.busy || (!tx && !d.data) ? "disabled" : ""}>${COMM.busy ? "Publicando…" : "Publicar"}</button>
@@ -4905,11 +4924,13 @@ async function commPublish(){
   if (d.kind === "texto" && !d.caption.trim()) { COMM.msg = "Escreva alguma coisa para postar."; render(); return; }
   if (d.kind !== "texto" && !d.data) return; const si = ($("#cm-post-song") || {}).value;
   const song = si !== undefined && si !== "" ? (COMM.me.songs || [])[+si] || null : null;
+  const place=placePayload(d),placeOwner=TEAM.user?.id;
   COMM.busy = true; COMM.msg = ""; render();
   try {
     const path = d.kind === "texto" ? null : await commUpload(d.data, "post");
     if (path) try { const tb = await commResize(await (await fetch(d.data)).blob(), 400, 40000); await commUpload(tb, "", commThumb(path)); } catch(e) {}
-    const {data, error} = await TEAM.client.from("posts").insert({author: TEAM.user.id, image_path: path, caption: d.caption.trim().slice(0, 500) || null, song}).select("*").single();
+    if(TEAM.user?.id!==placeOwner)throw new Error("Sua conta mudou.");
+    const {data, error} = await TEAM.client.from("posts").insert({author: TEAM.user.id, image_path: path, caption: d.caption.trim().slice(0, 500) || null, song,...place}).select("*").single();
     if (error) throw error;
     COMM.posts[data.id] = data; COMM.likes[data.id] = 0;
     await pfSaveTags("post", data.id);
@@ -5779,7 +5800,7 @@ function openSafe(){
     <h2 id="sf-t">🛡️ Segurança e privacidade</h2>
     <ul class="safe-list">
       <li><b>Conexão protegida.</b> O site só abre com o cadeado 🔒 (HTTPS): o que você digita vai criptografado.</li>
-      <li><b>Não instala nada no celular.</b> Funciona pelo navegador. "Adicionar à Tela de Início" só cria um atalho. O app não pede acesso a contatos, câmera nem localização. Na Comunidade, é você quem escolhe a foto que quer postar.</li>
+      <li><b>Não instala nada no celular.</b> Funciona pelo navegador. "Adicionar à Tela de Início" só cria um atalho. O app não pede acesso a contatos. Câmera, microfone e localização só são solicitados quando você escolhe usar o recurso. Marcar um lugar é opcional: o lugar escolhido fica visível na publicação. Na Comunidade, é você quem escolhe a foto que quer postar.</li>
       <li><b>Presença no app.</b> O dono do painel pode ver quando sua conta está online e o horário do último acesso. Isso não mostra suas mensagens nem sua localização.</li>
       <li><b>Sua senha é protegida.</b> Ela fica guardada criptografada no sistema de login (Supabase). Nem o administrador consegue ver.</li>
       <li><b>Sem cartão e sem dados bancários.</b> O app nunca pede. O Pix do "Colabore" é opcional e é feito no app do seu banco.</li>
