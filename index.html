@@ -785,7 +785,7 @@ button{cursor:pointer}
 .bl-act{border:0;background:none;color:#fff;display:grid;justify-items:center;gap:2px;font:800 13px var(--f-body);padding:4px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
 .bl-act svg{width:32px;height:32px}.bl-act .cm-av{border:2px solid #fff}
 .bl-act.like[aria-pressed="true"]{color:#9033FF}.bl-act.like[aria-pressed="true"] svg{fill:currentColor}
-.bl-info{position:absolute;left:0;right:64px;bottom:0;z-index:2;padding:40px 14px calc(100px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.65) 40%);pointer-events:none;color:#fff}
+.bl-info{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:40px 78px calc(100px + env(safe-area-inset-bottom,0px)) 14px;background:linear-gradient(transparent,rgba(0,0,0,.65) 40%);pointer-events:none;color:#fff}
 .bl-info>*{pointer-events:auto}
 .bl-who{border:0;background:none;color:#fff;padding:0;font:700 15px var(--f-body);display:flex;align-items:center;gap:4px;text-align:left}
 .bl-cap{margin:6px 0 0;font-size:14px;line-height:1.35;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -1052,6 +1052,13 @@ html[data-appearance=light] .nf-head.home-dashboard-head{--cream:#372440;--ink:#
 @media(hover:hover){.home-panel-stage:hover .home-panel-run{animation-play-state:paused}}
 .home-panel-stage:focus-within .home-panel-run{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.home-panel-run{animation:none;will-change:auto}}
+
+/* Abas do perfil: mesma largura e ícones alinhados, inclusive em telas estreitas. */
+.cm-seg.pf-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;overflow:visible;width:100%;max-width:100%;padding:5px;border-radius:20px;margin:18px 0 16px}
+.pf-tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:58px;padding:7px 2px;border-radius:14px;white-space:normal;line-height:1.2}
+.pf-tabs .pf-tab-icon{display:grid;place-items:center;width:21px;height:21px;flex:none}.pf-tab-icon svg{display:block;width:21px;height:21px}
+.pf-tabs .pf-tab-label{display:block;max-width:100%;font-size:clamp(8px,calc(4.3vw - 6px),12px);font-weight:600;letter-spacing:-.1px;white-space:nowrap}
+.news-page-heading{padding:0 16px 15px}.news-page-heading h2{font:650 24px var(--f-display);letter-spacing:-.5px;margin:0;color:var(--cream)}
 </style>
 
 <div id="app"></div>
@@ -1432,7 +1439,7 @@ const state = {
   infoOpen: lsGet("cc-info", true), recent: lsGet("cc-recent", []), infoDocs: lsGet("cc-info-cache", {}),
   confirmClear:false,
   studyTab: lsGet("cc-studytab", "biblia"), bible: lsGet("cc-bible", {b:"PSA", c:23}), bibleSel: [], bibleFs: lsGet("cc-bfs", 19),
-  view:"library", currentId:null, editing:null, confirmDelete:false,
+  view:teamAvailable()?"community":"library", currentId:null, editing:null, confirmDelete:false,
   q:"", simple: lsGet("cc-simple", false), asMajor: lsGet("cc-asmajor", true), fontSize: lsGet("cc-font", 17), fieldOpen: lsGet("cc-field", true), tipsOpen: lsGet("cc-tips", true),
   wake:null, sheet:null
 };
@@ -1565,6 +1572,7 @@ function viewLibrary(){
   return head + `
   ${installBanner()}
   ${pendingCount() ? `<button class="team-alert" data-a="tab" data-v="team">🔔 ${pendingCount()} pessoa${pendingCount() > 1 ? "s" : ""} pedindo para entrar na equipe · <b>Ver</b></button>` : ""}
+  <div class="news-page-heading"><h2>Novidades</h2></div>
   ${homeCommunity()}
   ${heroMosaic(setSongs)}
   ${pcHomePosts()}
@@ -1643,7 +1651,7 @@ async function teamEnter(user,onboard=false){
       clearTimeout(TEAM.t);
       TEAM.t = setTimeout(async () => { await teamLoad(); if (state.view !== "editor" && state.view !== "artist-edit") rerenderKeepScroll(); }, 500);
     }).subscribe();
-  if (state.view === "login") state.view = after === "community" ? "community" : after === "blessings" ? "blessings" : after === "bible" ? "study" : "library";
+  if (state.view === "login") state.view = after === "community" ? "community" : after === "blessings" ? "blessings" : after === "bible" ? "study" : "community";
   if (TEAM.profile.role === "admin") loadTeamUsers();
   if(await community)commProfileIntro(user,onboard);
 }
@@ -1739,7 +1747,7 @@ async function teamAuth(kind){
 }
 function viewLogin(){
   const p = TEAM.profile, tab = state.loginTab || "in";
-  const box = inner => `<div class="top"><button class="btn ghost" data-a="home">‹ Início</button></div>
+  const box = inner => `<div class="top"><button class="btn ghost" data-a="home">‹ Novidades</button></div>
     <div class="login"><h1 class="page-title">Equipe</h1>${inner}</div>`;
   if (!teamAvailable()) return box('<p class="muted">O login da equipe funciona no site do Blessed.</p>');
   if (TEAM.user && p && p.role === "pending") return box(`<div class="panel"><h3 style="font-size:18px">Aguardando aprovação</h3>
@@ -1843,9 +1851,9 @@ window.addEventListener("appinstalled", () => { INSTALL.evt = null; render(); })
 const TAB_ICONS = {
   team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg>',
   login:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7"/></svg>',
-  library:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>',
+  library:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 7h8M8 11h3v3H8zM14 11h2M14 14h2M8 17h8"/></svg>',
   study:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7.5 5v8M12 5v8M16.5 5v8"/></svg>',
-  community:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.6 18.4c1.2-2 3.1-3.1 5.4-3.1s4.2 1.1 5.4 3.1"/></svg>',
+  community:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>',
   blessings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4.5" y="2.5" width="15" height="19" rx="4"/><path d="M10.2 8.8v6.4l5.3-3.2z" fill="currentColor"/></svg>',
   contato:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg>',
   setlist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h3"/></svg>'
@@ -1855,9 +1863,9 @@ function tabbar(active){
   const n = pendingCount();
   const extra = !teamAvailable() ? "" : teamRole() === "admin" ? t("team", "Equipe" + (n ? ` <span class="badge" aria-label="${n} pedido${n > 1 ? "s" : ""}">${n}</span>` : "")) : (TEAM.user && store.mode !== "team" ? t("login", "Conta") : "") + t("contato", "Contato");
   const dmn = commOn() && TEAM.user ? dmUnreadCount() : 0;
-  const comm = commOn() ? t("community", "Comunidade" + (dmn ? ` <span class="badge" aria-label="${dmn} mensage${dmn > 1 ? "ns" : "m"} não lida${dmn > 1 ? "s" : ""}">${dmn}</span>` : "")) : "";
+  const comm = commOn() ? t("community", "Início" + (dmn ? ` <span class="badge" aria-label="${dmn} mensage${dmn > 1 ? "ns" : "m"} não lida${dmn > 1 ? "s" : ""}">${dmn}</span>` : "")) : "";
   const bl = blOn() || (commOn() && teamRole() === "admin") ? t("blessings", "Blessings") : "";
-  return `<nav class="tabbar" aria-label="Abas">${t("library","Início")}${comm}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
+  return `<nav class="tabbar" aria-label="Abas">${comm}${t("library",commOn()?"Novidades":"Início")}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
 }
 
 /* ---------- Estudo: Bíblia (Bíblia Livre, CC BY 4.0 BR) ----------
@@ -4033,9 +4041,10 @@ function pfCell(x){
   const b = BLS.items[x.id];
   return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span></button>`;
 }
+const PF_TAB_ICONS={fotos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/></svg>',blessings:TAB_ICONS.blessings,tags:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="9" r="3"/><path d="M6.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5"/></svg>',shares:CM_ICONS.share};
 function pfTabs(id, me, posts){
   const tab = state.pfTab || "fotos";
-  const seg = (v, l) => `<button data-a="pf-tab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`;
+  const seg = (v, l) => `<button type="button" data-a="pf-tab" data-v="${v}" aria-pressed="${tab === v}" aria-label="${l}"><span class="pf-tab-icon" aria-hidden="true">${PF_TAB_ICONS[v]}</span><span class="pf-tab-label">${l}</span></button>`;
   let body;
   if (tab === "fotos") body = posts === undefined ? '<p class="muted">Carregando…</p>' : posts.length ? commGrid(posts) : `<p class="muted">${me ? "Você ainda não postou. Que tal uma foto tocando?" : "Ainda não postou fotos."}</p>`;
   else if (PF.missing && tab !== "blessings") body = `<p class="muted">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-perfil-abas.sql</b> no Supabase (SQL Editor → New query → Run)." : "Em breve."}</p>`;
@@ -6031,7 +6040,7 @@ document.addEventListener('error',event=>{const img=event.target;if(!img.matches
 function artistPage(name,songs,visitor){
  const photo=artistPhoto(name),editable=!visitor&&canEditTeam(),listed=songs.filter(s=>!s.pending),pending=songs.filter(s=>s.pending),registered=listed.length;
  setTimeout(()=>artistStatsLoad(name,songs),0);
- return `<section class="artist-page"><header class="artist-cover" ${photo?`style="background-image:url(&quot;${esc(photo)}&quot;)"`:''}><button class="artist-back" data-a="home" aria-label="Voltar ao Início">‹</button><div class="artist-cover-copy"><span>ARTISTA · BLESSED</span><h1>${esc(name)}</h1></div></header><div class="artist-page-body"><div class="artist-summary"><p>${registered} música${registered===1?'':'s'}${songs.some(s=>s.pending)?' cadastradas':''}</p>${editable?'<button class="btn ghost" data-a="artist-edit">Editar artista</button>':''}</div>${editable?`<button class="btn primary" data-a="new" data-n="${esc(name)}">＋ Cadastrar música</button>`:''}<div class="artist-section-title"><h2>Músicas</h2><span>Louvor e adoração</span></div><div class="artist-tracks">${listed.map((song,i)=>artistTrackRow(song,i,visitor)).join('')||'<p class="muted">Ainda não há músicas cadastradas para este artista.</p>'}</div>${editable&&pending.length?`<details class="artist-pending"><summary>Outras músicas para cadastrar · ${pending.length}</summary><div class="artist-tracks">${pending.map((song,i)=>artistTrackRow(song,i,false)).join('')}</div></details>`:''}<small class="artist-stats-note" hidden>Visualizações do YouTube · atualização periódica.</small>${visitor?'':artistBioPanel(name)}</div></section>${tabbar('library')}`;
+ return `<section class="artist-page"><header class="artist-cover" ${photo?`style="background-image:url(&quot;${esc(photo)}&quot;)"`:''}><button class="artist-back" data-a="home" aria-label="Voltar às Novidades">‹</button><div class="artist-cover-copy"><span>ARTISTA · BLESSED</span><h1>${esc(name)}</h1></div></header><div class="artist-page-body"><div class="artist-summary"><p>${registered} música${registered===1?'':'s'}${songs.some(s=>s.pending)?' cadastradas':''}</p>${editable?'<button class="btn ghost" data-a="artist-edit">Editar artista</button>':''}</div>${editable?`<button class="btn primary" data-a="new" data-n="${esc(name)}">＋ Cadastrar música</button>`:''}<div class="artist-section-title"><h2>Músicas</h2><span>Louvor e adoração</span></div><div class="artist-tracks">${listed.map((song,i)=>artistTrackRow(song,i,visitor)).join('')||'<p class="muted">Ainda não há músicas cadastradas para este artista.</p>'}</div>${editable&&pending.length?`<details class="artist-pending"><summary>Outras músicas para cadastrar · ${pending.length}</summary><div class="artist-tracks">${pending.map((song,i)=>artistTrackRow(song,i,false)).join('')}</div></details>`:''}<small class="artist-stats-note" hidden>Visualizações do YouTube · atualização periódica.</small>${visitor?'':artistBioPanel(name)}</div></section>${tabbar('library')}`;
 }
 function artistStatsPaint(name,songs){if(state.view!=='artist'||norm(state.currentArtist)!==norm(name))return;for(const song of songs){const row=document.querySelector('[data-artist-track="'+CSS.escape(song.id||'')+'"]');if(!row)continue;const m=artistTrackData(song),video=artistVideoId(m.youtube),text=row.querySelector('.artist-track-copy small'),button=row.querySelector('.artist-track-main'),link=row.querySelector('.artist-track-watch');if(text)text.textContent=artistTrackMeta(song).replace(/&amp;/g,'&');if(button)button.dataset.video=video;if(link){link.hidden=!video;link.href=video?'https://www.youtube.com/watch?v='+video:'#';}if(video){const cover=row.querySelector('.artist-track-cover');if(cover&&!cover.querySelector('[data-youtube-cover]'))cover.innerHTML=`<img data-artist-image data-fallback="${esc(artistPhoto(song.artist))}" data-youtube-cover src="https://i.ytimg.com/vi/${video}/hqdefault.jpg" alt="" loading="lazy" decoding="async">`;}}const note=document.querySelector('.artist-stats-note');if(note)note.hidden=!songs.some(s=>typeof artistTrackData(s).views==='string');}
 async function artistStatsLoad(name,songs){
@@ -6153,7 +6162,7 @@ function viewSetlist(){
       : `<div class="actions" style="margin-top:8px"><button class="btn ghost" data-a="set-clear">Limpar escala</button></div>`}
   </section>` : `<p class="muted" style="font-size:14px;margin:0 0 12px">Monte a <b>escala do culto</b>: toque em <b>+ Escala</b> nas músicas, na ordem em que vão ser tocadas.</p>`;
   if (state.view === "escala") return `
-  <div class="top"><button class="btn ghost" data-a="home">‹ Início</button><h1 style="font-size:22px">Escala do culto</h1></div>
+  <div class="top"><button class="btn ghost" data-a="home">‹ Novidades</button><h1 style="font-size:22px">Escala do culto</h1></div>
   ${setPanel}
   <h3 style="font-size:18px;margin:4px 0 8px">Adicionar da sua lista</h3>
   <input id="q" class="search" type="search" placeholder="Buscar no repertório" value="${esc(state.q)}" aria-label="Buscar música">
