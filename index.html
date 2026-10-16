@@ -3906,7 +3906,7 @@ document.addEventListener("click", e => {
 });
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
-function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); return full ? (commUrl(p.image_path) || t) : t; }
+function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); if (full && !COMM.urls[p.image_path]) commSign([p.image_path]); return full ? (commUrl(p.image_path) || t) : t; }
 function exOpen(id){ state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = id; state.view = "post"; render(); scrollTo(0, 0); }
 function exPop(el){
   if (!el) return;
@@ -3928,7 +3928,7 @@ function exHeart(p){
 function exWho(p){ const a = exPostAuthor(p); return `<span class="ex-w">${commAvatar(a, 22, false)}<b>${esc(a.display_name || "")}</b>${commBadge(a)}</span>`; }
 function exTile(p, i){
   const sz = i % 6 === 0 ? " big" : i % 6 === 3 ? " tall" : "", pray = p.kind === "oracao";
-  const media = p.image_path ? (() => { const u = exImg(p, sz === " big"); return u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""; })()
+  const media = p.image_path ? (() => { const u = exImg(p, sz !== ""); return u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""; })()
     : `<span class="ex-tx" style="${txStyle(p)}">${pray ? "<i>🙏 Pedido de oração</i>" : ""}<span>${esc(p.caption || "")}</span></span>`;
   return `<div class="ex-tile${sz}" role="button" tabindex="0" data-a="ex-tile" data-id="${esc(p.id)}" aria-label="Abrir publicação de ${esc(exPostAuthor(p).display_name || "")}">${media}${Array.isArray(p.images) && p.images.length ? `<span class="ex-multi" title="Várias fotos">❐ ${p.images.length + 1}</span>` : ""}<div class="ex-ov">${exWho(p)}${exHeart(p)}</div></div>`;
 }
