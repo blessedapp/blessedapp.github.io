@@ -917,17 +917,17 @@ body.dm-screen-shake{animation:none}}
 .hero.artists-secondary{min-height:300px;height:auto;padding-block:35px}.artists-secondary .bl-mark{font-size:clamp(48px,9vw,85px)}.artists-secondary .meta{font-size:14px}.artists-secondary .bl-tag{font-size:12px}
 .vp{position:relative;aspect-ratio:4/5;max-height:560px;max-width:560px;margin:0 auto 18px;border-radius:28px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0,#5b2aa6 0,#2a1058 55%,#160a30 100%);color:#fff;box-shadow:0 14px 40px rgba(60,20,120,.35);isolation:isolate}
 .vp-s{position:absolute;inset:0;opacity:0;transition:opacity .6s;pointer-events:none}.vp-s.on{opacity:1}
-.vp-stage{position:absolute;left:14px;right:14px;top:14px;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:#12082a;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.vp-stage{position:absolute;left:14px;right:14px;top:14px;height:56%;border-radius:22px;overflow:hidden;background:#12082a;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .vp-stage video{width:100%;height:100%;object-fit:cover;display:block}
 .vp-s.on .vp-stage video{animation:vpZoom 6s ease-out both}
-.vp-cap{position:absolute;left:18px;right:18px;bottom:20px}.vp-cap h2{font-size:clamp(22px,6.4vw,30px);line-height:1.15;margin:0 0 6px;color:#fff}.vp-cap p{font-size:14.5px;line-height:1.4;margin:0;color:rgba(255,255,255,.82)}
-.vp-s.on .vp-cap{animation:vpUp .7s .15s both}
+.vp-cap{position:absolute;left:0;right:0;top:0;z-index:2;padding:14px 16px 40px;background:linear-gradient(180deg,rgba(12,6,28,.88) 0,rgba(12,6,28,.55) 55%,rgba(12,6,28,0))}.vp-cap h2{font-size:clamp(17px,5vw,21px);line-height:1.15;margin:0 0 3px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.5)}.vp-cap p{font-size:13px;line-height:1.35;margin:2px 0 0;font-weight:600;color:rgba(255,255,255,.88);text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.vp-cap p{opacity:0;display:flex;align-items:center;gap:7px}.vp-cap p::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:#ff8fb3}.vp-s.on .vp-cap h2{animation:vpUp .6s .1s both}.vp-s.on .vp-cap p{animation:vpUp .6s calc(.6s + var(--k)*.9s) both}
 .vp-hearts{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .vp-h{position:absolute;bottom:-24px;opacity:0;animation:vpHeart 3s ease-out forwards}.vp-h svg{width:100%;height:100%;display:block;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
 @keyframes vpHeart{0%{opacity:0;transform:translate(0,0) scale(.5)}12%{opacity:1}100%{opacity:0;transform:translate(var(--sw),calc(var(--rise)*-1)) scale(1.1)}}
 @keyframes vpZoom{from{transform:scale(1)}to{transform:scale(1.08)}}
 @keyframes vpUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.vp-net{width:100%;height:100%;display:block}
+.vp-net{width:100%;height:calc(100% - 58px);margin-top:58px;display:block}
 .vp-net line{stroke:rgba(255,255,255,.5);stroke-width:1.4;stroke-dasharray:140;stroke-dashoffset:140}
 .vp-s.on .vp-net line{animation:vpDraw .9s calc(var(--n)*.25s + .3s) forwards}
 .vp-net .nd{transform-box:fill-box;transform-origin:center;transform:scale(0)}
@@ -939,7 +939,7 @@ body.dm-screen-shake{animation:none}}
 @keyframes vpDraw{to{stroke-dashoffset:0}}@keyframes vpPop{to{transform:scale(1)}}
 @keyframes vpMove{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
 @keyframes vpRing{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
-.vp-ag{position:absolute;inset:0;display:flex;gap:10px;padding:10px;background:linear-gradient(160deg,#20103f,#2e1668)}
+.vp-ag{position:absolute;inset:62px 0 0;display:flex;gap:10px;padding:10px;background:linear-gradient(160deg,#20103f,#2e1668)}
 .vp-cal{flex:1.1;background:rgba(255,255,255,.08);border-radius:14px;padding:8px}.vp-cal b{display:block;font-size:12px;margin-bottom:4px}
 .vp-cal div{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:9.5px;color:rgba(255,255,255,.75)}
 .vp-cal span{position:relative;padding:3px 0;border-radius:6px}.vp-cal .hd{color:rgba(255,255,255,.45)}
@@ -949,20 +949,20 @@ body.dm-screen-shake{animation:none}}
 .vp-evs p{margin:0;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,.12);font-size:11.5px;line-height:1.25;border-left:3px solid var(--c);color:#fff}.vp-evs small{display:block;color:rgba(255,255,255,.65);font-size:10px}
 .vp-s.on .vp-evs p{animation:vpIn .5s calc(var(--n)*.7s + .5s) backwards}
 @keyframes vpIn{from{opacity:0;transform:translateX(18px)}}
-.vp-s.ch .vp-stage{aspect-ratio:auto;bottom:112px;background:transparent;box-shadow:none;display:flex;justify-content:center;align-items:stretch;gap:16px;overflow:visible}
-.vp-ph{position:relative;height:100%;aspect-ratio:288/636;border-radius:22px;border:5px solid #0a0614;background:#12082a;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.5)}
+.vp-s.ch .vp-stage{height:calc(100% - 28px);padding-top:78px;box-sizing:border-box;background:transparent;box-shadow:none;display:flex;justify-content:center;align-items:stretch;gap:16px;overflow:visible}.vp-s.ch .vp-cap{background:none;padding-left:4px;padding-right:4px}
+.vp-ph{position:relative;box-sizing:border-box;flex:none;height:100%;aspect-ratio:288/636;border-radius:22px;border:5px solid #0a0614;background:#12082a;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.5)}
 .vp-ph video{width:100%;height:100%;object-fit:cover}
 .vp-fr{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:8px;font-size:11px;line-height:1.3;background:linear-gradient(170deg,#3b1a78,#1a0b3a);color:#fff}
 .vp-fr i{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#a468ff;font-style:normal;font-weight:800;font-size:20px}
 .vp-fr span{color:rgba(255,255,255,.7)}.vp-fr .hit{display:none;color:#fff;font-weight:800}
-.vp-wrap{position:relative;height:100%;aspect-ratio:288/636}.vp-wrap .vp-ph{height:100%;width:100%}
+.vp-wrap{position:relative;flex:none;height:100%;aspect-ratio:288/636}.vp-wrap .vp-ph{height:100%;width:100%}
 .vp-wv .ring{position:absolute;inset:-6px;border-radius:26px;border:2px solid #d9b8ff;opacity:0}
 .vp-s.hit .vp-wrap .vp-ph{animation:vpShake .55s 3}
 .vp-s.hit .vp-wv .ring{animation:vpRing2 1.1s 2}.vp-s.hit .vp-wv .ring:nth-of-type(3){animation-delay:.25s}
 .vp-s.hit .vp-fr .wait{display:none}.vp-s.hit .vp-fr .hit{display:block}
 @keyframes vpShake{0%,100%{transform:none}15%{transform:translate(-7px,2px) rotate(-3deg)}30%{transform:translate(7px,-2px) rotate(3deg)}45%{transform:translate(-6px,1px) rotate(-2.5deg)}60%{transform:translate(6px,-1px) rotate(2.5deg)}80%{transform:translate(-3px,0) rotate(-1deg)}}
 @keyframes vpRing2{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}
-.vp-s.ch .vp-cap h2{color:#ffd9ff}
+.vp-s.ch .vp-cap h2{color:#ffd9ff}.vp-strip{position:absolute;left:14px;right:14px;top:calc(14px + 56% + 12px);bottom:14px;display:flex;gap:6px;overflow:hidden;border-radius:16px;transition:opacity .5s;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 86%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 86%,transparent 100%)}.vp.nostrip .vp-strip{opacity:0}.vp-col{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}.vp-col img{flex:none;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;display:block}.vp-col.up{animation:mosaicUp 26s linear infinite}.vp-col.dn{animation:mosaicDown 26s linear infinite}.vp-tag{position:absolute;left:6px;top:4px;z-index:2;font-size:9.5px;font-weight:700;letter-spacing:.03em;padding:2px 7px;border-radius:99px;background:rgba(12,6,28,.7);color:#fff}
 @media(prefers-reduced-motion:reduce){.vp *{animation:none!important}.vp-net line{stroke-dashoffset:0}.vp-net .nd{transform:none}}
 .pc-welcome{padding:12px 0 20px}.pc-welcome h2{font-size:clamp(23px,5vw,32px);line-height:1.2;margin-bottom:10px}.pc-welcome p{color:var(--muted);line-height:1.5}.pc-people{display:grid}.pc-person{display:flex;align-items:center;gap:12px;padding:15px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;color:var(--ink);font:inherit;width:100%}.pc-person>span:nth-child(2){display:grid;gap:4px;flex:1;min-width:0;overflow-wrap:anywhere}.pc-person small{color:var(--muted)}.pc-post .cm-post-h>span{display:grid;gap:3px;min-width:0}.pc-post .cm-post-h small{color:var(--muted)}.pc-post .cm-bar>.muted{margin-left:auto;font-size:12px}.pc-post .cm-post-img img{max-height:650px;object-fit:contain}.pc-artist{display:grid;justify-items:center;gap:10px;margin-bottom:20px}.pc-artist .ph{width:150px;height:150px;background-size:cover;background-position:center;border-radius:22px}.pc-artist h1{font-size:28px;text-align:center}.cm-counts>span{display:grid;text-align:center;font-size:11px;gap:4px;padding:5px 3px}
 @media(min-width:800px){.community-primary.home-comm{height:530px}.community-primary .hc-over{padding-left:35px}}
@@ -3528,34 +3528,35 @@ async function commLoadSaved(){
 // Painel animado da página inicial da Comunidade para quem ainda não entrou (vídeos leves, sem som, em loop).
 const VP_HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 const VP_SCENES=[
- {k:"v",f:"cena1",d:4200,t:"A fé aproxima.",s:"Louvor, igrejas e pessoas reais."},
- {k:"v",f:"cena2",d:4200,t:"Gente de verdade.",s:"Siga, curta e converse com quem pensa como você."},
- {k:"v",f:"cena3",d:4200,t:"Tudo na palma da mão.",s:"Do culto direto para o seu celular."},
- {k:"c",f:"chamar",d:11000,t:"Amigo demorou a responder?",s:"Balance a tela dele com o Chamar atenção."},
- {k:"n",d:5500,t:"Igrejas se conectando.",s:"Descubra comunidades e conecte-se com elas."},
- {k:"v",f:"cena4",d:4200,t:"Compartilhe momentos.",s:"Cada publicação aproxima mais gente."},
- {k:"v",f:"cena5",d:4200,t:"Cresça junto.",s:"Ore, louve e ajude quem está por perto."},
- {k:"a",d:5500,t:"Sua agenda de fé.",s:"Cultos, ensaios e lembretes em um só lugar."},
- {k:"v",f:"cena6",d:4200,t:"A comunidade acontece aqui.",s:"Entre para fazer parte."}
+ {k:"v",f:"cena1",d:5200,t:"Seu dia a dia na fé",s:["Poste suas rotinas","Inspire quem caminha com você"]},
+ {k:"v",f:"cena2",d:5200,t:"Converse de verdade",s:["Comente nas publicações dos amigos","Curta e responda na hora"]},
+ {k:"v",f:"cena3",d:5200,t:"Tudo na palma da mão",s:["Cifras, agenda e comunidade","Tudo em um só app"]},
+ {k:"c",f:"chamar",d:11000,t:"Amigo não responde?",s:["Balance a tela dele","Chame a atenção na hora"]},
+ {k:"n",d:6000,t:"Igrejas perto de você",s:["Veja a programação das igrejas","Cultos, eventos e horários"]},
+ {k:"v",f:"cena4",d:5200,t:"Compartilhe momentos",s:["Poste fotos e vídeos","Receba corações e comentários"]},
+ {k:"v",f:"cena5",d:5200,t:"Cresça acompanhado",s:["Ore e louve junto","Apoie quem está por perto"]},
+ {k:"a",d:6000,t:"Nunca perca um culto",s:["Agenda com lembretes","Cultos, ensaios e células"]},
+ {k:"v",f:"cena6",d:5200,t:"Faça parte da comunidade",s:["Entre e comece a seguir hoje"]}
 ];
 const VP={i:0,el:null,io:null,timer:null,heart:null,vis:false,hit:null};
 function vpLite(){try{return !!(navigator.connection&&navigator.connection.saveData)||matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}}
 function visitorPanel(){return `<section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
 function vpScene(c,i){
- const cap=`<div class="vp-cap"><h2>${esc(c.t)}</h2><p>${esc(c.s)}</p></div>`;
- if(c.k==="v")return `<div class="vp-s" data-i="${i}"><div class="vp-stage"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div></div>${cap}</div>`;
- if(c.k==="c")return `<div class="vp-s ch" data-i="${i}"><div class="vp-stage"><div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div></div>${cap}</div>`;
+ const cap=`<div class="vp-cap"><h2>${esc(c.t)}</h2>${c.s.map((l,k)=>`<p style="--k:${k}">${esc(l)}</p>`).join("")}</div>`,wrapS=(cls,inner)=>`<div class="vp-s ${cls}" data-i="${i}"><div class="vp-stage">${inner}${cap}</div></div>`;
+ if(c.k==="v")return wrapS("",`<video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div>`);
+ if(c.k==="c")return wrapS("ch",`<div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div>`);
  if(c.k==="n"){const N=[[48,42,"#e0589a"],[272,40,"#4aa8ff"],[34,118,"#ffb347"],[286,124,"#5fd38d"],[110,152,"#ff7a59"],[214,150,"#b085ff"]];
   const ln=N.map((n,j)=>`<line x1="160" y1="90" x2="${n[0]}" y2="${n[1]}" style="--n:${j}"/>`).join("");
   const dots=N.map((n,j)=>`<circle class="dot" cx="160" cy="90" r="3" style="--n:${j};--dx:${n[0]-160}px;--dy:${n[1]-90}px"/>`).join("");
   const nd=N.map((n,j)=>`<g class="nd" style="--n:${j}"><circle cx="${n[0]}" cy="${n[1]}" r="15" fill="${n[2]}"/><path d="M${n[0]} ${n[1]-8}v5m-2.5-2.5h5M${n[0]-6} ${n[1]+7}v-8l6-3 6 3v8z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></g>`).join("");
-  return `<div class="vp-s" data-i="${i}"><div class="vp-stage"><svg class="vp-net" viewBox="0 0 320 180" aria-hidden="true">${ln}<circle class="ring" cx="160" cy="90" r="18"/>${dots}${nd}<circle cx="160" cy="90" r="19" fill="#a468ff"/><text x="160" y="97" text-anchor="middle" font-size="20" font-weight="800" fill="#fff" font-family="system-ui,sans-serif">B</text></svg></div>${cap}</div>`;}
+  return wrapS("ncap",`<svg class="vp-net" viewBox="0 0 320 180" aria-hidden="true">${ln}<circle class="ring" cx="160" cy="90" r="18"/>${dots}${nd}<circle cx="160" cy="90" r="19" fill="#a468ff"/><text x="160" y="97" text-anchor="middle" font-size="20" font-weight="800" fill="#fff" font-family="system-ui,sans-serif">B</text></svg>`);}
  const days=["D","S","T","Q","Q","S","S"].map(d=>`<span class="hd">${d}</span>`).join("")+"<span></span>".repeat(4)+Array.from({length:31},(_,j)=>{const d=j+1,e={4:0,11:1,18:2}[d];return e===undefined?`<span>${d}</span>`:`<span class="ev" style="--n:${e}">${d}</span>`;}).join("");
- return `<div class="vp-s" data-i="${i}"><div class="vp-stage"><div class="vp-ag"><div class="vp-cal"><b>Outubro</b><div>${days}</div></div><div class="vp-evs"><p style="--c:#e0589a;--n:0">Culto de domingo<small>19h · lembrete ligado</small></p><p style="--c:#4aa8ff;--n:1">Ensaio do louvor<small>20h · sábado</small></p><p style="--c:#5fd38d;--n:2">Célula na casa<small>quarta · 20h</small></p></div></div></div>${cap}</div>`;
+ return wrapS("ncap",`<div class="vp-ag"><div class="vp-cal"><b>Outubro</b><div>${days}</div></div><div class="vp-evs"><p style="--c:#e0589a;--n:0">Culto de domingo<small>19h · lembrete ligado</small></p><p style="--c:#4aa8ff;--n:1">Ensaio do louvor<small>20h · sábado</small></p><p style="--c:#5fd38d;--n:2">Célula na casa<small>quarta · 20h</small></p></div></div>`);
 }
+function vpStrip(){const o=[[1,2,3,4,5],[3,4,5,1,2],[5,1,2,3,4],[2,3,4,5,1]];return `<div class="vp-strip" aria-hidden="true"><span class="vp-tag">Igrejas no Blessed · exemplos</span>${o.map((c,j)=>{const t=c.concat(c).map(n=>`<img src="img/painel/igreja${n}.jpg" alt="" loading="lazy" decoding="async">`).join("");return `<div class="vp-col ${j%2?"dn":"up"}">${t}</div>`;}).join("")}</div>`;}
 function vpMount(el){
  el.dataset.on="1";
- el.innerHTML=VP_SCENES.map(vpScene).join("");
+ el.innerHTML=VP_SCENES.map(vpScene).join("")+vpStrip();
  VP.el=el;
  if(VP.io)VP.io.disconnect();
  if("IntersectionObserver" in window){VP.vis=false;VP.io=new IntersectionObserver(es=>{const v=es[es.length-1].isIntersecting;if(v!==VP.vis){VP.vis=v;v?vpGo(VP.i):vpStop();}},{threshold:.35});VP.io.observe(el);}
@@ -3568,7 +3569,7 @@ function vpGo(i){
  vpStop();
  while(!vpOk(i))i=(i+1)%VP_SCENES.length;
  VP.i=i;
- const ss=el.querySelectorAll(".vp-s"),s=ss[i],c=VP_SCENES[i];
+ const ss=el.querySelectorAll(".vp-s"),s=ss[i],c=VP_SCENES[i];el.classList.toggle("nostrip",c.k==="c");
  ss.forEach((x,j)=>{x.classList.toggle("on",j===i);if(j!==i)x.classList.remove("hit");});
  if(!vpLite()){
   const v=s.querySelector("video");
