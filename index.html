@@ -952,6 +952,7 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.rp-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.rp-c{padding:12px;border-radius:16px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.rp-c b{display:block;font-size:24px;line-height:1.1}.rp-c small{display:block;margin-top:2px;font-size:12px;opacity:.75}.rp h4{margin:16px 0 6px}.rp-l{margin:0;padding-left:22px;display:grid;gap:6px}.rp-l li span{float:right;opacity:.75;font-size:13px}.rp-l small{opacity:.65}
 .perm-list{list-style:none;margin:12px 0 16px;padding:0;display:grid;gap:10px}.perm-list li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;padding:12px 14px;border-radius:14px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.perm-list small{flex-basis:100%;opacity:.75;font-size:13px}
 /* Barra de digitar: [foto] [chamar atenção] [mensagem] [microfone ou enviar] */
 .dm-form{align-items:flex-end;gap:8px;flex-wrap:wrap}
@@ -1999,6 +2000,7 @@ function viewTeam(){
   return `<div class="top"><h1 class="page-title">Equipe</h1><span style="flex:1"></span><button class="btn" data-a="team-out">Sair</button></div>
     <p class="muted" style="margin:-6px 0 12px">Você está como <b style="color:#fff">${esc(TEAM.profile.name || TEAM.user.email)}</b> (administrador).</p>
     ${prPanel()}
+    ${rpPanel()}
     ${(() => { const fresh = users.filter(u => u.reviewed === false && u.role !== "blocked" && u.role !== "pending");
       return fresh.length ? `<section class="panel"><h3 style="font-size:18px;margin-bottom:4px">🆕 Novos para revisar (${fresh.length})</h3>
       <p class="muted" style="font-size:13px;margin:0 0 8px">Já entraram e usam o app. Veja o perfil e decida se mantém.</p>
@@ -3828,6 +3830,79 @@ document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-a^='perm-']"); if (!b) return;
   if (b.dataset.a === "perm-all") permsAsk();
   else if (b.dataset.a === "perm-skip") { lsSet("blessed-perms-done", true); closePix(); }
+});
+/* ---------- Relatório do administrador (números gerais e rankings; nunca mensagens nem e-mails) ---------- */
+const REP = {data: null, loading: false, error: ""};
+const rpN = n => Number(n || 0).toLocaleString("pt-BR");
+const rpH = n => Number(n || 0).toLocaleString("pt-BR", {maximumFractionDigits: 1});
+async function rpLoad(){
+  if (REP.loading || teamRole() !== "admin") return;
+  REP.loading = true; REP.error = ""; if (state.view === "team") rerenderKeepScroll();
+  try {
+    const {data, error} = await TEAM.client.rpc("admin_report");
+    if (error) throw error;
+    REP.data = data;
+  } catch (e) {
+    REP.error = /42501|administrador/i.test((e && (e.message || e.code)) || "") ? "Só o administrador pode ver o relatório." : "Não consegui gerar. Falta rodar o arquivo supabase-relatorio.sql no Supabase?";
+  }
+  REP.loading = false; if (state.view === "team") rerenderKeepScroll();
+}
+function rpPanel(){
+  if (teamRole() !== "admin") return "";
+  const d = REP.data, u = d && d.usage || {};
+  const card = (n, l) => `<div class="rp-c"><b>${n}</b><small>${l}</small></div>`;
+  const list = (title, rows, fmt) => rows && rows.length ? `<h4>${title}</h4><ol class="rp-l">${rows.map(x => `<li>${fmt(x)}</li>`).join("")}</ol>` : "";
+  const who = x => `<b>${esc(x.name)}</b>${x.handle ? ` <small>@${esc(x.handle)}</small>` : ""}`;
+  let body = "";
+  if (REP.error) body = `<p class="muted">${esc(REP.error)}</p>`;
+  else if (REP.loading && !d) body = '<p class="muted">Gerando…</p>';
+  else if (!d) body = '<p class="muted">Veja quantas pessoas usam o app, quem mais usa e quem tem mais seguidores. Mostra só números e nomes de perfil, nunca mensagens.</p>';
+  else body = `<div class="rp-g">${card(rpN(d.members), "pessoas cadastradas")}${card(rpN(d.new_7d), "novas em 7 dias")}${card(rpN(u.active_7d), "ativas em 7 dias")}${card(rpN(u.active_1d), "ativas hoje")}${card(rpN(u.online_now), "online agora")}${card(rpH(u.hours_30d) + " h", "de uso em 30 dias")}${card(rpN(d.churches), "igrejas")}${card(rpN(d.musicians), "músicos")}${card(rpN(d.posts), "publicações")}${card(rpN(d.likes), "curtidas")}${card(rpN(d.comments), "comentários")}${card(rpN(d.follows), "seguidores (total)")}</div>
+    ${d.has_presence ? "" : '<p class="muted" style="font-size:13px">As horas de uso aparecem depois que a presença estiver ativada (supabase-presenca.sql).</p>'}
+    ${list("Mais seguidores", d.top_followers, x => `${who(x)} <span>${rpN(x.followers)} seguidores</span>`)}
+    ${list("Quem mais usa", u.top_usage, x => `${who(x)} <span>${rpH(x.hours)} h · ${rpN(x.sessions)} acessos</span>`)}
+    ${list("Quem mais posta", d.top_posters, x => `${who(x)} <span>${rpN(x.posts)} posts</span>`)}
+    <p class="muted" style="font-size:12px">Gerado em ${esc(new Date(d.generated_at).toLocaleString("pt-BR"))}</p>
+    <div class="actions"><button class="btn primary" data-a="rp-pdf">📄 PDF para patrocinador</button><button class="btn" data-a="rp-csv">⬇ CSV completo</button></div>`;
+  return `<section class="panel rp" id="rp-panel"><div class="actions" style="justify-content:space-between"><h3>Relatório do app</h3><button class="btn ghost" data-a="rp-load" ${REP.loading ? "disabled" : ""}>${REP.loading ? "Gerando…" : d ? "Atualizar" : "Gerar relatório"}</button></div>${body}</section>`;
+}
+function rpDownload(name, blob){ const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+function rpCsv(){
+  const d = REP.data; if (!d) return; const u = d.usage || {};
+  const q = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const rows = [["Relatório Blessed", new Date(d.generated_at).toLocaleString("pt-BR")], [], ["Resumo", "Valor"],
+    ["Pessoas cadastradas", d.members], ["Novas em 7 dias", d.new_7d], ["Novas em 30 dias", d.new_30d], ["Perfis na comunidade", d.community_profiles], ["Músicos", d.musicians], ["Igrejas", d.churches], ["Membros de igreja", d.church_members],
+    ["Ativas hoje", u.active_1d], ["Ativas em 7 dias", u.active_7d], ["Ativas em 30 dias", u.active_30d], ["Online agora", u.online_now], ["Horas de uso (total)", u.hours_total], ["Horas de uso (7 dias)", u.hours_7d], ["Horas de uso (30 dias)", u.hours_30d],
+    ["Publicações", d.posts], ["Publicações em 7 dias", d.posts_7d], ["Curtidas", d.likes], ["Comentários", d.comments], ["Seguidores (total)", d.follows], ["Mensagens trocadas (só a quantidade)", d.messages], [],
+    ["Mais seguidores", "Perfil", "Seguidores"], ...(d.top_followers || []).map(x => [x.name, "@" + (x.handle || ""), x.followers]), [],
+    ["Quem mais usa", "Perfil", "Horas", "Acessos", "Último acesso"], ...(u.top_usage || []).map(x => [x.name, "@" + (x.handle || ""), x.hours, x.sessions, x.last_seen ? new Date(x.last_seen).toLocaleString("pt-BR") : ""]), [],
+    ["Quem mais posta", "Perfil", "Posts"], ...(d.top_posters || []).map(x => [x.name, "@" + (x.handle || ""), x.posts])];
+  rpDownload("relatorio-blessed.csv", new Blob(["﻿" + rows.map(r => r.map(q).join(";")).join("\r\n")], {type: "text/csv;charset=utf-8"}));
+}
+function rpPdf(){
+  const d = REP.data; if (!d) return;
+  if (!window.jspdf || !window.jspdf.jsPDF) { flash("Não consegui carregar o gerador de PDF. Confira a internet."); return; }
+  const u = d.usage || {}, doc = new window.jspdf.jsPDF({unit: "pt", format: "a4"}), W = 595;
+  doc.setFillColor(60, 22, 110); doc.rect(0, 0, W, 120, "F");
+  doc.setTextColor(255); doc.setFontSize(30); doc.setFont("helvetica", "bold"); doc.text("BLESSED", 40, 62);
+  doc.setFontSize(13); doc.setFont("helvetica", "normal"); doc.text("Comunidade e louvor · Relatório de audiência", 40, 88);
+  doc.setFontSize(10); doc.text("Gerado em " + new Date(d.generated_at).toLocaleDateString("pt-BR"), 40, 106);
+  doc.setTextColor(40, 20, 70);
+  const big = [[rpN(d.members), "pessoas cadastradas"], [rpN(u.active_30d), "ativas nos últimos 30 dias"], [rpH(u.hours_30d) + " h", "de uso nos últimos 30 dias"], [rpN(d.new_30d), "novas pessoas em 30 dias"]];
+  big.forEach((b, i) => { const x = 40 + (i % 2) * 260, y = 160 + Math.floor(i / 2) * 100;
+    doc.setFillColor(243, 235, 252); doc.roundedRect(x, y, 240, 80, 12, 12, "F");
+    doc.setFontSize(28); doc.setFont("helvetica", "bold"); doc.setTextColor(106, 42, 174); doc.text(String(b[0]), x + 16, y + 38);
+    doc.setFontSize(11); doc.setFont("helvetica", "normal"); doc.setTextColor(60, 40, 90); doc.text(b[1], x + 16, y + 60); });
+  doc.setFontSize(15); doc.setFont("helvetica", "bold"); doc.setTextColor(40, 20, 70); doc.text("Comunidade", 40, 390);
+  const lines = [["Publicações", d.posts], ["Curtidas", d.likes], ["Comentários", d.comments], ["Conexões entre pessoas (seguidores)", d.follows], ["Igrejas cadastradas", d.churches], ["Músicos cadastrados", d.musicians], ["Ativas em 7 dias", u.active_7d], ["Ativas hoje", u.active_1d]];
+  doc.setFontSize(12); doc.setFont("helvetica", "normal");
+  lines.forEach((l, i) => { const y = 415 + i * 24; doc.setTextColor(80, 60, 110); doc.text(l[0], 40, y); doc.setFont("helvetica", "bold"); doc.setTextColor(40, 20, 70); doc.text(rpN(l[1]), W - 40, y, {align: "right"}); doc.setFont("helvetica", "normal"); doc.setDrawColor(230, 220, 242); doc.line(40, y + 8, W - 40, y + 8); });
+  doc.setFontSize(9); doc.setTextColor(130, 110, 150); doc.text("Números agregados. O Blessed não mostra mensagens nem dados pessoais nos relatórios.", 40, 810);
+  doc.save("blessed-relatorio-patrocinador.pdf");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-a^='rp-']"); if (!b) return;
+  if (b.dataset.a === "rp-load") rpLoad(); else if (b.dataset.a === "rp-csv") rpCsv(); else if (b.dataset.a === "rp-pdf") rpPdf();
 });
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
