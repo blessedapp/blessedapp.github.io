@@ -1083,7 +1083,7 @@ html[data-appearance=light] .vb-n{color:#372440}html[data-appearance=light] .vb-
 .vd{margin:0 0 16px;padding:16px 18px;border-radius:22px;background:linear-gradient(150deg,rgba(150,80,230,.35),rgba(30,14,60,.85));border:1px solid rgba(218,194,239,.3);color:#fff}.vd-k{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#e7c2ff;margin-bottom:8px}.vd-s{float:right;font-size:12px;font-weight:700;color:#ffd9ff;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:99px}.vd-t{font-size:17px;line-height:1.45;margin:0 0 8px;font-weight:600}.vd-r{display:block;color:#ffd9ff;font-size:13px;margin-bottom:12px}.vd-b{display:flex;gap:8px;flex-wrap:wrap}.vd-b .btn{font-size:13px;padding:8px 14px;min-height:0}
 .vb{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:0;flex:none}.vb-r1{display:flex;align-items:center;gap:6px}.vb .bl-ic{width:26px;height:26px;flex:none;border-radius:8px;box-shadow:0 0 0 1px rgba(202,78,255,.35)}.vb-n{font-family:"Anton",var(--f-brand);font-size:19px;letter-spacing:.02em;color:#f3eaff;text-transform:uppercase;line-height:1}.vb-r2{display:flex;align-items:center;gap:6px;font-size:9.5px;white-space:nowrap;line-height:1;color:rgba(243,234,255,.7)}.vb-r2 b{color:#f3eaff}.vb-b{border:0;background:linear-gradient(135deg,#9b4fd8,#6a2aae);color:#fff;font:700 11px var(--f-body);padding:6px 12px;border-radius:99px;white-space:nowrap}
 .vp{position:relative;aspect-ratio:4/5;max-height:560px;max-width:560px;margin:0 auto 18px;border-radius:28px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0,#5b2aa6 0,#2a1058 55%,#160a30 100%);color:#fff;box-shadow:0 14px 40px rgba(60,20,120,.35);isolation:isolate}
-.vp[data-set=mon]{aspect-ratio:4/4.6}.vp-lvs{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:2}.lvb{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.45;filter:grayscale(.8);transition:opacity .4s,filter .4s,transform .4s}.lvb small{font-size:11px;font-weight:700}.lvb.lit{opacity:1;filter:none;transform:translateY(-3px)}
+.vp[data-set=mon]{aspect-ratio:4/4.6}.vp-lvs{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:2}.lvb{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.45;filter:grayscale(.8);transition:opacity .4s,filter .4s,transform .4s}.lvb small{font-size:11px;font-weight:700}.lvb.lit{opacity:1;filter:none;transform:translateY(-3px)}
 .vp-mon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding:96px 10px 10px;text-align:center}.vm-b.pop{animation:vmPop .5s ease-out}.vm-lv{font-weight:800;font-size:16px}.vm-n b{font:800 34px/1 var(--f-body,system-ui)}.vm-n small{display:block;font-size:12px;opacity:.8}.vm-r{display:flex;gap:14px;font-size:12px;opacity:.9}.vm-r b{font-size:14px}@keyframes vmPop{0%{transform:scale(.6)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
 .mon-lead{margin:0 0 14px;line-height:1.5}.mon-h{margin:18px 0 8px}.mon-lv{display:grid;gap:8px}.mon-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:16px}.mon-row small{display:block;color:var(--muted);font-size:12px}.mon-row em{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;background:#b085ff;color:#fff}.mon-b{flex:none;display:flex}.mon-note,.mon-rules{color:var(--muted);font-size:13px;line-height:1.55}.mon-rules{padding-left:18px;margin:8px 0 16px}
 .vp-s{position:absolute;inset:0;opacity:0;transition:opacity .6s;pointer-events:none}.vp-s.on{opacity:1}
@@ -3825,7 +3825,7 @@ function visitorBrand(){return `<div class="vb"><div class="vb-r1">${BL_ICON}<sp
 function visitorPanel(){return `<section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
 function vpScene(c,i){
  const cap=`<div class="vp-cap"><h2>${esc(c.t)}</h2>${c.s.map((l,k)=>`<p style="--k:${k}">${esc(l)}</p>`).join("")}</div>`,wrapS=(cls,inner)=>`<div class="vp-s ${cls}" data-i="${i}"><div class="vp-stage">${inner}${cap}</div></div>`;
- if(c.k==="m")return wrapS("ncap",'<div class="vp-mon"><div class="vm-b"></div><div class="vm-lv">🌱 Semente</div><div class="vm-n"><b data-r="v">0</b><small>visualizações</small></div><div class="vm-r"><span><b data-r="f">0</b> seguidores</span><span><b data-r="l">0</b> curtidas</span></div></div>');
+ if(c.k==="m")return wrapS("ncap",'<div class="vp-mon"><div class="vm-b"></div><div class="vm-lv">🥉 Bronze</div><div class="vm-n"><b data-r="v">0</b><small>visualizações</small></div><div class="vm-r"><span><b data-r="f">0</b> seguidores</span><span><b data-r="l">0</b> curtidas</span></div></div>');
  if(c.k==="v")return wrapS("",`<video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div>`);
  if(c.k==="c")return wrapS("ch",`<div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div>`);
  if(c.k==="n"){const N=[[48,42,"#e0589a"],[272,40,"#4aa8ff"],[34,118,"#ffb347"],[286,124,"#5fd38d"],[110,152,"#ff7a59"],[214,150,"#b085ff"]];
@@ -3840,12 +3840,12 @@ function vpStrip(){const o=[[1,2,3,4,5],[3,4,5,1,2],[5,1,2,3,4],[2,3,4,5,1]];ret
 function vpMount(el){
  el.dataset.on="1";
  const mon=el.dataset.set==="mon";VP.sc=mon?VP_MON:VP_SCENES;
- el.innerHTML=VP.sc.map(vpScene).join("")+(mon?'<div class="vp-lvs" aria-hidden="true">'+MON_LV.map(l=>'<div class="lvb">'+monBadge(l,44)+'<small>'+l.n+'</small></div>').join("")+'</div>':vpStrip());
+ el.innerHTML=VP.sc.map(vpScene).join("")+(mon?'<div class="vp-lvs" aria-hidden="true">'+MON_LV.map(l=>'<div class="lvb">'+monBadge(l,38)+'<small>'+l.n+'</small></div>').join("")+'</div>':vpStrip());
  VP.el=el;
  if(VP.io)VP.io.disconnect();
  if("IntersectionObserver" in window){VP.vis=false;VP.io=new IntersectionObserver(es=>{const v=es[es.length-1].isIntersecting;if(v!==VP.vis){VP.vis=v;v?vpGo(VP.i):vpStop();}},{threshold:.35});VP.io.observe(el);
   // garantia: se o navegador não avisar que o painel está na tela, começa mesmo assim
-  [400,1200,2500].forEach(t=>setTimeout(()=>{if(VP.el===el&&el.isConnected&&!VP.vis){const r=el.getBoundingClientRect();if(r.bottom>80&&r.top<innerHeight*.65&&!document.hidden){VP.vis=true;vpGo(VP.i);}}},t));}
+  for(let t=400;t<=30000;t+=t<3000?800:2500)setTimeout(()=>{if(VP.el===el&&el.isConnected&&!VP.vis){const r=el.getBoundingClientRect();if(r.bottom>80&&r.top<innerHeight*.65&&!document.hidden){VP.vis=true;vpGo(VP.i);}}},t);}
  else{VP.vis=true;vpGo(VP.i);}
 }
 function vpStop(){cancelAnimationFrame(VP.raf);clearTimeout(VP.timer);clearInterval(VP.heart);clearTimeout(VP.hit);if(VP.el)VP.el.querySelectorAll("video").forEach(v=>v.pause());}
@@ -3874,8 +3874,8 @@ function vpMon(s){
  const q=r=>s.querySelector('[data-r="'+r+'"]'),bd=s.querySelector(".vm-b"),nm=s.querySelector(".vm-lv"),lvs=VP.el.querySelectorAll(".lvb"),T=5600,t0=performance.now(),fmt=n=>Math.round(n).toLocaleString("pt-BR");
  let L=-1;
  const step=t=>{const p=Math.min(1,(t-t0)/T),e=1-Math.pow(1-p,2);
-  q("v").textContent=fmt(e*520000);q("f").textContent=fmt(e*10000);q("l").textContent=fmt(e*50000);
-  const n=Math.min(3,Math.floor(p*4.2));
+  q("v").textContent=fmt(e*1000000);q("f").textContent=fmt(e*50000);q("l").textContent=fmt(e*250000);
+  const n=Math.min(4,Math.floor(p*5.2));
   if(n!==L){L=n;bd.innerHTML=monBadge(MON_LV[n],70);bd.classList.remove("pop");void bd.offsetWidth;bd.classList.add("pop");nm.textContent=MON_LV[n].i+" "+MON_LV[n].n;lvs.forEach((x,j)=>x.classList.toggle("lit",j<=n));}
   if(p<1)VP.raf=requestAnimationFrame(step);};
  VP.raf=requestAnimationFrame(step);
@@ -4467,17 +4467,17 @@ async function shareBlessedLink(text,url,invite=false){
   try{await navigator.clipboard.writeText(invite?text+"\n"+url:url);flash(invite?"Convite copiado ✓ É só colar e enviar.":"Link copiado ✓ Cole e compartilhe.");}
   catch(e){const m=$("#modal");m.className="modal";m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="share-link-title"><h2 id="share-link-title">${invite?"Convidar alguém":"Compartilhar publicação"}</h2><p>Selecione e copie:</p><textarea readonly aria-label="Texto para compartilhar" rows="5">${esc(invite?text+"\n"+url:url)}</textarea><button class="btn" data-a="pix-close">Fechar</button></div>`;m.hidden=false;}
 }
-const MON_LV=[{n:"Semente",i:"🌱",f:100,l:500,v:1000,c:"#f5c542",h:"#e0393e"},{n:"Broto",i:"🌿",f:1000,l:5000,v:20000,c:"#f5c542",h:"#3ecf8e"},{n:"Árvore",i:"🌳",f:5000,l:25000,v:100000,c:"#f5c542",h:"#4aa8ff"},{n:"Parceiro",i:"🍇",f:10000,l:50000,v:500000,c:"#ffffff",h:"#b085ff"}];
+const MON_LV=[{n:"Bronze",i:"🥉",f:100,l:500,v:1000,c:"#d98a4a",h:"#a8602c"},{n:"Prata",i:"🥈",f:1000,l:5000,v:20000,c:"#dfe5ee",h:"#9aa7ba"},{n:"Ouro",i:"🥇",f:5000,l:25000,v:100000,c:"#f5c542",h:"#e0a21a"},{n:"Platina",i:"💠",f:10000,l:50000,v:250000,c:"#e8f4ff",h:"#7fd0ff"},{n:"Diamante",i:"💎",f:50000,l:250000,v:1000000,c:"#ffffff",h:"#4fe0ff"}];
 // Selo do nível: o B com a auréola, que muda de cor a cada nível
 function monBadge(l,px){return '<svg viewBox="0 0 100 100" width="'+(px||64)+'" height="'+(px||64)+'" aria-hidden="true"><circle cx="50" cy="52" r="46" fill="#1b0f2e" stroke="'+l.h+'" stroke-opacity=".35" stroke-width="2"/><ellipse cx="50" cy="22" rx="27" ry="8" fill="none" stroke="'+l.h+'" stroke-width="6" transform="rotate(-8 50 22)"/><text x="50" y="80" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="58" fill="'+l.c+'">B</text></svg>';}
 function monPage(){
-  const lv=MON_LV.map((l,i)=>'<div class="mon-row"><span class="mon-b">'+monBadge(l,52)+'</span><div><b>'+l.i+' '+l.n+'</b><small>'+l.f.toLocaleString("pt-BR")+' seguidores · '+l.l.toLocaleString("pt-BR")+' curtidas · '+l.v.toLocaleString("pt-BR")+' visualizações</small></div>'+(i===3?'<em>Elegível</em>':'')+'</div>').join("");
+  const lv=MON_LV.map((l,i)=>'<div class="mon-row"><span class="mon-b">'+monBadge(l,52)+'</span><div><b>'+l.i+' '+l.n+'</b><small>'+l.f.toLocaleString("pt-BR")+' seguidores · '+l.l.toLocaleString("pt-BR")+' curtidas · '+l.v.toLocaleString("pt-BR")+' visualizações</small></div>'+(i===3?'<em>Elegível ao programa</em>':'')+'</div>').join("");
   return '<section class="mon"><div class="news-page-heading"><h2>💰 Monetizar</h2></div>'
    +'<p class="mon-lead">Poste, receba visualizações, curtidas e seguidores e suba de nível. <b>Quanto mais você cresce, maior a possibilidade de ganhar dinheiro</b>, sempre de acordo com os termos do programa de parcerias.</p>'
    +'<section class="vp" data-set="mon" role="region" aria-label="Como crescer e ganhar no Blessed"></section>'
    +'<h3 class="mon-h">Os níveis</h3><div class="mon-lv">'+lv+'</div>'
    +'<p class="mon-note">Para subir de nível é preciso bater <b>as três metas juntas</b>: seguidores, curtidas e visualizações. A contagem de visualizações dos seus vídeos está chegando em breve.</p>'
-   +'<ul class="mon-rules"><li>Só conta gente de verdade. Perfil falso ou compra de seguidores tira você do programa.</li><li>No nível Parceiro você fica elegível ao programa de parcerias com anunciantes.</li><li>Não prometemos valores: o que cada um recebe depende dos termos do programa.</li></ul>'
+   +'<ul class="mon-rules"><li>Só conta gente de verdade. Perfil falso ou compra de seguidores tira você do programa.</li><li>A partir do nível Platina você fica elegível ao programa de parcerias com anunciantes.</li><li>Não prometemos valores: o que cada um recebe depende dos termos do programa.</li></ul>'
    +(TEAM&&TEAM.user?'<button class="btn primary" data-a="cm-money">Ver meu progresso</button>':'')
    +'</section>';
 }
@@ -4494,13 +4494,13 @@ async function moneyOpen(){
   const n=x=>Number(x).toLocaleString("pt-BR"),bar=(v,t)=>'<div style="height:8px;border-radius:99px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:'+Math.min(100,Math.round(v/t*100))+'%;background:var(--acc,#7c5cff)"></i></div>';
   let k=-1;MON_LV.forEach((x,i)=>{if(fo>=x.f&&lk>=x.l)k=i;});
   const nx=MON_LV[k+1],cur=MON_LV[k];
-  const ok=k===MON_LV.length-1;
+  const ok=k>=3;
   m.innerHTML='<div class="modal-box" role="dialog" aria-modal="true"><h2>💰 Monetizar</h2>'
    +'<p style="display:flex;align-items:center;gap:10px">'+(cur?monBadge(cur,56):'')+'<span>Seu nível: <b>'+(cur?cur.i+' '+cur.n:'Ainda sem nível')+'</b></span></p>'
    +(ok?'<p>🎉 Você está <b>elegível ao programa de parcerias</b> do Blessed.</p>':'<p class="muted">Próximo nível: <b>'+nx.i+' '+nx.n+'</b></p>'
     +'<p style="margin:10px 0 4px">Seguidores: '+n(fo)+' / '+n(nx.f)+'</p>'+bar(fo,nx.f)
     +'<p style="margin:10px 0 4px">Curtidas: '+n(lk)+' / '+n(nx.l)+'</p>'+bar(lk,nx.l))
-   +'<h3 style="margin:16px 0 6px;font-size:15px">Como funciona</h3><ul class="muted" style="margin:0;padding-left:18px;line-height:1.6"><li>Os níveis sobem com seguidores e curtidas de verdade.</li><li>🍇 Parceiro: 10 mil seguidores e 50 mil curtidas.</li><li>Quem chega lá fica elegível ao programa de parcerias com anunciantes.</li><li>Elegível não é garantia de ganho: não prometemos valores.</li><li>Perfis falsos, compra de seguidores ou conteúdo ofensivo tiram do programa.</li></ul>'
+   +'<h3 style="margin:16px 0 6px;font-size:15px">Como funciona</h3><ul class="muted" style="margin:0;padding-left:18px;line-height:1.6"><li>Os níveis sobem com seguidores e curtidas de verdade.</li><li>💠 Platina: 10 mil seguidores e 50 mil curtidas. 💎 Diamante é o nível máximo.</li><li>Quem chega lá fica elegível ao programa de parcerias com anunciantes.</li><li>Elegível não é garantia de ganho: não prometemos valores.</li><li>Perfis falsos, compra de seguidores ou conteúdo ofensivo tiram do programa.</li></ul>'
    +'<button class="btn" style="margin-top:14px" data-a="pix-close">Fechar</button></div>';
 }
 let INV_TEXT="";
