@@ -926,6 +926,7 @@ body.dm-screen-shake{animation:none}}
 .community-primary.home-comm{height:510px;margin:8px 16px 24px;background:radial-gradient(ellipse at 70% 20%,#643381,#160f20 75%)}
 .community-primary .hc-over{padding:100px 20px 25px;gap:12px}.community-primary h2{font:clamp(34px,7vw,62px)/1.05 var(--f-display);letter-spacing:-1px;margin:0;color:#f2e2ff;max-width:670px}.community-primary .hc-over>p:last-of-type{font-size:16px;line-height:1.5;max-width:520px}.community-primary .hc-over .btn{margin:0}.community-primary .hct{pointer-events:none}
 .hero.artists-secondary{min-height:300px;height:auto;padding-block:35px}.artists-secondary .bl-mark{font-size:clamp(48px,9vw,85px)}.artists-secondary .meta{font-size:14px}.artists-secondary .bl-tag{font-size:12px}
+.vd{margin:0 0 16px;padding:16px 18px;border-radius:22px;background:linear-gradient(150deg,rgba(150,80,230,.35),rgba(30,14,60,.85));border:1px solid rgba(218,194,239,.3);color:#fff}.vd-k{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#e7c2ff;margin-bottom:8px}.vd-s{float:right;font-size:12px;font-weight:700;color:#ffd9ff;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:99px}.vd-t{font-size:17px;line-height:1.45;margin:0 0 8px;font-weight:600}.vd-r{display:block;color:#ffd9ff;font-size:13px;margin-bottom:12px}.vd-b{display:flex;gap:8px;flex-wrap:wrap}.vd-b .btn{font-size:13px;padding:8px 14px;min-height:0}
 .vb{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:0;flex:none}.vb-r1{display:flex;align-items:center;gap:6px}.vb .bl-ic{width:26px;height:26px;flex:none;border-radius:8px;box-shadow:0 0 0 1px rgba(202,78,255,.35)}.vb-n{font-family:"Anton",var(--f-brand);font-size:19px;letter-spacing:.02em;color:#f3eaff;text-transform:uppercase;line-height:1}.vb-r2{display:flex;align-items:center;gap:6px;font-size:9.5px;white-space:nowrap;line-height:1;color:rgba(243,234,255,.7)}.vb-r2 b{color:#f3eaff}.vb-b{border:0;background:linear-gradient(135deg,#9b4fd8,#6a2aae);color:#fff;font:700 11px var(--f-body);padding:6px 12px;border-radius:99px;white-space:nowrap}
 .vp{position:relative;aspect-ratio:4/5;max-height:560px;max-width:560px;margin:0 auto 18px;border-radius:28px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0,#5b2aa6 0,#2a1058 55%,#160a30 100%);color:#fff;box-shadow:0 14px 40px rgba(60,20,120,.35);isolation:isolate}
 .vp-s{position:absolute;inset:0;opacity:0;transition:opacity .6s;pointer-events:none}.vp-s.on{opacity:1}
@@ -3552,6 +3553,33 @@ const VP_SCENES=[
 ];
 const VP={i:0,el:null,io:null,timer:null,heart:null,vis:false,hit:null};
 function vpLite(){try{return !!(navigator.connection&&navigator.connection.saveData)||matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}}
+// Versículo do dia: um por dia, tirado da Bíblia que já vem no app (sem internet extra)
+const VD_REFS=[["JOH",3,[16]],["PSA",23,[1,2,3]],["PRO",3,[5,6]],["ISA",41,[10]],["JER",29,[11]],["PHI",4,[13]],["ROM",8,[28]],["MAT",11,[28]],["PSA",46,[1]],["JOS",1,[9]],["PSA",119,[105]],["ROM",12,[2]],["1CO",13,[4,5]],["EPH",2,[8,9]],["HEB",11,[1]],["MAT",6,[33]],["PSA",27,[1]],["PSA",121,[1,2]],["ISA",40,[31]],["PHI",4,[6,7]],["JOH",14,[6]],["ROM",15,[13]],["2TI",1,[7]],["PSA",37,[4,5]],["PRO",16,[3]],["MAT",5,[16]],["1JO",4,[19]],["LAM",3,[22,23]],["PSA",91,[1,2]],["COL",3,[23]]];
+const VD={day:"",data:null,busy:false};
+function vdToday(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function vdLoad(){
+  const day=vdToday();if(VD.day===day&&(VD.data||VD.busy))return;
+  VD.day=day;VD.data=null;VD.busy=true;
+  const n=Math.floor(new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()).getTime()/86400000),[code,c,vs]=VD_REFS[n%VD_REFS.length];
+  bibleLoad(code).then(d=>{const ch=d[c-1];if(!ch)throw 0;VD.data={code,c,vs,text:vs.map(v=>ch[v-1]).filter(Boolean).join(" ")};}).catch(()=>{}).finally(()=>{VD.busy=false;if(VD.data&&state.view==="community")rerenderKeepScroll();});
+}
+// Dias seguidos abrindo o Blessed (guardado só neste aparelho)
+function vdStreak(){
+  try{
+    const day=vdToday(),y=new Date(Date.now()-86400000),yd=y.getFullYear()+"-"+(y.getMonth()+1)+"-"+y.getDate();
+    let st=JSON.parse(localStorage.getItem("blessed-streak")||"{}");
+    if(st.last!==day){st={last:day,n:st.last===yd?(st.n||0)+1:1};localStorage.setItem("blessed-streak",JSON.stringify(st));}
+    return st.n||1;
+  }catch(e){return 0;}
+}
+function vdBadge(n){return n>=30?"Perseverante":n>=7?"Constante":n>=3?"Firme":"";}
+function vdCard(){
+  vdLoad();if(!VD.data)return "";
+  const n=vdStreak(),bd=vdBadge(n),streak=n>1?`<span class="vd-s">🔥 ${n} dias seguidos${bd?` · ${bd}`:""}</span>`:"";
+  const d=VD.data;
+  return `<section class="vd" aria-label="Versículo do dia"><span class="vd-k">Versículo do dia</span>${streak}<p class="vd-t">“${bibleText(d.text)}”</p><b class="vd-r">${esc(bibleRef(d.code,d.c,d.vs))}</b><div class="vd-b"><button class="btn" data-a="vd-read">Ler o capítulo</button><button class="btn" data-a="vd-share">Compartilhar</button></div></section>`;
+}
+function vdShare(){const d=VD.data;if(!d)return;shareBlessedLink("“"+d.text+"” — "+bibleRef(d.code,d.c,d.vs)+" · Blessed",location.origin+location.pathname);}
 function visitorBrand(){return `<div class="vb"><div class="vb-r1">${BL_ICON}<span class="vb-n">Blessed</span></div><div class="vb-r2"><span>Desenvolvido por <b>Irmão Francisco</b></span></div>${PIX_KEY?`<button class="vb-b" data-a="pix" aria-haspopup="dialog">♥ Colabore</button>`:""}</div>`;}
 function visitorPanel(){return `<section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
 function vpScene(c,i){
@@ -5078,7 +5106,7 @@ function viewCommunity(){
   } else {
     body = COMM.explore.length ? commGrid(COMM.explore) + (COMM.explore.length >= (COMM.exploreLimit || 24) ? '<button class="btn cm-more" data-a="cm-more">Ver mais fotos</button>' : "") : '<p class="muted">Ninguém postou ainda. Seja o primeiro!</p>';
   }
-  return wrap(`${tab === "people" ? "" : commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
+  return wrap(`${tab === "people" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
     <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`);
 }
 function viewProfile(){
@@ -5422,6 +5450,8 @@ function commClick(a, b){
   else if (a === "cm-save") commToggleSave(b.dataset.id);
   else if (a === "cm-invite") inviteSomeone();
   else if (a === "inv-copy") inviteCopy();
+  else if (a === "vd-share") vdShare();
+  else if (a === "vd-read") { const d = VD.data; if (d) { state.view = "study"; state.studyTab = "biblia"; bibleGo(d.code, d.c, d.vs[0]); } }
   else if (a === "inv-share") inviteShare();
   else if (a === "cm-share") pfShareMenu("post", b.dataset.id);
   else if (a === "cm-cmt-del") { if (confirm("Apagar este comentário?")) commDelComment(b.dataset.id, b.dataset.p); }
