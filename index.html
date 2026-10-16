@@ -3,7 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Cifras no tom do culto, graus, campo harmônico e a roda dos caminhos.">
+<meta name="description" content="Compartilhe sua fé, siga igrejas e músicos, veja a agenda dos cultos e chame a atenção de um amigo. Entre na comunidade Blessed.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Blessed">
+<meta property="og:title" content="Blessed · Comunidade e louvor">
+<meta property="og:description" content="Siga igrejas e músicos, compartilhe seus momentos de fé e acompanhe a agenda dos cultos.">
+<meta property="og:url" content="https://blessedapp.github.io/">
+<meta property="og:image" content="https://blessedapp.github.io/img/painel/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Blessed · Comunidade e louvor">
+<meta name="twitter:image" content="https://blessedapp.github.io/img/painel/og.jpg">
 <meta name="theme-color" content="#0C0B0E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -3598,7 +3609,16 @@ async function shareBlessedLink(text,url,invite=false){
   try{await navigator.clipboard.writeText(invite?text+"\n"+url:url);flash(invite?"Convite copiado ✓ É só colar e enviar.":"Link copiado ✓ Cole e compartilhe.");}
   catch(e){const m=$("#modal");m.className="modal";m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="share-link-title"><h2 id="share-link-title">${invite?"Convidar alguém":"Compartilhar publicação"}</h2><p>Selecione e copie:</p><textarea readonly aria-label="Texto para compartilhar" rows="5">${esc(invite?text+"\n"+url:url)}</textarea><button class="btn" data-a="pix-close">Fechar</button></div>`;m.hidden=false;}
 }
-function inviteSomeone(){return shareBlessedLink("Vem conhecer o Blessed! Uma comunidade para compartilhar a fé, momentos e louvores. Te espero por lá!",location.origin+location.pathname,true);}
+let INV_TEXT="";
+function inviteSomeone(){
+  const h=COMM&&COMM.me&&COMM.me.handle?" Me procura lá: @"+COMM.me.handle:"",url=location.origin+location.pathname;
+  INV_TEXT="Entra no Blessed e vem me seguir lá! 🙏 Uma comunidade para compartilhar a fé, o louvor e os seus momentos."+h+"\n"+url;
+  const m=$("#modal");m.className="modal";
+  m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="inv-t"><h2 id="inv-t">Convidar alguém</h2><p>Convite pronto para enviar:</p><textarea readonly rows="5" aria-label="Texto do convite">${esc(INV_TEXT)}</textarea><div style="display:grid;gap:8px;margin-top:12px"><a class="btn primary" href="https://wa.me/?text=${encodeURIComponent(INV_TEXT)}" target="_blank" rel="noopener">Enviar no WhatsApp</a>${navigator.share?'<button class="btn" data-a="inv-share">Outros apps</button>':""}<button class="btn" data-a="inv-copy">Copiar convite</button><button class="btn ghost" data-a="pix-close">Fechar</button></div></div>`;
+  m.hidden=false;
+}
+async function inviteCopy(){try{await navigator.clipboard.writeText(INV_TEXT);flash("Convite copiado ✓ É só colar e enviar.");}catch(e){const t=$("#modal textarea");if(t){t.focus();t.select();}}}
+async function inviteShare(){try{await navigator.share({title:"Blessed",text:INV_TEXT.split("\n")[0],url:location.origin+location.pathname});}catch(e){}}
 async function commShare(id){
   const p = COMM.posts[id], a = p ? COMM.profiles[p.author] || {} : {};
   const url = location.origin + location.pathname + "?foto=" + encodeURIComponent(id);
@@ -5401,6 +5421,8 @@ function commClick(a, b){
   else if (a === "cm-like") commToggleLike(b.dataset.id);
   else if (a === "cm-save") commToggleSave(b.dataset.id);
   else if (a === "cm-invite") inviteSomeone();
+  else if (a === "inv-copy") inviteCopy();
+  else if (a === "inv-share") inviteShare();
   else if (a === "cm-share") pfShareMenu("post", b.dataset.id);
   else if (a === "cm-cmt-del") { if (confirm("Apagar este comentário?")) commDelComment(b.dataset.id, b.dataset.p); }
   else if (a === "cm-comments") {
