@@ -3517,8 +3517,13 @@ async function commCheckHandle(v){
 function isChurch(p){ return !!p && p.kind === "igreja"; }
 function isMember(p){ return !!p && p.kind === "membro"; }
 function commKindOf(p){ return isChurch(p) ? "igreja" : isMember(p) ? "membro" : "musico"; }
-function commChurchOf(name){ const n = norm(name); return n ? (COMM.people || []).find(x => isChurch(x) && norm(x.display_name) === n) : null; }
-function commMembersOf(p){ const n = norm(p.display_name); return (COMM.people || []).filter(x => commKindOf(x) === "musico" && norm(x.church) === n); }
+function commChurchOf(name){
+  const raw = String(name || ""), at = /@([A-Za-z0-9_.]{2,30})/.exec(raw);
+  if (at) { const h = at[1].replace(/\.+$/, "").toLowerCase(); return (COMM.people || []).find(x => x && String(x.handle || "").toLowerCase() === h) || null; }
+  const n = norm(name); return n ? (COMM.people || []).find(x => isChurch(x) && norm(x.display_name) === n) : null;
+}
+function commChurchLabel(name){ const raw = String(name || ""); if (!/@/.test(raw)) return raw; const ch = commChurchOf(raw); return ch ? ch.display_name : raw; }
+function commMembersOf(p){ const n = norm(p.display_name), h = "@" + String(p.handle || "").toLowerCase(); return (COMM.people || []).filter(x => commKindOf(x) === "musico" && (norm(x.church) === n || (x.church && String(x.church).toLowerCase().split(/\s+/).includes(h)))); }
 /* PUBLIC-COMMUNITY-START: leitura pública isolada do estado privado da conta. */
 const PC={pages:new Map(),tab:'posts'};
 function pcKey(person='',entry=''){return person+'|'+entry;}
@@ -3588,7 +3593,7 @@ function homeCommunity(){
  people=[...new Map(people.filter(Boolean).map(p=>[p.id,p])).values()].slice(0,24);
  return `<section class="home-panel community-primary" aria-label="Comunidade Blessed"><div class="home-panel-stage">${homePanelTiles(people,'community',publicPage)}</div><div class="home-panel-caption"><div><h2>Comunidade</h2><p>Pessoas, fé e momentos.</p></div><button class="btn primary" data-a="tab" data-v="community" aria-label="Explorar a comunidade">Explorar <span aria-hidden="true">↗</span></button></div></section>`;
 }
-function commWhere(p){ return [p.church, p.city].filter(Boolean).map(esc).join(" · "); }
+function commWhere(p){ return [commChurchLabel(p.church), p.city].filter(Boolean).map(esc).join(" · "); }
 function commFollowBtn(id){
   if (!COMM.me || id === TEAM.user.id) return "";
   const on = COMM.following.has(id);
@@ -3997,7 +4002,7 @@ function mnShow(t){
   pop.innerHTML = list.map(p => '<button type="button" class="mn-i" data-mn="' + esc(p.handle) + '">' + commAvatar(p, 32, false) + "<span><b>" + esc(p.display_name || "") + "</b><small>@" + esc(p.handle) + "</small></span></button>").join("");
   document.body.appendChild(pop); pop._t = t;
 }
-document.addEventListener("input", e => { const t = e.target; if (t && (t.id === "cm-caption" || t.id === "cm-comment")) mnShow(t); });
+document.addEventListener("input", e => { const t = e.target; if (t && (t.id === "cm-caption" || t.id === "cm-comment" || t.id === "cm-bio" || t.id === "cm-church")) mnShow(t); });
 document.addEventListener("pointerdown", e => {
   const b = e.target.closest && e.target.closest("#mn-pop .mn-i"); if (!b) { if (!(e.target.closest && e.target.closest("#mn-pop"))) mnHide(); return; }
   e.preventDefault(); const pop = document.getElementById("mn-pop"), t = pop && pop._t; if (!t) return;
@@ -5738,10 +5743,10 @@ function viewProfile(){
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
     ${(() => { if (isChurch(p)) return p.church || p.city ? `<p class="cm-church big">${commWhere(p)}</p>` : "";
       const ch = commChurchOf(p.church);
-      if (ch) return `<p class="cm-church big">⛪ <button class="lnk2 cm-chlink" data-a="cm-profile" data-id="${esc(ch.id)}">${esc(p.church)}</button>${p.city ? " · " + esc(p.city) : ""}</p>`;
+      if (ch) return `<p class="cm-church big">⛪ <button class="lnk2 cm-chlink" data-a="cm-profile" data-id="${esc(ch.id)}">${esc(commChurchLabel(p.church))}</button>${p.city ? " · " + esc(p.city) : ""}</p>`;
       return p.church || p.city ? `<p class="cm-church big">⛪ ${commWhere(p)}</p>` : ""; })()}
     ${(p.instruments || []).length ? `<div class="cm-chips">${p.instruments.map(i => `<span>${esc(i)}</span>`).join("")}</div>` : ""}
-    ${p.bio ? `<p class="cm-bio">${esc(p.bio)}</p>` : ""}
+    ${p.bio ? `<p class="cm-bio">${rich(p.bio)}</p>` : ""}
     ${ig || yt ? `<div class="cm-links">${ig ? `<a href="https://instagram.com/${esc(ig)}" target="_blank" rel="noopener">Instagram ↗</a>` : ""}${yt ? `<a href="${esc(yt)}" target="_blank" rel="noopener">YouTube ↗</a>` : ""}</div>` : ""}
 
   </div>
