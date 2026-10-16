@@ -952,6 +952,7 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.boot{display:grid;justify-items:center;align-content:center;gap:14px;min-height:70vh;color:var(--ink)}.boot .bl-ic{width:84px;height:84px;border-radius:22px;box-shadow:0 12px 40px rgba(110,40,190,.35);animation:bootP 1.6s ease-in-out infinite}.boot b{font:400 30px "Anton",var(--f-brand);letter-spacing:.04em;text-transform:uppercase}@keyframes bootP{50%{transform:scale(1.07)}}
 .dm-card .dm-receipt{margin:0 5px 0 0;color:var(--muted);vertical-align:-3px}.dm-card .dm-receipt svg{width:20px;height:14px}.dm-card .dm-receipt.read{color:#8a2be0;filter:none}
 /* "Chegaram agora": fechadinho num quadrado; ao tocar, abre mostrando as pessoas */
 .cm-arr{margin:0 0 12px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:0 6px 18px rgba(70,25,110,.08);overflow:hidden}
@@ -1674,7 +1675,15 @@ function flash(msg){
 const chevron = '<svg class="chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
 /* ---------- views ---------- */
+// Quem já está conectado abre direto logado: enquanto a conta é conferida, aparece só a logo (nada de piscar deslogado)
+function bootSession(){
+  try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^sb-.*-auth-token$/.test(k)) { const v = JSON.parse(localStorage.getItem(k) || "null"); if (v && (v.access_token || (v.currentSession && v.currentSession.access_token))) return true; } } } catch (e) {}
+  return false;
+}
+function bootSplash(){ return '<div class="boot" role="status" aria-label="Abrindo o Blessed">' + BL_ICON + '<b>Blessed</b></div>'; }
 function render(){
+  if (TEAM.booting === undefined) { TEAM.booting = teamAvailable() && bootSession(); if (TEAM.booting) setTimeout(() => { if (TEAM.booting) { TEAM.booting = false; render(); } }, 7000); }
+  if (TEAM.booting) { const a = $("#app"); if (a) { a.className = ""; if (!a.querySelector(".boot")) a.innerHTML = bootSplash(); } return; }
   if(DMM.panel&&!dmmCurrent(DMM.panel))dmmClose();if(LM.open&&state.view!==LM.view)closePix();
   if(DWP.edit&&!dwpCurrent(DWP.edit))dwpCloseEditor();
   const app = $("#app");
@@ -1866,8 +1875,10 @@ async function teamInit(){
   try {
     const {data} = await TEAM.client.auth.getSession();
     if (data && data.session) await teamEnter(data.session.user);
+    TEAM.booting = false; render();
     if (store.mode !== "team") await loadVitrine();
   } catch(e) {}
+  TEAM.booting = false;
   render();
 }
 async function loadVitrine(){
