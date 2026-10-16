@@ -3719,7 +3719,7 @@ async function commAddComment(){
   COMM.busy = true;
   const {data, error} = await TEAM.client.from("post_comments").insert({post_id: pid, author: TEAM.user.id, text}).select("id,post_id,author,text,created_at").single();
   COMM.busy = false;
-  if (error) { flash(error.message?.includes("blessed_comment_offensive")?MOD_COMMENT_MSG:"Não consegui enviar o comentário. Confira a internet."); return; }
+  if (error) { flash(error.message?.includes("blessed_comment_offensive")?MOD_COMMENT_MSG:(error.message||"").includes("Muitas ações")?"Muitas ações em pouco tempo. Espere um pouco.":"Não consegui enviar o comentário. Confira a internet."); return; }
   (COMM.comments[pid] = COMM.comments[pid] || []).push(data);
   COMM.ccount[pid] = COMM.comments[pid].length;
   rerenderKeepScroll(); const f = $("#cm-comment"); if (f) f.focus();
@@ -3909,6 +3909,7 @@ async function rpLoad(){
     const {data, error} = await TEAM.client.rpc("admin_report");
     if (error) throw error;
     REP.data = data;
+    try { const er = await TEAM.client.rpc("admin_errors"); REP.errors = er.error ? null : er.data; } catch (x) {}
   } catch (e) {
     REP.error = /42501|administrador/i.test((e && (e.message || e.code)) || "") ? "Só o administrador pode ver o relatório." : "Não consegui gerar. Falta rodar o arquivo supabase-relatorio.sql no Supabase?";
   }
@@ -3929,6 +3930,7 @@ function rpPanel(){
     ${list("Mais seguidores", d.top_followers, x => `${who(x)} <span>${rpN(x.followers)} seguidores</span>`)}
     ${list("Quem mais usa", u.top_usage, x => `${who(x)} <span>${rpH(x.hours)} h · ${rpN(x.sessions)} acessos</span>`)}
     ${list("Quem mais posta", d.top_posters, x => `${who(x)} <span>${rpN(x.posts)} posts</span>`)}
+    ${REP.errors && REP.errors.length ? `<h4>Erros recentes no app (7 dias)</h4><ol class="rp-l">${REP.errors.map(x => `<li><b>${esc(x.msg)}</b> <span>${x.n}× · ${esc(new Date(x.last).toLocaleString("pt-BR"))}</span></li>`).join("")}</ol>` : ""}
     <p class="muted" style="font-size:12px">Gerado em ${esc(new Date(d.generated_at).toLocaleString("pt-BR"))}</p>
     <div class="actions"><button class="btn primary" data-a="rp-pdf">📄 PDF para patrocinador</button><button class="btn" data-a="rp-csv">⬇ CSV completo</button></div>`;
   return `<section class="panel rp" id="rp-panel"><div class="actions" style="justify-content:space-between"><h3>Relatório do app</h3><button class="btn ghost" data-a="rp-load" ${REP.loading ? "disabled" : ""}>${REP.loading ? "Gerando…" : d ? "Atualizar" : "Gerar relatório"}</button></div>${body}</section>`;
@@ -4253,6 +4255,18 @@ document.addEventListener("click", e => {
   else if (a === "call-hang") callEnd("local", true);
   else if (a === "call-mute") { const c = CALL.cur; if (!c || !c.stream) return; c.muted = !c.muted; c.stream.getAudioTracks().forEach(t => t.enabled = !c.muted); callUi(); }
 });
+/* Erros do app: ficam guardados para o administrador ver (sem dados pessoais, no máximo 5 por abertura) */
+const ERRR = {sent: 0, seen: new Set()};
+function errReport(msg, src, stack){
+  try {
+    if (!TEAM.user || !TEAM.client || ERRR.sent >= 5) return;
+    const m = String(msg || "erro"); if (/ResizeObserver|Script error|Failed to fetch|Load failed|NetworkError|AbortError|cancelled|canceled/i.test(m)) return;
+    const k = m.slice(0, 80); if (ERRR.seen.has(k)) return; ERRR.seen.add(k); ERRR.sent++;
+    TEAM.client.from("client_errors").insert({msg: m.slice(0, 400), src: String(src || "").slice(0, 200), stack: String(stack || "").slice(0, 1200), ua: navigator.userAgent.slice(0, 200), view: String(state.view || "").slice(0, 40)}).then(() => {}, () => {});
+  } catch (e) {}
+}
+addEventListener("error", e => errReport(e.message, (e.filename || "") + ":" + e.lineno, e.error && e.error.stack));
+addEventListener("unhandledrejection", e => errReport("Promise: " + ((e.reason && e.reason.message) || e.reason), "", e.reason && e.reason.stack));
 // carrega uma biblioteca só na hora de usar (uma vez só)
 const LIBS = {};
 function loadLib(src){
@@ -5104,7 +5118,7 @@ async function pfBcSend(bid){
   PF.bcBusy = true;
   const {data, error} = await TEAM.client.from("blessing_comments").insert({blessing_id: bid, author: TEAM.user.id, text}).select("id,blessing_id,author,text,created_at").single();
   PF.bcBusy = false;
-  if (error) { flash(error.message?.includes("blessed_comment_offensive")?MOD_COMMENT_MSG:"Não consegui enviar o comentário. Confira a internet."); return; }
+  if (error) { flash(error.message?.includes("blessed_comment_offensive")?MOD_COMMENT_MSG:(error.message||"").includes("Muitas ações")?"Muitas ações em pouco tempo. Espere um pouco.":"Não consegui enviar o comentário. Confira a internet."); return; }
   if (el) el.value = "";
   (PF.bcom[bid] = PF.bcom[bid] || []).push(data); PF.bccount[bid] = PF.bcom[bid].length;
   pfBcRender(bid); pfBcCount(bid); const f = $("#pf-bc"); if (f) f.focus();
@@ -5451,7 +5465,7 @@ async function dmSend(){
   const row = {conversation_id: id, author: TEAM.user.id, text}; if (DMX.ok && DM.reply && DM.reply.conv === id) row.reply_to = DM.reply.id;
   const {data, error} = await TEAM.client.from("messages").insert(row).select("id,conversation_id,author,text,created_at" + (DMX.ok ? ",reply_to" : "")).single();
   DM.busy = false;
-  if (error) { flash(navigator.onLine ? "Não foi possível enviar esta mensagem." : "Sem internet. Tente de novo."); return; }
+  if (error) { flash((error.message||"").includes("Muitas ações")?"Você enviou muitas mensagens seguidas. Espere um pouco.":navigator.onLine ? "Não foi possível enviar esta mensagem." : "Sem internet. Tente de novo."); return; }
   if (el) el.value = "";
   DM.reply = null; dmIncoming(data);ntfSound('sent');
   const n = $("#dm-in"); if (n) { n.value = ""; n.focus(); }
@@ -6213,7 +6227,7 @@ async function commPublish(){
     COMM.byAuthor[TEAM.user.id] = [data.id].concat(COMM.byAuthor[TEAM.user.id] || []);
     if (COMM.explore) COMM.explore.unshift(data.id); if (COMM.feed) COMM.feed.unshift(data.id);
     COMM.busy = false; state.cmPost = null; state.profileId = TEAM.user.id; state.view = "profile"; render(); scrollTo(0, 0);
-  } catch(err) { COMM.busy = false; COMM.msg = "Não consegui publicar agora. Confira a internet e tente de novo."; render(); }
+  } catch(err) { COMM.busy = false; COMM.msg = (err && err.message || "").includes("Muitas ações") ? "Você publicou muita coisa em pouco tempo. Espere um pouco e tente de novo." : "Não consegui publicar agora. Confira a internet e tente de novo."; render(); }
 }
 async function commToggleFollow(id){
   if (!COMM.me) { state.view = "community"; render(); return; }
