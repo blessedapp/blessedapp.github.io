@@ -1351,7 +1351,7 @@ html[data-appearance=light] .sel-fact b{color:#8a5a0a}
 .vp-cm.out{opacity:0;transform:translateY(-8px);transition:.45s}
 @keyframes vpCm{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
 
-.vp[data-set=mon] .vp-s.on .vp-cap h2{animation-delay:.05s}.vp[data-set=mon] .vp-s.on .vp-cap p{animation-delay:calc(.2s + var(--k)*.4s)}
+.vp[data-set=mon] .vp-s.on .vp-cap h2{animation-delay:.05s}.vp[data-set=mon] .vp-s.on .vp-cap p{animation-delay:calc(.12s + var(--k)*.28s)}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -3946,16 +3946,16 @@ const VP_SCENES=[
  {k:"v",f:"cena6",d:5200,t:"Faça parte da comunidade",s:["Entre e comece a seguir hoje"]}
 ];
 const VP_MON=[
- {k:"v",f:"m_louvor",d:3000,t:"Seja um criador de conteúdo",s:["Mostre seu louvor e sua fé","Seu talento merece ser visto"],cm:["Que voz linda! 🙏","Amém! Glória a Deus","Me arrepiei 😭"]},
- {k:"v",f:"m_carro",d:3000,t:"Vlogs do seu dia a dia",s:["Grave sua rotina e seus momentos","O dia a dia vira conteúdo"],cm:["Amei o vlog!","Quero ver o próximo 😍","Faz mais! 🙌"]},
+ {k:"v",f:"m_louvor",d:2000,t:"Seja um criador de conteúdo",s:["Mostre seu louvor e sua fé","Seu talento merece ser visto"],cm:["Que voz linda! 🙏","Amém! Glória a Deus","Me arrepiei 😭"]},
+ {k:"v",f:"m_carro",d:2000,t:"Vlogs do seu dia a dia",s:["Grave sua rotina e seus momentos","O dia a dia vira conteúdo"],cm:["Amei o vlog!","Quero ver o próximo 😍","Faz mais! 🙌"]},
  {k:"m",d:6800,t:"Suba de nível",s:["Visualizações, curtidas e seguidores","O selo muda de cor a cada nível"]},
- {k:"v",f:"m_produto",d:3000,t:"Divulgue seu trabalho",s:["Mídias, produtos e ministérios","Mostre o que você faz"],cm:["Qual o link?","Ficou lindo!","Comprei o meu 😍"]},
- {k:"v",f:"m_pastor1",d:3000,t:"Pregue a Palavra",s:["Mensagens que alcançam mais gente","Leve o culto para além da igreja"],cm:["Palavra poderosa! 🙏","Amém, pastor!","Compartilhei com a família"]},
- {k:"v",f:"m_caminhada1",d:3000,t:"Mídia da igreja crescendo",s:["Equipes de mídia e filmmakers","Transmita cultos e eventos"],cm:["Que enquadramento!","Conteúdo de qualidade 👏","Nossa igreja no Blessed! 💜"]},
- {k:"v",f:"m_pastor2",d:3000,t:"Ministério em crescimento",s:["Transmita suas pregações","Cada mensagem alcança novas vidas"],cm:["Deus abençoe, pastor","Precisava ouvir isso hoje","Glória a Deus! 🙌"]},
- {k:"v",f:"m_casal",d:3000,t:"Crie junto",s:["Grave com quem você ama","Dois olhares, mais criatividade"],cm:["Casal lindo 🥰","Que amor!","Amei a parceria"]},
- {k:"v",f:"m_caminhada2",d:3000,t:"A mídia da igreja cresce com você",s:["Mais visualizações, mais alcance","Quanto mais cresce, mais chance de ganhar"],cm:["Sempre acompanhando!","Continue assim 🙌","Mais um vídeo top"]},
- {k:"v",f:"m_tchau",d:3000,t:"Comece hoje",s:["Entre no Blessed e poste seu 1º vídeo","Sempre de acordo com o programa de parcerias"],cm:["Bem-vinda! 🤗","Vamos crescer juntos","Estamos juntos 🙏"]}
+ {k:"v",f:"m_produto",d:2000,t:"Divulgue seu trabalho",s:["Mídias, produtos e ministérios","Mostre o que você faz"],cm:["Qual o link?","Ficou lindo!","Comprei o meu 😍"]},
+ {k:"v",f:"m_pastor1",d:2000,t:"Pregue a Palavra",s:["Mensagens que alcançam mais gente","Leve o culto para além da igreja"],cm:["Palavra poderosa! 🙏","Amém, pastor!","Compartilhei com a família"]},
+ {k:"v",f:"m_caminhada1",d:2000,t:"Mídia da igreja crescendo",s:["Equipes de mídia e filmmakers","Transmita cultos e eventos"],cm:["Que enquadramento!","Conteúdo de qualidade 👏","Nossa igreja no Blessed! 💜"]},
+ {k:"v",f:"m_pastor2",d:2000,t:"Ministério em crescimento",s:["Transmita suas pregações","Cada mensagem alcança novas vidas"],cm:["Deus abençoe, pastor","Precisava ouvir isso hoje","Glória a Deus! 🙌"]},
+ {k:"v",f:"m_casal",d:2000,t:"Crie junto",s:["Grave com quem você ama","Dois olhares, mais criatividade"],cm:["Casal lindo 🥰","Que amor!","Amei a parceria"]},
+ {k:"v",f:"m_caminhada2",d:2000,t:"A mídia da igreja cresce com você",s:["Mais visualizações, mais alcance","Quanto mais cresce, mais chance de ganhar"],cm:["Sempre acompanhando!","Continue assim 🙌","Mais um vídeo top"]},
+ {k:"v",f:"m_tchau",d:2000,t:"Comece hoje",s:["Entre no Blessed e poste seu 1º vídeo","Sempre de acordo com o programa de parcerias"],cm:["Bem-vinda! 🤗","Vamos crescer juntos","Estamos juntos 🙏"]}
 ];
 function vpLite(){try{return !!(navigator.connection&&navigator.connection.saveData)||matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}}
 // Versículo do dia: um por dia, tirado da Bíblia que já vem no app (sem internet extra)
@@ -4050,7 +4050,7 @@ function vpGo(P,i){
  const box=s.querySelector(".vp-hearts");
  if(box&&!vpLite())P.heart=setInterval(()=>vpHeart(box),P.mon?300:380);
  const cms=s.querySelector(".vp-cms");
- if(cms&&c.cm&&!vpLite()){let n=0;const add=()=>vpComment(cms,c.cm[n++%c.cm.length],n);setTimeout(add,P.mon?300:500);P.cm=setInterval(add,P.mon?800:1250);}
+ if(cms&&c.cm&&!vpLite()){let n=0;const add=()=>vpComment(cms,c.cm[n++%c.cm.length],n);setTimeout(add,P.mon?200:500);P.cm=setInterval(add,P.mon?650:1250);}
  if(P.mon){el.querySelectorAll(".lvb").forEach(x=>x.classList.remove("lit"));if(c.k==="m")vpMon(P,s);}
  P.timer=setTimeout(()=>vpGo(P,(i+1)%P.sc.length),c.d);
 }
