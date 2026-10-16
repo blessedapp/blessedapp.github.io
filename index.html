@@ -1327,6 +1327,9 @@ html[data-appearance=light] .sel-fact b{color:#8a5a0a}
 .sel-err{color:#ff8fa3;font-size:14px;margin:6px 0}.sel-note{font-size:12px;margin:4px 0 0}
 
 .tabbar button{font-size:10.5px;letter-spacing:-.02em;padding-inline:0}.tabbar:has(button:nth-child(7)) button{font-size:9.5px;letter-spacing:-.03em}.tabbar button svg{width:22px;height:22px}
+
+.pf-bl .pf-bl-n{position:absolute;left:6px;bottom:5px;inset:auto auto 5px 6px;display:block;font:700 12px var(--f-body);font-style:normal;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}.pf-bl .pf-bl-n:empty{display:none}
+.bl-vw{font-weight:500}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -4906,8 +4909,12 @@ async function blLoad(){
   if (BLS.loading || !BLS.more) return;
   BLS.loading = true;
   const from = (BLS.list || []).length;
-  const {data, error} = await TEAM.client.from("blessings").select("*")
-    .order("created_at", {ascending: false}).range(from, from + 9);
+  let res = BLS.algOff ? null : await TEAM.client.rpc("blessings_feed", {p_limit: 10, p_offset: from});
+  if (!res || (res.error && /function|does not exist|schema cache|not found/i.test(res.error.message || ""))) {
+    BLS.algOff = true;
+    res = await TEAM.client.from("blessings").select("*").order("created_at", {ascending: false}).range(from, from + 9);
+  }
+  const {data, error} = res;
   BLS.loading = false;
   if (error) { BLS.list = BLS.list || []; BLS.more = false; BLS.err = /does not exist|schema cache/i.test(error.message || "") ? "missing" : "net"; blRefresh(true); return; }
   BLS.err = "";
@@ -4930,6 +4937,7 @@ async function blAfter(list){
   ids.forEach(id => BLS.likes[id] = 0);
   (data || []).forEach(r => { BLS.likes[r.blessing_id]++; if (r.user_id === TEAM.user.id) BLS.my.add(r.blessing_id); });
   await pfAfter("blessing", ids);
+  blCounts(ids);
 }
 // Abre um Blessing específico (link compartilhado ou denúncia): ele vem primeiro no feed
 async function blOpen(id){
@@ -4943,6 +4951,69 @@ async function blOpen(id){
   render(); scrollTo(0, 0);
 }
 
+// ---------- visualizações válidas, tempo assistido e estatísticas dos Blessings (supabase-blessings-algoritmo.sql) ----------
+const BLW = {t: new Map(), off: false};
+BLS.views = {};
+function fmtN(n){ n = Number(n) || 0; return n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(".", ",") + " mi" : n >= 1e3 ? (n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(".", ",") + " mil" : String(n); }
+function blCounts(ids){
+  if (BLW.off || !ids || !ids.length) return;
+  Promise.resolve(TEAM.client.rpc("blessing_view_counts", {p_ids: ids.slice(0, 100)})).then(r => {
+    if (r && r.error) { if (/function|does not exist|schema cache|not found/i.test(r.error.message || "")) BLW.off = true; return; }
+    (r.data || []).forEach(x => BLS.views[x.blessing_id] = Number(x.views) || 0);
+    document.querySelectorAll(".bl-vw[data-id]").forEach(el => { const n = BLS.views[el.dataset.id]; el.textContent = n ? " · " + fmtN(n) + " visualizações" : ""; });
+    document.querySelectorAll(".pf-bl-n[data-id]").forEach(el => { const n = BLS.views[el.dataset.id]; el.textContent = n ? "▶ " + fmtN(n) : ""; });
+  }).catch(() => {});
+}
+function blWatchSend(id, final){
+  if (BLW.off || !TEAM.user) return;
+  const e = BLW.t.get(id); if (!e) return;
+  const x = BLS.items[id]; if (!x || x.author === TEAM.user.id) return;
+  const ms = Math.min(900000, Math.round(performance.now() - e.t0));
+  if (ms < 3000) return;
+  e.sent = true;
+  Promise.resolve(TEAM.client.rpc("record_blessing_view", {p_blessing: id, p_source: "feed", p_ms: ms})).then(r => {
+    if (r && r.error && /function|does not exist|schema cache|not found/i.test(r.error.message || "")) BLW.off = true;
+  }).catch(() => {});
+}
+function blWatchStart(id){
+  if (BLW.off || !TEAM.user || BLW.t.has(id)) return;
+  const e = {t0: performance.now(), sent: false};
+  e.timer = setTimeout(() => {
+    const v = document.querySelector('.bl-item[data-id="' + CSS.escape(id) + '"] video');
+    if (document.hidden || !v || v.paused) { BLW.t.delete(id); return; }
+    blWatchSend(id);
+  }, 3100);
+  BLW.t.set(id, e);
+}
+function blWatchStop(id){
+  const e = BLW.t.get(id); if (!e) return;
+  clearTimeout(e.timer); BLW.t.delete(id);
+  if (e.sent) { BLW.t.set(id, e); blWatchSend(id, true); BLW.t.delete(id); }
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) [...BLW.t.keys()].forEach(blWatchStop); });
+window.addEventListener("pagehide", () => { [...BLW.t.keys()].forEach(blWatchStop); });
+const BL_SRC = {feed: "Feed dos Blessings", explore: "Explorar", perfil: "Perfil", link: "Link compartilhado", outro: "Outros"};
+async function blStatsOpen(id){
+  const m = $("#modal"); m.className = "modal";
+  const box = h => '<div class="modal-box st-ins" role="dialog" aria-modal="true"><h2>Estatísticas do Blessing</h2>' + h + '<button class="btn" style="margin-top:14px;width:100%" data-a="pix-close">Fechar</button></div>';
+  m.innerHTML = box('<p class="muted">Carregando…</p>'); m.hidden = false;
+  let d = null, bad = false;
+  try { const r = await TEAM.client.rpc("blessing_stats", {p_blessing: id}); if (r.error) bad = true; else d = r.data; } catch (e) { bad = true; }
+  if (bad) { m.innerHTML = box('<p>As estatísticas dos Blessings ainda estão sendo ativadas. Volte daqui a pouco.</p>'); return; }
+  if (!d) { m.innerHTML = box('<p>Só quem publicou pode ver as estatísticas.</p>'); return; }
+  const n = x => Number(x || 0).toLocaleString("pt-BR"), tot = Math.max(1, d.views), fol = d.views_followers || 0, pc = x => Math.round(x / tot * 1000) / 10;
+  const ser = d.series || [], W = 300, HH = 110, mx = Math.max(1, ...ser.map(x => x.n));
+  const pt = ser.map(x => Math.round(x.h / 24 * W) + "," + Math.round(HH - x.n / mx * HH)).join(" ");
+  const chart = '<svg viewBox="-4 -6 ' + (W + 8) + ' ' + (HH + 22) + '" width="100%" role="img" aria-label="Visualizações nas primeiras 24 horas"><line x1="0" y1="' + HH + '" x2="' + W + '" y2="' + HH + '" stroke="currentColor" stroke-opacity=".2"/><polyline points="' + pt + '" fill="none" stroke="#e0398e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="0" y="' + (HH + 14) + '" font-size="10" fill="currentColor" opacity=".6">0</text><text x="' + (W / 2) + '" y="' + (HH + 14) + '" font-size="10" text-anchor="middle" fill="currentColor" opacity=".6">12h</text><text x="' + W + '" y="' + (HH + 14) + '" font-size="10" text-anchor="end" fill="currentColor" opacity=".6">24h</text></svg>';
+  const cell = (l, v) => '<div class="si-c"><small>' + l + '</small><b>' + v + '</b></div>';
+  const src = (d.sources || []).map(x => '<div class="si-r"><span>' + esc(BL_SRC[x.source] || x.source) + '</span><i><u style="width:' + pc(x.n) + '%"></u></i><b>' + pc(x.n).toLocaleString("pt-BR") + '%</b></div>').join("") || '<p class="muted" style="margin:0">Ainda sem visualizações.</p>';
+  m.innerHTML = box('<div class="si-top"><span>♥ <b>' + n(d.likes) + '</b></span><span>💬 <b>' + n(d.comments) + '</b></span><span>👁 <b>' + n(d.views) + '</b></span></div>'
+    + '<h3>Resumo</h3><div class="si-g">' + cell("Visualizações", n(d.views)) + cell("Visualizadores", n(d.viewers)) + cell("Assistiram em média", n(d.avg_pct) + "%") + cell("Viram até o fim", n(d.completes)) + cell("Tempo total assistido", n(d.seconds) + " s") + cell("Novos seguidores", n(d.new_followers)) + '</div>'
+    + '<h3>Quem viu</h3><div class="si-r"><span>Seguidores</span><i><u style="width:' + pc(fol) + '%"></u></i><b>' + pc(fol).toLocaleString("pt-BR") + '%</b></div><div class="si-r"><span>Não seguidores</span><i><u style="width:' + pc(d.views - fol) + '%"></u></i><b>' + pc(d.views - fol).toLocaleString("pt-BR") + '%</b></div>'
+    + '<h3>Visualizações ao longo do tempo</h3>' + chart
+    + '<h3>De onde vieram</h3>' + src
+    + '<p class="muted" style="font-size:12px;margin:14px 0 0">Só contam visualizações válidas: pessoas reais, com perfil e conta de mais de 10 minutos, que assistiram pelo menos 3 segundos. Cada pessoa conta uma vez por dia, e ver o próprio vídeo não conta. Quanto mais gente assiste até o fim, curte e comenta, mais o Blessing é recomendado para outras pessoas.</p>');
+}
 function blItemHtml(id, i){
   const x = BLS.items[id], a = COMM.profiles[x.author] || {}, liked = BLS.my.has(id), mine = x.author === TEAM.user.id;
   const canDel = mine || teamRole() === "admin";
@@ -4954,10 +5025,11 @@ function blItemHtml(id, i){
       <button class="bl-act like" data-a="bl-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${CM_ICONS.heart}<span>${BLS.likes[id] || 0}</span></button>
       <button class="bl-act" data-a="bl-cmts" data-id="${esc(id)}" aria-label="Comentários">${CM_ICONS.comment}<span>${PF.bccount[id] || 0}</span></button>
       <button class="bl-act" data-a="bl-share" data-id="${esc(id)}" aria-label="Compartilhar">${CM_ICONS.share}</button>
+      ${mine ? `<button class="bl-act" data-a="bl-stats" data-id="${esc(id)}" aria-label="Ver estatísticas">📊</button>` : ""}
       <button class="bl-act" data-a="bl-more" data-id="${esc(id)}" data-del="${canDel ? 1 : ""}" aria-label="Mais opções">${BL_ICONS.more}</button>
     </div>
     <div class="bl-info">
-      <button class="bl-who" data-a="cm-profile" data-id="${esc(x.author)}"><b>${esc(a.display_name || "Alguém")}</b>${commBadge(a)}<span class="muted"> · ${commAgo(x.created_at)}</span></button>
+      <button class="bl-who" data-a="cm-profile" data-id="${esc(x.author)}"><b>${esc(a.display_name || "Alguém")}</b>${commBadge(a)}<span class="muted"> · ${commAgo(x.created_at)}</span><span class="muted bl-vw" data-id="${esc(id)}">${BLS.views[id] ? " · " + fmtN(BLS.views[id]) + " visualizações" : ""}</span></button>
       ${placeLink(x.place)}${x.caption ? `<p class="bl-cap">${esc(x.caption)}</p>` : ""}${pfWith("blessing", id)}
     </div>
   </section>`;
@@ -5004,9 +5076,10 @@ function blSetup(){
       if (!v.src) v.src = v.dataset.src;
       v.preload = "auto";
       if (!blSaveData() || v.dataset.go) blAutoPlay(v, e.target); else blPlayIcon(e.target, true);
+      blWatchStart(e.target.dataset.id);
       const next = e.target.nextElementSibling && e.target.nextElementSibling.querySelector("video");
       if (next && !next.src && !blSaveData()) { next.preload = "metadata"; next.src = next.dataset.src; }
-    } else if (!v.paused) v.pause();
+    } else { if (!v.paused) v.pause(); blWatchStop(e.target.dataset.id); }
   }), {root: feed, threshold: [0, .6]});
   items.forEach(el => blObs.observe(el));
   // se o celular travou o som no início, o primeiro toque ou deslize liga o som
@@ -5244,6 +5317,7 @@ function blClick(a, b){
   else if (a === "bl-share") pfShareMenu("blessing", b.dataset.id);
   else if (a === "bl-cmts") pfBcOpen(b.dataset.id);
   else if (a === "bl-more") blMore(b.dataset.id, !!b.dataset.del);
+  else if (a === "bl-stats") blStatsOpen(b.dataset.id);
   else if (a === "bl-del") { if (confirm("Apagar este Blessing? Não dá para desfazer.")) blDelete(b.dataset.id); }
   else if (a === "bl-open") { closePix(); blOpen(b.dataset.id); }
   else if (a === "bl-reload") { blReset(); render(); }
@@ -5275,6 +5349,7 @@ async function pfLoad(uid, tab){
     const {data} = await TEAM.client.from("blessings").select(PF_BSEL).eq("author", uid).order("created_at", {ascending: false}).limit(60);
     (data || []).forEach(x => BLS.items[x.id] = x); await blAfter(data || []);
     PF.bl[uid] = (data || []).map(x => x.id);
+    blCounts(PF.bl[uid]);
   } else {
     const {data, error} = await TEAM.client.from(tab).select("kind,target_id,created_at").eq("user_id", uid).order("created_at", {ascending: false}).limit(90);
     pfMissing(error);
@@ -5306,7 +5381,7 @@ function pfCell(x){
   if (x.k === "post" && COMM.posts[x.id] && !COMM.posts[x.id].image_path) { const p = COMM.posts[x.id]; return `<button class="cm-grid-tx" data-a="cm-post" data-id="${esc(x.id)}"><span>${esc((p.caption || "").slice(0, 120))}</span></button>`; }
   if (x.k === "post") { const u = commGridUrl(COMM.posts[x.id]); return `<button data-a="cm-post" data-id="${esc(x.id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }
   const b = BLS.items[x.id];
-  return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span></button>`;
+  return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span><em class="pf-bl-n" data-id="${esc(x.id)}">${BLS.views[x.id] ? "▶ " + fmtN(BLS.views[x.id]) : ""}</em></button>`;
 }
 const PF_TAB_ICONS={saved:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.5L5 21V4a1 1 0 0 1 1-1z"/></svg>',fotos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/></svg>',blessings:TAB_ICONS.blessings,tags:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="9" r="3"/><path d="M6.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5"/></svg>',shares:CM_ICONS.share};
 function pfTabs(id, me, posts){
