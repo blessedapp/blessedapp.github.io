@@ -5245,7 +5245,7 @@ function openPix(){
     <h2 id="pix-t">Colabore com o projeto</h2>
     <p>O Blessed é gratuito. Se ele te ajuda no ministério, você pode colaborar com qualquer valor via Pix. Obrigado!</p>
     ${pixQr() ? `<div class="pix-qr" aria-label="QR code Pix">${pixQr()}</div><p class="muted" style="font-size:13px;text-align:center">Aponte a câmera do app do banco para o QR code</p>` : ""}
-    <div class="pix"><small>Chave Pix (aleatória)</small><code id="pix-key">${esc(PIX_KEY)}</code>${PIX_NAME ? `<small style="margin-top:6px">Recebedor</small><span>${esc(PIX_NAME)}</span>` : ""}</div>
+    <div class="pix"><small>Chave Pix (aleatória)</small><code id="pix-key">${esc(PIX_KEY)}</code>${PIX_NAME ? `<small style="margin-top:6px">Recebedor</small><span aria-label="Nome do recebedor oculto">K••••••</span>` : ""}</div>
     <div class="actions"><button class="btn primary" data-a="pix-cc">Copiar Pix Copia e Cola</button><button class="btn" data-a="pix-copy">Copiar só a chave</button><button class="btn" data-a="pix-close">Fechar</button></div>
     <p id="pix-msg" class="muted" style="font-size:13px" hidden></p>
   </div>`;
