@@ -1687,6 +1687,21 @@ function bootSession(){
   return false;
 }
 function bootSplash(){ return '<div class="boot" role="status" aria-label="Abrindo o Blessed">' + BL_ICON + '<b>Blessed</b></div>'; }
+// Troca só os blocos que mudaram. O que continua igual (vídeos tocando, fotos, rolagens) não é refeito.
+function patchApp(html){
+  const app = $("#app"), tpl = document.createElement("template"); tpl.innerHTML = html;
+  const nk = [...tpl.content.children], ok = [...app.children];
+  if (!ok.length || ok.some(el => el.classList.contains("boot"))) { app.innerHTML = html; return; }
+  const n = Math.max(nk.length, ok.length);
+  for (let i = 0; i < n; i++) {
+    const a = ok[i], b = nk[i];
+    if (!b) { a.remove(); continue; }
+    if (!a) { app.appendChild(b); continue; }
+    const sa = a.getAttribute("data-sig"), sb = b.getAttribute("data-sig");
+    if (sa !== null && sa === sb) continue;
+    if (a.outerHTML !== b.outerHTML) a.replaceWith(b);
+  }
+}
 function render(){
   if (TEAM.booting === undefined) { TEAM.booting = teamAvailable() && bootSession(); if (TEAM.booting) setTimeout(() => { if (TEAM.booting) { TEAM.booting = false; render(); } }, 7000); }
   if (TEAM.booting) { const a = $("#app"); if (a) { a.className = ""; if (!a.querySelector(".boot")) a.innerHTML = bootSplash(); } return; }
@@ -1699,7 +1714,7 @@ function render(){
   else if (state.view === "study") app.innerHTML = viewStudy();
   else if (state.view === "login") app.innerHTML = viewLogin();
   else if (state.view === "team") app.innerHTML = viewTeam();
-  else if (state.view === "community") app.innerHTML = viewCommunity();
+  else if (state.view === "community") patchApp(viewCommunity());
   else if (state.view === "chats") app.innerHTML = viewChats();
   else if (state.view === "notices") app.innerHTML = viewNotices();
   else if (state.view === "chat") {const html=viewChat();if(!dmmPatchChat(html))app.innerHTML=html;}
@@ -1732,6 +1747,7 @@ render = function(){
   try {
     permsMaybe();
     const k = navKey();
+    if (state.view !== "community") document.body.style.minHeight = "";
     if (NAV.skip) { NAV.skip = false; NAV.key = k; NAV.snaps[NAV.n] = Object.assign(navSnap(), {y: NAV.snaps[NAV.n] && NAV.snaps[NAV.n].y}); return; }
     if (NAV.key === "") { history.replaceState({n: 0}, ""); NAV.snaps[0] = navSnap(); NAV.key = k; }
     else if (k !== NAV.key) {
@@ -3994,7 +4010,7 @@ function exBlCard(id){
 }
 function exBlRow(){
   const ids = (COMM.exBl || []).filter(id => BLS.items[id]); if (!ids.length) return "";
-  return `<section class="ex-sec"><h3 class="ex-h2">🎬 Blessings <button class="ex-more" data-a="tab" data-v="blessings">Ver todos ›</button></h3><div class="ex-row ex-blr">${ids.map(exBlCard).join("")}</div></section>`;
+  return `<section class="ex-sec" data-sig="bl:${ids.join(",")}"><h3 class="ex-h2">🎬 Blessings <button class="ex-more" data-a="tab" data-v="blessings">Ver todos ›</button></h3><div class="ex-row ex-blr">${ids.map(exBlCard).join("")}</div></section>`;
 }
 const EXV = {io: null};
 function exBlObs(){
@@ -4075,7 +4091,7 @@ async function commLoadStorePosts(){
 function exStoreRow(){
   const list = commStores().slice(0, 14); if (!list.length) return "";
   const cards = list.map(p => `<button class="cm-bub st" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}" aria-label="Loja ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}</span><b>${esc(p.display_name || "")}${commBadge(p)}</b></button>`).join("");
-  return `<section class="ex-sec"><h3 class="ex-h2">🛍️ Lojas <button class="ex-more" data-a="cm-tab" data-v="lojas">Ver todas ›</button></h3><div class="cm-bubs">${cards}</div></section>`;
+  return `<section class="ex-sec" data-sig="st:${list.map(p => p.id + (p.avatar_path || "")).join(",")}"><h3 class="ex-h2">🛍️ Lojas <button class="ex-more" data-a="cm-tab" data-v="lojas">Ver todas ›</button></h3><div class="cm-bubs">${cards}</div></section>`;
 }
 function commStoreCard(p){
   const cv = commUrl(p.cover_path);
@@ -6021,8 +6037,8 @@ function viewCommunity(){
   } else {
     body = exploreView();
   }
-  return wrap(`${tab === "people" || tab === "lojas" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
-    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("lojas", "Lojas")}${seg("people", "Pessoas")}</div>${body}<div class="cm-invite-end">${communityInvite()}</div>`, false, (tab === "people" || tab === "lojas" ? "" : commStoryStrip() + exBlRow() + exStoreRow()));
+  return wrap(`${vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
+    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("lojas", "Lojas")}${seg("people", "Pessoas")}</div>${body}<div class="cm-invite-end">${communityInvite()}</div>`, false, (commStoryStrip() + exBlRow() + exStoreRow()));
 }
 function viewProfile(){
   if(!TEAM.user||COMM.me===null)return pcProfile();
@@ -6367,7 +6383,7 @@ function commClick(a, b){
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tstyle") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.style = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "cm-pkind") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.oracao = b.dataset.v === "oracao"; d.kind = d.oracao ? "texto" : b.dataset.v; COMM.msg = ""; render(); }
-  else if (a === "cm-tab") { const v = b.dataset.v, y = window.scrollY; state.cmTab = v; state.exTag = null; state.view = "community"; render(); cmAlignTab(y); if (v === "feed" && COMM.feed !== null) commLoadPosts("feed"); if (v === "explore" && COMM.explore !== null) commLoadPosts("explore"); }
+  else if (a === "cm-tab") { const v = b.dataset.v; state.cmTab = v; state.exTag = null; state.view = "community"; document.body.style.minHeight = document.documentElement.scrollHeight + "px"; render(); if (v === "feed" && COMM.feed !== null) commLoadPosts("feed"); if (v === "explore" && COMM.explore !== null) commLoadPosts("explore"); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; state.pfTab = "fotos"; delete PF.bl[b.dataset.id]; delete PF.tags[b.dataset.id]; delete PF.shares[b.dataset.id]; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
   else if (a === "cm-back") { if (NAV.n > 0) { history.back(); return; } state.view = state.cmBack && state.cmBack !== "post" && state.cmBack !== "post-new" ? state.cmBack : "community"; if (state.view === "profile") state.profileId = state.cmBackProfile || state.profileId; render(); scrollTo(0, 0); }
