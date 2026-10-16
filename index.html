@@ -952,6 +952,22 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+/* "Chegaram agora": fechadinho num quadrado; ao tocar, abre mostrando as pessoas */
+.cm-arr{margin:0 0 12px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:0 6px 18px rgba(70,25,110,.08);overflow:hidden}
+.cm-arr-h{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:10px 14px;color:var(--ink);text-align:left;font:inherit}
+.cm-arr-st{display:flex;flex:none}
+.cm-arr-m{width:30px;height:30px;margin-left:-9px;border-radius:10px;background:var(--acc);padding:2px;box-shadow:0 0 0 2px var(--surface)}.cm-arr-m:first-child{margin-left:0}
+.cm-arr-m .cm-av{width:26px!important;height:26px!important;font-size:11px!important;border-radius:8px!important;overflow:hidden;border:0!important}.cm-arr-m .cm-av>img{border-radius:8px}
+.cm-arr-t{flex:1;min-width:0;display:grid;gap:1px}.cm-arr-t b{font-size:15px}.cm-arr-t small{color:var(--muted);font-size:12px}
+.cm-arr-c{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(176,92,240,.16);color:#8a2be0;transition:transform .35s}.cm-arr-c svg{width:18px;height:18px}
+.cm-arr.open .cm-arr-c{transform:rotate(180deg)}
+.cm-arr-body{max-height:0;opacity:0;overflow:hidden;transition:max-height .45s ease,opacity .3s ease}
+.cm-arr.open .cm-arr-body{max-height:150px;opacity:1}
+.cm-arr .cm-bubs{padding:2px 12px 12px}
+.cm-arr .cm-bub{opacity:0;transform:translateY(10px) scale(.9)}
+.cm-arr.open .cm-bub{animation:arrIn .45s ease both;animation-delay:calc(var(--i) * 45ms)}
+@keyframes arrIn{from{opacity:0;transform:translateY(10px) scale(.9)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.cm-arr-body,.cm-arr-c{transition:none}.cm-arr.open .cm-bub{animation:none;opacity:1;transform:none}}
 section.vd{margin:0 0 10px;padding:9px 13px 10px;border-radius:16px}
 section.vd .vd-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
 section.vd .vd-k{margin:0;font-size:10px}
@@ -4301,13 +4317,13 @@ function commPersonCard(p){
 }
 // Fileira de "stories" (foto redonda de cada músico, os mais novos primeiro) + vitrine "Chegaram agora" no estilo Apple
 function commStories(){
-  const all = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || "")));
-  const others = all.filter(p => p.id !== TEAM.user.id).slice(0, 30);
   const week = Date.now() - 7 * 86400000, isNew = p => p.created_at && new Date(p.created_at).getTime() > week;
-  // os que entraram há pouco, em bolinhas: cabem muitos na mesma linha
   const fresh = (COMM.people || []).filter(p => p.id !== TEAM.user.id && !isStore(p)).slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 16);
-  const bubs = fresh.map(p => `<button class="cm-bub${isNew(p) ? " nw" : ""}" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}" aria-label="Perfil de ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}${isNew(p) ? '<em class="cm-bub-n">Novo</em>' : ""}</span><b>${esc((p.display_name || "").split(" ")[0])}${commBadge(p)}</b></button>`).join("");
-  return bubs ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-bubs">${bubs}</div>` : "";
+  if (!fresh.length) return "";
+  const open = !!state.arrOpen, nNew = fresh.filter(isNew).length;
+  const bubs = fresh.map((p, i) => `<button class="cm-bub${isNew(p) ? " nw" : ""}" style="--acc:${THEMES[p.theme] || THEMES.red};--i:${i}" data-a="cm-profile" data-id="${esc(p.id)}" aria-label="Perfil de ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}${isNew(p) ? '<em class="cm-bub-n">Novo</em>' : ""}</span><b>${esc((p.display_name || "").split(" ")[0])}${commBadge(p)}</b></button>`).join("");
+  const minis = fresh.slice(0, 4).map(p => `<span class="cm-arr-m" style="--acc:${THEMES[p.theme] || THEMES.red}">${commAvatar(p, 24, false)}</span>`).join("");
+  return `<section class="cm-arr${open ? " open" : ""}"><button type="button" class="cm-arr-h" data-a="ex-arr" aria-expanded="${open}"><span class="cm-arr-st">${minis}</span><span class="cm-arr-t"><b>Chegaram agora</b><small>${nNew ? nNew + (nNew > 1 ? " novos" : " novo") + " esta semana" : fresh.length + " pessoas"}</small></span><span class="cm-arr-c" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></button><div class="cm-arr-body"><div class="cm-bubs">${bubs}</div></div></section>`;
 }
 function commStoryStrip(){
   const all = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || "")));
@@ -6157,6 +6173,7 @@ function commClick(a, b){
   else if (a === "vd-share") vdShare();
   else if (a === "ex-tile") exTap(b.dataset.id, b);
   else if (a === "ex-bl") blOpen(b.dataset.id);
+  else if (a === "ex-arr") { const sec = b.closest(".cm-arr"); if (sec) { const on = !sec.classList.contains("open"); sec.classList.toggle("open", on); b.setAttribute("aria-expanded", on); state.arrOpen = on; } }
   else if (a === "ex-mention") exMention(b.dataset.h);
   else if (a === "ex-refresh") { ptrPillHide(); scrollTo({top: 0, behavior: "smooth"}); PTR.busy = true; const e = ptrEl(); e.classList.add("spin"); ptrShow(56); ptrLabel("Atualizando…"); Promise.all([ptrRefresh(), new Promise(r => setTimeout(r, 600))]).then(() => { PTR.busy = false; ptrHide(); }); }
   else if (a === "ex-tag") { const t = b.dataset.t; state.exTag = t; state.cmTab = "explore"; state.view = "community"; if (!COMM.tagRes[t]) exTagLoad(t); render(); scrollTo(0, 0); }
