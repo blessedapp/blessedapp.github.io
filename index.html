@@ -952,6 +952,7 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.perm-list{list-style:none;margin:12px 0 16px;padding:0;display:grid;gap:10px}.perm-list li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;padding:12px 14px;border-radius:14px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.perm-list small{flex-basis:100%;opacity:.75;font-size:13px}
 /* Barra de digitar: [foto] [chamar atenção] [mensagem] [microfone ou enviar] */
 .dm-form{align-items:flex-end;gap:8px;flex-wrap:wrap}
 .dm-form .dm-tools{display:contents;width:auto;padding:0}
@@ -1663,6 +1664,7 @@ render = function(){
   const y = window.scrollY;
   navRender.apply(this, arguments);
   try {
+    permsMaybe();
     const k = navKey();
     if (NAV.skip) { NAV.skip = false; NAV.key = k; NAV.snaps[NAV.n] = Object.assign(navSnap(), {y: NAV.snaps[NAV.n] && NAV.snaps[NAV.n].y}); return; }
     if (NAV.key === "") { history.replaceState({n: 0}, ""); NAV.snaps[0] = navSnap(); NAV.key = k; }
@@ -3286,7 +3288,7 @@ const BL_ICON = `<svg class="bl-ic" viewBox="0 0 512 512" aria-hidden="true"><de
    segue outras pessoas e posta fotos. As cifras da equipe continuam só para quem o administrador aprovou.
    Tabelas e fotos: supabase-comunidade.sql (fotos numa pasta privada, abertas por link temporário). */
 const COMM = {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(),
-  likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
+  likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
 // cores prontas + qualquer cor escolhida na roda (guardada como #RRGGBB)
 const THEMES = new Proxy({red: "#E50914", pink: "#FF5FA2", lilac: "#B05CF0", violet: "#B99AF7", blue: "#4F8CFF", teal: "#46D3C3", green: "#3DDC84", gold: "#F5B451", orange: "#FF8A3D", white: "#F4F1F8"},
   {get: (t, k) => typeof k === "string" && /^#[0-9a-f]{6}$/i.test(k) ? k : t[k]});
@@ -3295,7 +3297,7 @@ const REPORT_REASONS = ["Conteúdo impróprio", "Não tem a ver com música ou l
 function commOn(){ return teamAvailable() && !!TEAM.client; }
 function commIn(){ return commOn() && !!TEAM.user && teamRole() !== "blocked"; }
 function commMissing(error){ return !!error && (error.code === "42P01" || error.code === "PGRST205" || /does not exist|schema cache/i.test(error.message || "")); }
-function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
+function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
 function commRerender(...views){ if (views.includes(state.view) || state.view === "library" || state.view === "setlist") rerenderKeepScroll(); }
 function commUrl(p){ return p ? COMM.urls[p] || "" : ""; }
 // Miniatura (~400 px) guardada ao lado da foto: a grade e os stories usam ela; a foto cheia só baixa ao abrir.
@@ -3347,6 +3349,7 @@ async function commLoadPosts(which){
   list.forEach(p => COMM.posts[p.id] = p);
   COMM[which] = list.map(p => p.id);
   await commAfterPosts(list);
+  if (which === "explore") commLoadFeatured();
   commRerender("community");
 }
 async function commLoadAuthorPosts(id){
@@ -3789,6 +3792,43 @@ document.addEventListener("visibilitychange",()=>{if(!VP.el)return;if(document.h
 new MutationObserver(()=>{const e=document.querySelector(".vp:not([data-on])");if(e)vpMount(e);}).observe(document.documentElement,{childList:true,subtree:true});
 // ---------- Explorar (vitrine): destaque do dia, filtros, igrejas perto, orando agora, fotos grandes, novos para seguir, música em alta ----------
 const EX = {t: 0, id: null, timer: null};
+async function commLoadFeatured(){
+  try {
+    const {data, error} = await TEAM.client.from("featured_post").select("post_id,set_at").eq("id", 1).maybeSingle();
+    if (error || !data) { COMM.featured = null; return; }
+    COMM.featured = {id: data.post_id, at: data.set_at};
+    if (!COMM.posts[data.post_id]) {
+      const {data: p} = await TEAM.client.from("posts").select("*").eq("id", data.post_id).maybeSingle();
+      if (p) { COMM.posts[p.id] = p; await commAfterPosts([p]); }
+    }
+    commRerender("community");
+  } catch (e) {}
+}
+/* Ao abrir o app instalado pela primeira vez: pedir notificações, microfone e câmera de uma vez */
+const PERM = {shown: false};
+function permsMaybe(){
+  if (PERM.shown || !TEAM.user || !isStandalone() || lsGet("blessed-perms-done", false) || state.view === "login") return;
+  PERM.shown = true;
+  setTimeout(() => {
+    if (!TEAM.user || ($("#modal") && !$("#modal").hidden)) { PERM.shown = false; return; }
+    const m = $("#modal"); m.className = "modal";
+    m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="perm-t"><h2 id="perm-t">Deixe tudo pronto 🙌</h2><p>Permita uma vez e você não precisa pedir de novo a cada áudio ou aviso.</p><ul class="perm-list"><li>🔔 <b>Notificações</b><small>mensagens, curtidas e quando chamarem sua atenção</small></li><li>🎤 <b>Microfone</b><small>para mandar áudios</small></li><li>📷 <b>Câmera</b><small>para fotos e stories</small></li></ul><div style="display:grid;gap:8px"><button class="btn primary" data-a="perm-all">Permitir tudo</button><button class="btn ghost" data-a="perm-skip">Agora não</button></div></div>`;
+    m.hidden = false;
+  }, 1500);
+}
+async function permsAsk(){
+  const b = document.querySelector('[data-a="perm-all"]'); if (b) { b.disabled = true; b.textContent = "Permitindo…"; }
+  try { if (!NTF.enabled && "Notification" in window && Notification.permission === "default") await ntfTogglePush(); } catch (e) {}
+  for (const c of [{audio: true}, {video: true}]) {
+    try { const st = await navigator.mediaDevices.getUserMedia(c); st.getTracks().forEach(t => t.stop()); } catch (e) {}
+  }
+  lsSet("blessed-perms-done", true); closePix(); flash("Tudo pronto ✓");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-a^='perm-']"); if (!b) return;
+  if (b.dataset.a === "perm-all") permsAsk();
+  else if (b.dataset.a === "perm-skip") { lsSet("blessed-perms-done", true); closePix(); }
+});
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
 function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); return full ? (commUrl(p.image_path) || t) : t; }
@@ -3859,7 +3899,8 @@ function exploreView(){
   let out = `<div class="cm-chips pick ex-chips" role="group" aria-label="Filtrar o Explorar">${chips}</div>`;
   let heroId = "";
   if (f === "all") {
-    const best = posts.filter(p => p.image_path).sort((a, b) => (COMM.likes[b.id] || 0) - (COMM.likes[a.id] || 0) || String(b.created_at).localeCompare(String(a.created_at)))[0];
+    const feat = COMM.featured && COMM.posts[COMM.featured.id] && Date.now() - Date.parse(COMM.featured.at) < 172800000 ? COMM.posts[COMM.featured.id] : null;
+    const best = feat || posts.filter(p => p.image_path).sort((a, b) => (COMM.likes[b.id] || 0) - (COMM.likes[a.id] || 0) || String(b.created_at).localeCompare(String(a.created_at)))[0];
     if (best) { out += exHero(best); heroId = best.id; }
     out += exRow(hasNear ? "⛪ Igrejas perto de você" : "⛪ Igrejas para conhecer", near.map(exChurchCard));
     out += exRow("🙏 Orando agora", pray.slice(0, 6).map(exPrayCard), "Pedidos de oração recentes. Ore por alguém hoje.");
@@ -5553,7 +5594,7 @@ function viewPost(){
   const mine = p.author === TEAM.user.id;
   return `${back}${commPostCard(p.id)}
     ${commCommentsHtml(p)}
-    <div class="actions" style="margin-top:14px">${(PF.tagsOf["post:" + p.id] || []).includes(TEAM.user.id) ? `<button class="btn ghost" data-a="pf-untag" data-k="post" data-id="${esc(p.id)}">Tirar minha marcação</button>` : ""}${mine || teamRole() === "admin" ? `<button class="btn danger" data-a="cm-del-post" data-id="${esc(p.id)}">${mine ? "Apagar post" : "Apagar (admin)"}</button>` : ""}
+    <div class="actions" style="margin-top:14px">${teamRole() === "admin" ? `<button class="btn primary" data-a="cm-feature" data-id="${esc(p.id)}" data-v="${COMM.featured && COMM.featured.id === p.id ? "" : "1"}">${COMM.featured && COMM.featured.id === p.id ? "Tirar o destaque do dia" : "⭐ Dar destaque do dia"}</button>` : ""}${(PF.tagsOf["post:" + p.id] || []).includes(TEAM.user.id) ? `<button class="btn ghost" data-a="pf-untag" data-k="post" data-id="${esc(p.id)}">Tirar minha marcação</button>` : ""}${mine || teamRole() === "admin" ? `<button class="btn danger" data-a="cm-del-post" data-id="${esc(p.id)}">${mine ? "Apagar post" : "Apagar (admin)"}</button>` : ""}
     ${mine ? "" : `<button class="btn ghost" data-a="cm-report" data-k="post" data-id="${esc(p.id)}">Denunciar</button>`}</div>${tabbar("community")}`;
 }
 function commSongOptions(){
@@ -5848,6 +5889,13 @@ function commClick(a, b){
   else if (a === "cm-like") commToggleLike(b.dataset.id);
   else if (a === "cm-pic-del") { const d = state.cmPost || {}; (d.datas || []).splice(+b.dataset.i, 1); d.data = (d.datas || [])[0] || null; rerenderKeepScroll(); }
   else if (a === "cm-pray") commTogglePray(b.dataset.id);
+  else if (a === "cm-feature") (async () => {
+    const id = b.dataset.id, on = !!b.dataset.v;
+    const r = on ? await TEAM.client.rpc("set_featured_post", {p_post: id}) : await TEAM.client.rpc("clear_featured_post");
+    if (r.error) { flash(/42501|admin/i.test(r.error.message || r.error.code || "") ? "Só o administrador pode fazer isso." : "Não consegui agora. Falta rodar o supabase-destaque.sql?"); return; }
+    COMM.featured = on ? {id, at: new Date().toISOString()} : null;
+    flash(on ? "⭐ Destaque do dia definido" : "Destaque do dia removido"); rerenderKeepScroll();
+  })();
   else if (a === "cm-save") commToggleSave(b.dataset.id);
   else if (a === "cm-invite") inviteSomeone();
   else if (a === "inv-copy") inviteCopy();
