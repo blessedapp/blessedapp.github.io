@@ -1339,6 +1339,17 @@ html[data-appearance=light] .sel-fact b{color:#8a5a0a}
 .ct-card:last-child:nth-child(odd){grid-column:1/-1}
 
 .ct-form textarea{font-family:var(--f-body);white-space:pre-wrap;min-height:130px;max-height:260px;resize:vertical;overflow-x:hidden}.ct-form textarea::placeholder{font-family:var(--f-body)}
+
+/* Painel de criadores (vertical) */
+.vp[data-set=mon]{aspect-ratio:9/13;max-height:600px}
+.vp[data-set=mon] .vp-stage{height:auto;bottom:92px;left:12px;right:12px;top:12px}
+.vp[data-set=mon] .vp-lvs{bottom:12px}
+.vp-cms{position:absolute;left:10px;right:56px;bottom:12px;display:grid;gap:6px;justify-items:start;pointer-events:none}
+.vp-cm{display:flex;align-items:center;gap:8px;max-width:100%;padding:5px 12px 5px 5px;border-radius:99px;background:rgba(10,8,30,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;font-size:13px;line-height:1.25;animation:vpCm .35s ease-out both}
+.vp-cm i{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:800 12px var(--f-body);font-style:normal;color:#fff}
+.vp-cm span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vp-cm b{font-weight:700;opacity:.85;margin-right:2px}
+.vp-cm.out{opacity:0;transform:translateY(-8px);transition:.45s}
+@keyframes vpCm{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -3933,14 +3944,15 @@ const VP_SCENES=[
  {k:"v",f:"cena6",d:5200,t:"Faça parte da comunidade",s:["Entre e comece a seguir hoje"]}
 ];
 const VP_MON=[
- {k:"v",f:"cena1",d:5200,t:"Poste seu dia a dia",s:["Cada publicação é uma chance de crescer","Mostre quem você é"]},
- {k:"v",f:"cena4",d:5200,t:"Receba visualizações",s:["Seus vídeos e fotos sendo vistos","O contador não para de subir"]},
- {k:"m",d:6800,t:"Suba de nível",s:["Seguidores, curtidas e visualizações","O selo muda de cor a cada nível"]},
- {k:"v",f:"cena2",d:5200,t:"Ganhe corações",s:["Curtidas e comentários contam","Quem participa cresce mais rápido"]},
- {k:"v",f:"cena5",d:5200,t:"Cresça acompanhado",s:["Ore, louve e inspire","Sua comunidade cresce com você"]},
- {k:"v",f:"cena6",d:5200,t:"Chegue ao programa de parcerias",s:["Quanto mais cresce, mais chance de ganhar","Sempre de acordo com os termos"]}
+ {k:"v",f:"m_louvor",d:5600,t:"Seja um criador de conteúdo",s:["Mostre seu louvor e sua fé","Seu talento merece ser visto"],cm:["Que voz linda! 🙏","Amém! Glória a Deus","Me arrepiei 😭","Compartilhei com a igreja"]},
+ {k:"v",f:"m_carro",d:5600,t:"Vlogs do seu dia a dia",s:["Grave sua rotina e seus momentos","O dia a dia vira conteúdo"],cm:["Amei o vlog!","Quero ver o próximo 😍","Seu dia a dia inspira","Faz mais! 🙌"]},
+ {k:"m",d:6800,t:"Suba de nível",s:["Visualizações, curtidas e seguidores","O selo muda de cor a cada nível"]},
+ {k:"v",f:"m_produto",d:5600,t:"Divulgue seu trabalho",s:["Mídias, produtos e ministérios","Mostre o que você faz"],cm:["Qual o link?","Ficou lindo!","Comprei o meu 😍","Parabéns pelo trabalho"]},
+ {k:"v",f:"m_caminhada1",d:5600,t:"Filmmaker de coração",s:["Capture, edite e publique","Seu olhar conta histórias"],cm:["Que enquadramento!","Conteúdo de qualidade 👏","Qual câmera você usa?","Seguindo! 💜"]},
+ {k:"v",f:"m_casal",d:5600,t:"Crie junto",s:["Grave com quem você ama","Dois olhares, mais criatividade"],cm:["Casal lindo 🥰","Que amor!","Deus abençoe vocês","Amei a parceria"]},
+ {k:"v",f:"m_caminhada2",d:5600,t:"Cresça a cada vídeo",s:["Mais visualizações, mais alcance","Quanto mais cresce, mais chance de ganhar"],cm:["Sempre acompanhando!","Que lugar lindo","Continue assim 🙌","Mais um vídeo top"]},
+ {k:"v",f:"m_tchau",d:5600,t:"Comece hoje",s:["Entre no Blessed e poste seu 1º vídeo","Sempre de acordo com o programa de parcerias"],cm:["Bem-vinda! 🤗","Vamos crescer juntos","Primeiro vídeo vem aí!","Estamos juntos 🙏"]}
 ];
-const VP={i:0,sc:null,raf:0,el:null,io:null,timer:null,heart:null,vis:false,hit:null};
 function vpLite(){try{return !!(navigator.connection&&navigator.connection.saveData)||matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}}
 // Versículo do dia: um por dia, tirado da Bíblia que já vem no app (sem internet extra)
 const VD_REFS=[["JOH",3,[16]],["PSA",23,[1,2,3]],["PRO",3,[5,6]],["ISA",41,[10]],["JER",29,[11]],["PHI",4,[13]],["ROM",8,[28]],["MAT",11,[28]],["PSA",46,[1]],["JOS",1,[9]],["PSA",119,[105]],["ROM",12,[2]],["1CO",13,[4,5]],["EPH",2,[8,9]],["HEB",11,[1]],["MAT",6,[33]],["PSA",27,[1]],["PSA",121,[1,2]],["ISA",40,[31]],["PHI",4,[6,7]],["JOH",14,[6]],["ROM",15,[13]],["2TI",1,[7]],["PSA",37,[4,5]],["PRO",16,[3]],["MAT",5,[16]],["1JO",4,[19]],["LAM",3,[22,23]],["PSA",91,[1,2]],["COL",3,[23]]];
@@ -3988,11 +4000,11 @@ function churchHero(p){
   return `<section class="ch-hero"><span class="ch-k">⛪ Mini página da igreja</span>${next?`<p class="ch-n"><small>Próximo culto</small><b>${esc(next)}</b></p>`:'<p class="ch-n"><small>Cultos</small><b>Ainda não cadastrados</b></p>'}${p.city?`<p class="ch-c">📍 ${esc(p.city)}</p>`:""}<div class="ch-b"><a class="btn primary" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">📍 Como chegar</a><button class="btn" data-a="ch-share" data-id="${esc(p.id)}">Compartilhar</button></div></section>`;
 }
 function visitorBrand(){return `<div class="vb"><div class="vb-r1">${BL_ICON}<span class="vb-n">Blessed</span></div><div class="vb-r2"><span>Desenvolvido por <b>Irmão Francisco</b></span></div>${PIX_KEY?`<button class="vb-b" data-a="pix" aria-haspopup="dialog">♥ Colabore</button>`:""}</div>`;}
-function visitorPanel(){return `<section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
+function visitorPanel(){return `<section class="vp" data-set="mon" role="region" aria-label="Seja um criador de conteúdo no Blessed"></section><section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
 function vpScene(c,i){
  const cap=`<div class="vp-cap"><h2>${esc(c.t)}</h2>${c.s.map((l,k)=>`<p style="--k:${k}">${esc(l)}</p>`).join("")}</div>`,wrapS=(cls,inner)=>`<div class="vp-s ${cls}" data-i="${i}"><div class="vp-stage">${inner}${cap}</div></div>`;
  if(c.k==="m")return wrapS("ncap",'<div class="vp-mon"><div class="vm-b"></div><div class="vm-lv">🥉 Bronze</div><div class="vm-n"><b data-r="v">0</b><small>visualizações</small></div><div class="vm-r"><span><b data-r="f">0</b> seguidores</span><span><b data-r="l">0</b> curtidas</span></div></div>');
- if(c.k==="v")return wrapS("",`<video muted playsinline loop preload="none" aria-hidden="true" poster="img/painel/poster-${c.f}.jpg" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div>`);
+ if(c.k==="v")return wrapS("",`<video muted playsinline loop preload="none" aria-hidden="true" poster="img/painel/poster-${c.f}.jpg" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div>${c.cm?'<div class="vp-cms"></div>':""}`);
  if(c.k==="c")return wrapS("ch",`<div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" poster="img/painel/poster-${c.f}.jpg" data-src="img/painel/${c.f}.mp4?v=2"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div>`);
  if(c.k==="n"){const N=[[48,42,"#e0589a"],[272,40,"#4aa8ff"],[34,118,"#ffb347"],[286,124,"#5fd38d"],[110,152,"#ff7a59"],[214,150,"#b085ff"]];
   const ln=N.map((n,j)=>`<line x1="160" y1="90" x2="${n[0]}" y2="${n[1]}" style="--n:${j}"/>`).join("");
@@ -4003,25 +4015,26 @@ function vpScene(c,i){
  return wrapS("ncap",`<div class="vp-ag"><div class="vp-cal"><b>Outubro</b><div>${days}</div></div><div class="vp-evs"><p style="--c:#e0589a;--n:0">Culto de domingo<small>19h · lembrete ligado</small></p><p style="--c:#4aa8ff;--n:1">Ensaio do louvor<small>20h · sábado</small></p><p style="--c:#5fd38d;--n:2">Célula na casa<small>quarta · 20h</small></p></div></div>`);
 }
 function vpStrip(){const o=[[1,2,3,4,5],[3,4,5,1,2],[5,1,2,3,4],[2,3,4,5,1]];return `<div class="vp-strip" aria-hidden="true"><span class="vp-tag">Igrejas no Blessed · exemplos</span>${o.map((c,j)=>{const t=c.concat(c).map(n=>`<img src="img/painel/igreja${n}.jpg" alt="" loading="lazy" decoding="async">`).join("");return `<div class="vp-col ${j%2?"dn":"up"}">${t}</div>`;}).join("")}</div>`;}
+const VPS=[];
 function vpMount(el){
  el.dataset.on="1";
- const mon=el.dataset.set==="mon";VP.sc=mon?VP_MON:VP_SCENES;
- el.innerHTML=VP.sc.map(vpScene).join("")+(mon?'<div class="vp-lvs" aria-hidden="true">'+MON_LV.map(l=>'<div class="lvb">'+monBadge(l,38)+'<small>'+l.n+'</small></div>').join("")+'</div>':vpStrip());
- VP.el=el;
- if(VP.io)VP.io.disconnect();
- if("IntersectionObserver" in window){VP.vis=false;VP.io=new IntersectionObserver(es=>{const v=es[es.length-1].isIntersecting;if(v!==VP.vis){VP.vis=v;v?vpGo(VP.i):vpStop();}},{threshold:.35});VP.io.observe(el);
+ const mon=el.dataset.set==="mon",P={el,mon,sc:mon?VP_MON:VP_SCENES,i:0,raf:0,io:null,timer:null,heart:null,cm:null,hit:null,vis:false};
+ el._vp=P;VPS.push(P);
+ el.innerHTML=P.sc.map(vpScene).join("")+(mon?'<div class="vp-lvs" aria-hidden="true">'+MON_LV.map(l=>'<div class="lvb">'+monBadge(l,38)+'<small>'+l.n+'</small></div>').join("")+'</div>':vpStrip());
+ if(mon)el.addEventListener("pointerdown",ev=>{if(vpLite())return;const r=el.getBoundingClientRect(),s=el.querySelector(".vp-s.on .vp-hearts");if(s)for(let k=0;k<5;k++)vpHeart(s,ev.clientX-r.left,ev.clientY-r.top);},{passive:true});
+ if("IntersectionObserver" in window){P.io=new IntersectionObserver(es=>{const v=es[es.length-1].isIntersecting;if(v!==P.vis){P.vis=v;v?vpGo(P,P.i):vpStop(P);}},{threshold:.35});P.io.observe(el);
   // garantia: se o navegador não avisar que o painel está na tela, começa mesmo assim
-  for(let t=400;t<=30000;t+=t<3000?800:2500)setTimeout(()=>{if(VP.el===el&&el.isConnected&&!VP.vis){const r=el.getBoundingClientRect();if(r.bottom>80&&r.top<innerHeight*.65&&!document.hidden){VP.vis=true;vpGo(VP.i);}}},t);}
- else{VP.vis=true;vpGo(VP.i);}
+  for(let t=400;t<=30000;t+=t<3000?800:2500)setTimeout(()=>{if(el.isConnected&&!P.vis){const r=el.getBoundingClientRect();if(r.bottom>80&&r.top<innerHeight*.65&&!document.hidden){P.vis=true;vpGo(P,P.i);}}},t);}
+ else{P.vis=true;vpGo(P,P.i);}
 }
-function vpStop(){cancelAnimationFrame(VP.raf);clearTimeout(VP.timer);clearInterval(VP.heart);clearTimeout(VP.hit);if(VP.el)VP.el.querySelectorAll("video").forEach(v=>v.pause());}
-function vpOk(i){const k=VP.sc[i].k;return !vpLite()||k==="n"||k==="a"||k==="c"||k==="m";}
-function vpGo(i){
- const el=VP.el;if(!el||!el.isConnected)return;
- vpStop();
- while(!vpOk(i))i=(i+1)%VP.sc.length;
- VP.i=i;
- const ss=el.querySelectorAll(".vp-s"),s=ss[i],c=VP.sc[i];el.classList.toggle("nostrip",c.k==="c");
+function vpStop(P){cancelAnimationFrame(P.raf);clearTimeout(P.timer);clearInterval(P.heart);clearInterval(P.cm);clearTimeout(P.hit);P.el.querySelectorAll("video").forEach(v=>v.pause());}
+function vpOk(P,i){const k=P.sc[i].k;return !vpLite()||k==="n"||k==="a"||k==="c"||k==="m";}
+function vpGo(P,i){
+ const el=P.el;if(!el.isConnected){const j=VPS.indexOf(P);if(j>=0)VPS.splice(j,1);return;}
+ vpStop(P);
+ while(!vpOk(P,i))i=(i+1)%P.sc.length;
+ P.i=i;
+ const ss=el.querySelectorAll(".vp-s"),s=ss[i],c=P.sc[i];if(!P.mon)el.classList.toggle("nostrip",c.k==="c");
  ss.forEach((x,j)=>{x.classList.toggle("on",j===i);if(j!==i)x.classList.remove("hit");});
  if(!vpLite()){
   const v=s.querySelector("video");
@@ -4029,31 +4042,42 @@ function vpGo(i){
   const nv=ss[(i+1)%ss.length].querySelector("video");
   if(nv&&!nv.getAttribute("src")){nv.preload="auto";nv.src=nv.dataset.src;}
  }
- if(c.k==="c")VP.hit=setTimeout(()=>s.classList.add("hit"),3000);
+ if(c.k==="c")P.hit=setTimeout(()=>s.classList.add("hit"),3000);
  const box=s.querySelector(".vp-hearts");
- if(box&&!vpLite())VP.heart=setInterval(()=>vpHeart(box),380);
- if(el.dataset.set==="mon"){el.querySelectorAll(".lvb").forEach(x=>x.classList.remove("lit"));if(c.k==="m")vpMon(s);}
- VP.timer=setTimeout(()=>vpGo((i+1)%VP.sc.length),c.d);
+ if(box&&!vpLite())P.heart=setInterval(()=>vpHeart(box),P.mon?300:380);
+ const cms=s.querySelector(".vp-cms");
+ if(cms&&c.cm&&!vpLite()){let n=0;const add=()=>vpComment(cms,c.cm[n++%c.cm.length],n);setTimeout(add,500);P.cm=setInterval(add,1250);}
+ if(P.mon){el.querySelectorAll(".lvb").forEach(x=>x.classList.remove("lit"));if(c.k==="m")vpMon(P,s);}
+ P.timer=setTimeout(()=>vpGo(P,(i+1)%P.sc.length),c.d);
+}
+// Comentários aparecendo como numa transmissão
+const VP_NAMES=["ana.lima","joao.vlogs","mari.cria","pr.lucas","bia.film","carla.fe","dani.rocha","davi.cut"],VP_COLS=["#e0589a","#4aa8ff","#ffb347","#5fd38d","#ff7a59","#b085ff"];
+function vpComment(box,txt,n){
+ const nm=VP_NAMES[(n*3+txt.length)%VP_NAMES.length],col=VP_COLS[(n+txt.length)%VP_COLS.length],d=document.createElement("div");
+ d.className="vp-cm";d.innerHTML='<i style="background:'+col+'">'+nm[0].toUpperCase()+'</i><span><b>'+nm+'</b> '+esc(txt)+'</span>';
+ box.appendChild(d);while(box.children.length>3)box.firstChild.remove();
+ setTimeout(()=>{d.classList.add("out");setTimeout(()=>d.remove(),500);},3600);
 }
 // Contadores subindo e o selo trocando de cor conforme o nível
-function vpMon(s){
- const q=r=>s.querySelector('[data-r="'+r+'"]'),bd=s.querySelector(".vm-b"),nm=s.querySelector(".vm-lv"),lvs=VP.el.querySelectorAll(".lvb"),T=5600,t0=performance.now(),fmt=n=>Math.round(n).toLocaleString("pt-BR");
+function vpMon(P,s){
+ const q=r=>s.querySelector('[data-r="'+r+'"]'),bd=s.querySelector(".vm-b"),nm=s.querySelector(".vm-lv"),lvs=P.el.querySelectorAll(".lvb"),T=5600,t0=performance.now(),fmt=n=>Math.round(n).toLocaleString("pt-BR");
  let L=-1;
  const step=t=>{const p=Math.min(1,(t-t0)/T),e=1-Math.pow(1-p,2);
   q("v").textContent=fmt(e*1000000);q("f").textContent=fmt(e*50000);q("l").textContent=fmt(e*250000);
   const n=Math.min(4,Math.floor(p*5.2));
   if(n!==L){L=n;bd.innerHTML=monBadge(MON_LV[n],70);bd.classList.remove("pop");void bd.offsetWidth;bd.classList.add("pop");nm.textContent=MON_LV[n].i+" "+MON_LV[n].n;lvs.forEach((x,j)=>x.classList.toggle("lit",j<=n));}
-  if(p<1)VP.raf=requestAnimationFrame(step);};
- VP.raf=requestAnimationFrame(step);
+  if(p<1)P.raf=requestAnimationFrame(step);};
+ P.raf=requestAnimationFrame(step);
 }
-function vpHeart(box){
+function vpHeart(box,x,y){
  const h=document.createElement("i"),sz=14+Math.random()*16,side=Math.random()<.78?"right":"left",cols=["#ff5d8f","#ff8fb3","#d9d2ff","#ffffff","#ff7aa8"];
  h.className="vp-h";
- h.style.cssText=`${side}:${6+Math.random()*28}px;width:${sz}px;height:${sz}px;color:${cols[(Math.random()*cols.length)|0]};--rise:${Math.round(box.clientHeight*(.5+Math.random()*.45))}px;--sw:${Math.round(Math.random()*30-15)}px;animation-duration:${(2.2+Math.random()*1.4).toFixed(2)}s`;
+ const pos=x==null?`${side}:${6+Math.random()*28}px;bottom:-24px;`:`left:${Math.round(x-sz/2+Math.random()*24-12)}px;top:${Math.round(y-sz/2)}px;bottom:auto;`;
+ h.style.cssText=`${pos}width:${sz}px;height:${sz}px;color:${cols[(Math.random()*cols.length)|0]};--rise:${Math.round(box.clientHeight*(x==null?.5+Math.random()*.45:.3))}px;--sw:${Math.round(Math.random()*30-15)}px;animation-duration:${(2.2+Math.random()*1.4).toFixed(2)}s`;
  h.innerHTML=VP_HEART;box.appendChild(h);setTimeout(()=>h.remove(),4000);
 }
-document.addEventListener("visibilitychange",()=>{if(!VP.el)return;if(document.hidden)vpStop();else if(VP.vis)vpGo(VP.i);});
-new MutationObserver(()=>{const e=document.querySelector(".vp:not([data-on])");if(e)vpMount(e);}).observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener("visibilitychange",()=>{VPS.slice().forEach(P=>{if(!P.el.isConnected)return;if(document.hidden)vpStop(P);else if(P.vis)vpGo(P,P.i);});});
+new MutationObserver(()=>{document.querySelectorAll(".vp:not([data-on])").forEach(vpMount);}).observe(document.documentElement,{childList:true,subtree:true});
 // ---------- Explorar (vitrine): destaque do dia, filtros, igrejas perto, orando agora, fotos grandes, novos para seguir, música em alta ----------
 const EX = {t: 0, id: null, timer: null};
 async function commLoadFeatured(){
