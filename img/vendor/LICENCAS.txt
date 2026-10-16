@@ -1,0 +1,4 @@
+Bibliotecas de terceiros usadas pelo Blessed (todas licenca MIT), servidas pelo proprio site:
+- supabase-js 2.45.4 (Supabase)
+- jsPDF 2.5.1 (James Hall e colaboradores)
+- qrcode-generator 1.4.4 (Kazuhiko Arase)
