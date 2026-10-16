@@ -1576,6 +1576,32 @@ function render(){
   if (state.view === "blessings") blSetup(); else { document.body.classList.remove("bl-on"); if (blObs) { blObs.disconnect(); blObs = null; } }
 }
 
+/* ---------- botão voltar (Android e deslizar do iPhone): volta de tela em vez de sair do app ---------- */
+const NAV = {n: 0, snaps: {}, key: "", skip: false};
+function navKey(){ const v = state.view; return v + "|" + (v === "profile" ? state.profileId : v === "post" ? state.postId : v === "chat" ? DM.open : v === "song" ? state.currentId : v === "artist" ? state.currentArtist : ""); }
+function navSnap(){ const s = {}; for (const k in state) { const x = state[k]; if (x === null || ["string", "number", "boolean"].includes(typeof x)) s[k] = x; } return {s, dm: DM.open}; }
+const navRender = render;
+render = function(){
+  const y = window.scrollY;
+  navRender.apply(this, arguments);
+  try {
+    const k = navKey();
+    if (NAV.skip) { NAV.skip = false; NAV.key = k; NAV.snaps[NAV.n] = Object.assign(navSnap(), {y: NAV.snaps[NAV.n] && NAV.snaps[NAV.n].y}); return; }
+    if (NAV.key === "") { history.replaceState({n: 0}, ""); NAV.snaps[0] = navSnap(); NAV.key = k; }
+    else if (k !== NAV.key) {
+      if (NAV.snaps[NAV.n]) NAV.snaps[NAV.n].y = y;
+      NAV.n++; history.pushState({n: NAV.n}, ""); NAV.snaps[NAV.n] = navSnap(); NAV.key = k;
+    } else NAV.snaps[NAV.n] = Object.assign(navSnap(), {y: NAV.snaps[NAV.n] && NAV.snaps[NAV.n].y});
+  } catch(e) {}
+};
+addEventListener("popstate", e => {
+  const n = e.state && typeof e.state.n === "number" ? e.state.n : 0, sn = NAV.snaps[n];
+  NAV.n = n; NAV.skip = true;
+  try { const m = document.getElementById("modal"); if (m && !m.hidden) closePix(); } catch(_) {}
+  if (sn) { Object.assign(state, sn.s); DM.open = sn.dm; } else state.view = "community";
+  render(); scrollTo(0, sn && sn.y || 0);
+});
+
 /* ---------- capas ---------- */
 const norm = s => String(s||"").trim().toLowerCase();
 /* Catálogo oficial: artistas e nomes das músicas mais tocadas (sem cifra nem letra), igual para todo mundo.
