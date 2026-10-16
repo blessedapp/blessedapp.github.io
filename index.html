@@ -1860,7 +1860,7 @@ function viewBible(){
       <button class="btn" data-a="bb-copy">📋 Copiar</button>
       <button class="btn" data-a="bb-ask-selected">💬 Explicar</button>
       <button class="btn" data-a="bs-selection">📝 Adicionar ao estudo</button>
-      <button class="btn primary" data-a="bb-story">📸 Story</button>
+      <button class="btn primary" data-a="bb-story-post">Publicar no story</button><button class="btn" data-a="bb-story">Imagem / compartilhar</button>
       <button class="btn ghost" data-a="bb-clear" aria-label="Limpar seleção">✕</button></div>` : "";
   return wrap(bar + ask + search + `<article class="bb-ch" style="--bfs:${state.bibleFs}px">
       <h2 class="bb-title">${esc(book[1])} ${c}</h2>
@@ -2026,21 +2026,25 @@ async function bibleStoryCanvas(themeKey){
   x.fillStyle = th.sub; x.font = '700 26px "Atkinson Hyperlegible"'; x.fillText("blessedapp.github.io", ix + s + 24, iy + 92);
   return cv;
 }
-async function bibleOpenStory(themeKey){
+async function bibleOpenStory(themeKey,direct=false){
+  const owner=TEAM.user?.id;if(direct&&!commIn()){stNew();return;}
   const t = bibleSelText(); if (!t) return;
   if (t.length > 900) { flash("Muito texto para um story. Escolha menos versículos."); return; }
   const key = themeKey || (BIBLE.story && BIBLE.story.theme) || "noite";
   const cv = await bibleStoryCanvas(key);
+  if(direct&&owner!==TEAM.user?.id)return;
   const blob = await new Promise(res => cv.toBlob(res, "image/png"));
+  if(direct&&owner!==TEAM.user?.id)return;
   if (BIBLE.story && BIBLE.story.url) URL.revokeObjectURL(BIBLE.story.url);
   const {b, c} = state.bible, name = ("versiculo-" + bibleRef(b, c, state.bibleSel)).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9-]+/g, "-") + ".png";
   BIBLE.story = {theme: key, url: URL.createObjectURL(blob), file: new File([blob], name, {type: "image/png"})};
+  if(direct){stBibleShare(BIBLE.story.file);return;}
   const canShare = !!(navigator.canShare && navigator.canShare({files: [BIBLE.story.file]}));
   const m = $("#modal"); m.className = "modal";
   m.innerHTML = `<div class="modal-box bb-story" role="dialog" aria-modal="true" aria-labelledby="st-t"><h2 id="st-t">Story do versículo</h2>
     <img src="${BIBLE.story.url}" alt="Prévia do story com ${esc(bibleRef(b, c, state.bibleSel))}">
     <div class="inst" role="group" aria-label="Cor do fundo" style="justify-self:center">${Object.entries(STORY_THEMES).map(([k, v]) => `<button data-a="bb-story-theme" data-v="${k}" aria-pressed="${k === key}">${v.label}</button>`).join("")}</div>
-    <div class="actions">${commIn() && COMM.me ? '<button class="btn primary" data-a="st-bible">Publicar no meu story · 24 h</button>' : ""}${canShare ? '<button class="btn primary" data-a="bb-story-share">📲 Compartilhar (Instagram, WhatsApp…)</button>' : ""}
+    <div class="actions"><button class="btn primary" data-a="st-bible">Publicar no meu story · 24 h</button>${canShare ? '<button class="btn primary" data-a="bb-story-share">📲 Compartilhar (Instagram, WhatsApp…)</button>' : ""}
       <a class="btn ${canShare ? "" : "primary"}" href="${BIBLE.story.url}" download="${esc(name)}">⬇ Baixar imagem</a>
       <button class="btn ghost" data-a="pix-close">Fechar</button></div>
     <p class="muted" style="font-size:13px">No Instagram: toque em Compartilhar, escolha Instagram e depois Stories. ${canShare ? "" : "No iPhone, se o botão não aparecer, segure o dedo na imagem e toque em Salvar."}</p></div>`;
@@ -2062,6 +2066,7 @@ function bibleClick(a, b){
     const {b: bk, c} = state.bible, t = "“" + bibleSelText() + "” " + bibleRef(bk, c, state.bibleSel) + " (BLIVRE)";
     try { navigator.clipboard.writeText(t).then(() => flash("Copiado ✓"), () => flash("Não consegui copiar.")); } catch(e) { flash("Não consegui copiar."); }
   }
+  else if (a === "bb-story-post") bibleOpenStory(undefined,true);
   else if (a === "bb-story") bibleOpenStory();
   else if (a === "bb-story-theme") bibleOpenStory(b.dataset.v);
   else if (a === "bb-story-share") { const st = BIBLE.story; if (st) navigator.share({files: [st.file], title: "Versículo"}).catch(() => {}); }
@@ -2341,6 +2346,11 @@ function stNew(){
   if (!termsGate()) return;
   const p=stPanel("gallery"); if(!p)return; p.draft={caption:"",theme:"lilas",image:null,original:null}; if(ST_MEDIA.owner!==p.actor.owner){stMediaReset();ST_MEDIA.owner=p.actor.owner;} stLoad(); stRender(true);
 }
+function stBibleShare(file){
+ if(!file)return;const previous=ST.panel;stNew();const p=ST.panel;
+ if(!p||p===previous||p.kind!=="gallery"||!stPanelCurrent(p))return;
+ p.kind="compose";stPick(file);
+}
 function stRender(first=false){
   const p=ST.panel; if(!p||!stPanelCurrent(p))return; const m=$("#modal"), active=document.activeElement, id=active&&active.id, position=active&&active.selectionStart;
   if(p.kind==="compose")stMusicStop(p);
@@ -2443,7 +2453,7 @@ function stClick(action,button){
   else if(action==="st-pause"){const p=ST.panel;if(p&&p.kind==="viewer"){p.paused=p.musicPlayer?!!p.musicPlaying:!p.paused;p.lastTick=performance.now();stPauseControl(p);stMusicPause(p,p.paused);}}
 
   else if(action==="st-delete")stDelete(button.dataset.id);
-  else if(action==="st-bible"){const file=BIBLE.story&&BIBLE.story.file;stNew();if(file)stPick(file);}
+  else if(action==="st-bible")stBibleShare(BIBLE.story?.file);
   else return false;return true;
 }
 function blessedFeatureKeys(event){
