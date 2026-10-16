@@ -3315,9 +3315,17 @@ const CM_ICONS = {
   saveOn: '<svg viewBox="0 0 24 24" fill="#1D9BF0" stroke="#1D9BF0" stroke-width="2" stroke-linejoin="round"><path d="M6 3.5h12v17l-6-4.2-6 4.2z"/></svg>',
   share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 13v7h14v-7"/></svg>'
 };
+/* Moderação local sem consultas extras. O SQL aplica as mesmas regras no banco. */
+const MOD_TERMS=["caralho", "porra", "merda", "foda", "foder", "fodase", "fudido", "fudida", "puta", "puto", "putaria", "arrombado", "arrombada", "vagabundo", "vagabunda", "otario", "otaria", "babaca", "imbecil", "idiota", "desgracado", "desgracada", "buceta", "fdp", "vsf", "pqp", "vai tomar no cu"];
+function modNormalize(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+function modReservedName(value){return ['deus','jesus'].includes(modNormalize(value).replace(/[^a-z]/g,''));}
+const MOD_BAD_RE=new RegExp('(^|[^a-z0-9])('+MOD_TERMS.map(t=>[...t.replace(/ /g,'')].join('[^a-z0-9]*')).join('|')+')($|[^a-z0-9])');
+function modOffensive(value){return MOD_BAD_RE.test(modNormalize(value).replace(/[013457@$]/g,c=>({'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t','@':'a','$':'s'}[c])));}
+const MOD_NAME_MSG='Use seu nome ou o nome completo da igreja. Apenas “Deus” ou “Jesus” não é permitido.',MOD_COMMENT_MSG='Este comentário contém uma expressão ofensiva. Reescreva com respeito para publicar.';
+
 async function commLoadComments(postId){
   const {data, error} = await TEAM.client.from("post_comments").select("id,post_id,author,text,created_at").eq("post_id", postId).order("created_at", {ascending: true}).limit(300);
-  COMM.comments[postId] = error ? [] : data;
+  COMM.comments[postId] = error ? [] : (data||[]).filter(c=>!modOffensive(c.text));
   COMM.ccount[postId] = COMM.comments[postId].length;
   const need = [...new Set(COMM.comments[postId].map(c => c.author))].filter(a => !COMM.profiles[a]);
   if (need.length) { const {data: pr} = await TEAM.client.from("community_profiles").select("id,handle,display_name,church,city,instruments,avatar_path,cover_path,theme,created_at,verified,official,kind,schedule,services").in("id", need); commKeep(pr); }
@@ -3325,7 +3333,7 @@ async function commLoadComments(postId){
 }
 function commCommentsHtml(p){
   if (COMM.comments[p.id] === undefined) { COMM.comments[p.id] = null; commLoadComments(p.id); }
-  const list = COMM.comments[p.id];
+  const list = COMM.comments[p.id]?.filter(c=>!modOffensive(c.text))??COMM.comments[p.id];
   const rows = (list || []).map(c => { const a = COMM.profiles[c.author] || {};
     const canDel = c.author === TEAM.user.id || p.author === TEAM.user.id || teamRole() === "admin";
     return `<div class="cm-cmt"><button class="cm-cmt-av" data-a="cm-profile" data-id="${esc(c.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 34)}</button>
@@ -3339,10 +3347,11 @@ function commCommentsHtml(p){
 async function commAddComment(){
   const el = $("#cm-comment"), text = ((el && el.value) || "").trim().slice(0, 500), pid = state.postId;
   if (!text || COMM.busy) return;
+  if(modOffensive(text)){flash(MOD_COMMENT_MSG);return;}
   COMM.busy = true;
   const {data, error} = await TEAM.client.from("post_comments").insert({post_id: pid, author: TEAM.user.id, text}).select("id,post_id,author,text,created_at").single();
   COMM.busy = false;
-  if (error) { flash("Não consegui enviar o comentário. Confira a internet."); return; }
+  if (error) { flash(error.message?.includes("blessed_comment_offensive")?MOD_COMMENT_MSG:"Não consegui enviar o comentário. Confira a internet."); return; }
   (COMM.comments[pid] = COMM.comments[pid] || []).push(data);
   COMM.ccount[pid] = COMM.comments[pid].length;
   rerenderKeepScroll(); const f = $("#cm-comment"); if (f) f.focus();
@@ -4019,14 +4028,14 @@ function pfBcOpen(bid){ PF.bcOpen = bid; if (PF.bcom[bid] === undefined) { PF.bc
 async function pfBcLoad(bid){
   const {data, error} = await TEAM.client.from("blessing_comments").select("id,blessing_id,author,text,created_at").eq("blessing_id", bid).order("created_at", {ascending: true}).limit(300);
   pfMissing(error);
-  PF.bcom[bid] = error ? [] : data; PF.bccount[bid] = PF.bcom[bid].length;
+  PF.bcom[bid] = error ? [] : (data||[]).filter(c=>!modOffensive(c.text)); PF.bccount[bid] = PF.bcom[bid].length;
   const need = [...new Set(PF.bcom[bid].map(c => c.author))].filter(a => !COMM.profiles[a]);
   if (need.length) { const {data: pr} = await TEAM.client.from("community_profiles").select(PF_PROF).in("id", need); commKeep(pr); }
   pfBcRender(bid); pfBcCount(bid);
 }
 function pfBcRender(bid){
   if (PF.bcOpen !== bid) return;
-  const m = $("#modal"), list = PF.bcom[bid], x = BLS.items[bid] || {}, draft = ($("#pf-bc") || {}).value || "";
+  const m = $("#modal"), list = PF.bcom[bid]?.filter(c=>!modOffensive(c.text))??PF.bcom[bid], x = BLS.items[bid] || {}, draft = ($("#pf-bc") || {}).value || "";
   const rows = (list || []).map(c => { const a = COMM.profiles[c.author] || {};
     const canDel = c.author === TEAM.user.id || x.author === TEAM.user.id || teamRole() === "admin";
     return `<div class="cm-cmt"><button class="cm-cmt-av" data-a="cm-profile" data-id="${esc(c.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 34)}</button>
@@ -4043,10 +4052,11 @@ function pfBcRender(bid){
 async function pfBcSend(bid){
   const el = $("#pf-bc"), text = ((el && el.value) || "").trim().slice(0, 500);
   if (!text || PF.bcBusy) return;
+  if(modOffensive(text)){flash(MOD_COMMENT_MSG);return;}
   PF.bcBusy = true;
   const {data, error} = await TEAM.client.from("blessing_comments").insert({blessing_id: bid, author: TEAM.user.id, text}).select("id,blessing_id,author,text,created_at").single();
   PF.bcBusy = false;
-  if (error) { flash("Não consegui enviar o comentário. Confira a internet."); return; }
+  if (error) { flash(error.message?.includes("blessed_comment_offensive")?MOD_COMMENT_MSG:"Não consegui enviar o comentário. Confira a internet."); return; }
   if (el) el.value = "";
   (PF.bcom[bid] = PF.bcom[bid] || []).push(data); PF.bccount[bid] = PF.bcom[bid].length;
   pfBcRender(bid); pfBcCount(bid); const f = $("#pf-bc"); if (f) f.focus();
@@ -4991,6 +5001,7 @@ async function commSaveProfile(){
   const handle = (e.handle || "").trim().toLowerCase().replace(/^@/, "");
   const fail = m => { COMM.msg = m; COMM.busy = false; render(); };
   if (!(e.display_name || "").trim()) return fail(e.kind === "igreja" ? "Escreva o nome da igreja." : "Escreva seu nome.");
+  if(modReservedName((e.display_name||"").trim().slice(0,60))||modReservedName(handle))return fail(MOD_NAME_MSG);
   if (!/^[a-z0-9_.]{3,20}$/.test(handle)) return fail("O nome de usuário precisa ter de 3 a 20 letras minúsculas, números, ponto ou _ (sem espaço e sem acento).");
   if (isNew && !e.rules) return fail("Para criar o perfil, marque que leu e aceita as regras.");
   COMM.busy = true; COMM.msg = ""; render();
@@ -5010,7 +5021,7 @@ async function commSaveProfile(){
     COMM.me = data; commKeep([Object.assign(data, {full: true})]); COMM.people = null;
     COMM.busy = false; state.cmEdit = null; state.profileId = data.id; state.view = "profile"; render(); scrollTo(0, 0);
   } catch(err) {
-    const m = (err && (err.code === "23505" || /duplicate|unique/i.test(err.message || ""))) ? "Esse nome de usuário já existe. Escolha outro." : "Não consegui salvar agora. Confira a internet e tente de novo.";
+    const m = err?.message?.includes("blessed_reserved_name")?MOD_NAME_MSG:(err && (err.code === "23505" || /duplicate|unique/i.test(err.message || ""))) ? "Esse nome de usuário já existe. Escolha outro." : "Não consegui salvar agora. Confira a internet e tente de novo.";
     fail(m);
   }
 }
