@@ -952,6 +952,43 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+/* Conversa no tema claro: mesmo desenho de ondas, em tons de lilás claro */
+html[data-appearance=light] .dm-head{background:rgba(250,248,253,.96);border-bottom:1px solid var(--line)}
+html[data-appearance=light] .dm-who,html[data-appearance=light] .dm-head .btn{color:var(--ink)}
+html[data-appearance=light] .dm-list{background-color:#e6d2f7;background-image:url('/img/chat/fundo-claro.webp')}
+html[data-appearance=light] .dm-list.dwp-on{background-color:transparent}
+html[data-appearance=light] .dm-day{color:#6e6079}
+html[data-appearance=light] .dm-msg .dm-b{--dm-bubble-fill:rgba(255,255,255,.96);color:#302637;border-color:rgba(131,60,180,.18);background-image:none;box-shadow:0 2px 6px rgba(80,30,120,.14);backdrop-filter:none;-webkit-backdrop-filter:none}
+html[data-appearance=light] .dm-msg.me .dm-b{--dm-bubble-fill:#8f45d6;color:#fff;border-color:rgba(255,255,255,.25);background-image:linear-gradient(135deg,#ffffff22,#ffffff00)}
+html[data-appearance=light] .dm-msg .dm-b small{color:#7a6c87}html[data-appearance=light] .dm-msg.me .dm-b small{color:rgba(255,255,255,.82)}
+html[data-appearance=light] .dm-msg.me .dm-receipt{color:rgba(255,255,255,.82)}html[data-appearance=light] .dm-msg.me .dm-receipt.read{color:#c8f1ff}
+html[data-appearance=light] .dm-msg.me .dm-b .btn{color:#fff;border-color:#ffffff55;background:#ffffff1a}
+html[data-appearance=light] .dm-msg .dmq{background:rgba(131,60,180,.1);border-left-color:#8b3fc4}html[data-appearance=light] .dm-msg .dmq b{color:#6a2a9a}
+html[data-appearance=light] .dm-msg.me .dmq{background:rgba(255,255,255,.2);border-left-color:#fff}html[data-appearance=light] .dm-msg.me .dmq b{color:#fff}
+html[data-appearance=light] .dm-msg .dmm-bars{color:#a98bc7}html[data-appearance=light] .dm-msg .dmm-bars i.played{background:#6a2aae}
+html[data-appearance=light] .dm-msg.me .dmm-bars{color:rgba(255,255,255,.55)}html[data-appearance=light] .dm-msg.me .dmm-bars i.played{background:#fff}
+html[data-appearance=light] .dm-msg .dmm-seek::-webkit-slider-thumb{background:#6a2aae}html[data-appearance=light] .dm-msg.me .dmm-seek::-webkit-slider-thumb{background:#fff}
+html[data-appearance=light] .dm-msg .dmm-play-status{color:#7a6c87}
+html[data-appearance=light] .dm-nudge-message{background:rgba(255,255,255,.9);color:#302637;border-color:rgba(131,60,180,.25)}
+html[data-appearance=light] .dm-shell .dm-form{background:rgba(250,248,253,.97);border-top:1px solid var(--line)}
+html[data-appearance=light] .dm-shell .dm-form textarea{color:var(--ink);background:#fff;border:1px solid var(--line)}
+html[data-appearance=light] .dm-shell .dm-form textarea::placeholder{color:#8c7f98}
+html[data-appearance=light] .dm-shell .dmm-tool{color:var(--ink);background:#fff;border-color:var(--line)}
+html[data-appearance=light] .dm-shell .dm-nudge-button{color:var(--ink)}
+html[data-appearance=light] .dm-reply{background:rgba(131,60,180,.1)}html[data-appearance=light] .dm-reply b{color:#6a2a9a}html[data-appearance=light] .dm-reply button{background:rgba(131,60,180,.14)}
+html[data-appearance=light] .dmo-i{background:rgba(131,60,180,.18)}html[data-appearance=light] .dm-msg.me .dmo-i{background:rgba(255,255,255,.25)}
+.dm-list-head{display:flex;align-items:center;gap:10px}.dm-list-head .btn{flex:none;width:42px;height:42px;padding:0;border-radius:50%;font-size:26px;line-height:1;display:grid;place-items:center}.dm-list-head .page-title{margin:0;flex:1;min-width:0}
+.dm-safe-chip{display:flex;align-items:center;gap:8px;margin:0 0 16px;padding:9px 14px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--muted);font:600 13px var(--f-body);width:fit-content;max-width:100%;text-align:left}.dm-safe-chip svg{width:16px;height:16px;flex:none;color:#9b4fd8}
+.dm-cards{display:grid;gap:10px}
+.dm-card{display:flex;align-items:center;gap:4px;padding:5px 8px 5px 5px;border-radius:24px;background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 22px rgba(70,25,110,.1);overflow:hidden}
+.dm-card.un{border-color:rgba(176,92,240,.6);background:linear-gradient(135deg,rgba(176,92,240,.16),var(--surface))}
+.dm-card .dm-row{flex:1;min-width:0;width:auto;border:0;border-radius:18px;padding:8px;background:none!important;color:var(--ink)!important}
+.dm-card .dm-row-t b{display:flex;align-items:center;gap:4px;font-size:16px;color:var(--ink)}
+.dm-card .dm-row-t .muted{color:var(--muted)}.dm-card.un .dm-row-t .muted{color:var(--ink)!important;font-weight:700}
+.dm-card .dm-row-x{align-self:flex-start;padding-top:4px}.dm-card .dm-row-x small{font-size:12px}
+.dm-card .dm-dot{width:12px;height:12px;box-shadow:0 0 0 4px rgba(197,97,255,.25)}
+.dm-trash{flex:none;display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:none;color:var(--muted)}.dm-trash:active,.dm-trash:hover{background:rgba(176,92,240,.16);color:var(--ink)}.dm-trash svg{width:19px;height:19px}
+.dm-empty{margin:28px 0;padding:34px 22px;text-align:center;border-radius:28px;border:1px dashed var(--line);background:var(--surface);display:grid;gap:10px;justify-items:center}.dm-empty-i{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#a46bff,#6a2aae);color:#fff;font-size:30px}.dm-empty h3{margin:4px 0 0;font-size:19px;color:var(--ink)}.dm-empty p{margin:0;color:var(--muted);max-width:280px;line-height:1.45}
 .dmq{display:block;margin:0 0 6px;padding:6px 10px;border-left:4px solid #d9a8ff;border-radius:8px;background:rgba(255,255,255,.12);text-align:left;cursor:pointer}.dmq b{display:block;font-size:12px;color:#e7c2ff}.dmq i{display:block;font-style:normal;font-size:13px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
 .dm-msg.me .dmq{background:rgba(80,40,110,.12);border-left-color:#8b3fc4}.dm-msg.me .dmq b{color:#6a2a9a}
 .dm-reply{flex:1 1 100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px;padding:8px 12px;border-left:4px solid #b05cf0;border-radius:10px;background:rgba(176,92,240,.16);min-width:0}.dm-reply span{min-width:0}.dm-reply b{display:block;font-size:12px;color:#d9b8ff}.dm-reply i{display:block;font-style:normal;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-reply button{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:inherit;font-size:18px;line-height:1;padding:0}
@@ -1118,10 +1155,8 @@ html[data-appearance=light] :is(.cm-profile-actions>.btn,.cm-profile-actions>.cm
 html[data-appearance=light] .cm-profile-actions>.dm-profile-message{background:var(--glass-selected)}html[data-appearance=light] .cm-profile-actions>.dm-profile-nudge svg{color:var(--felt)}
 html[data-appearance=light] .muted b[style*="color:#fff"]{color:var(--ink)!important}
 /* As imagens mantêm suas cores; texto e controles sobre mídia continuam claros. */
-html[data-appearance=light] :is(.st-viewer,.st-camera,.bl-feed,.dm-shell){color-scheme:dark;--cream:#ece0f5;--ink:#eae6ef;--muted:#b1a5b0;--bg:#0c0b0e;--surface:#1c151d;--surface2:#241e31;--line:#ecd9f926;--felt:#c34af4;--glass-control:linear-gradient(135deg,#ecd6ff12,#b47ade0e);--glass-red:linear-gradient(135deg,#ce64fbb3,#8e1ad2a8);color:#f4edfa}
+html[data-appearance=light] :is(.st-viewer,.st-camera,.bl-feed){color-scheme:dark;--cream:#ece0f5;--ink:#eae6ef;--muted:#b1a5b0;--bg:#0c0b0e;--surface:#1c151d;--surface2:#241e31;--line:#ecd9f926;--felt:#c34af4;--glass-control:linear-gradient(135deg,#ecd6ff12,#b47ade0e);--glass-red:linear-gradient(135deg,#ce64fbb3,#8e1ad2a8);color:#f4edfa}
 html[data-appearance=light] .st-viewer :is(.st-heart,.st-metric){color:#ead2fa}
-html[data-appearance=light] .dm-shell :is(.dm-form textarea,.dmm-tool){color:#f4edfa;background:#170d239c;border-color:#ffffff30}
-html[data-appearance=light] .dm-shell .dm-form textarea::placeholder{color:#d1c0db}
 html[data-appearance=light] :is(.st-viewer,.st-camera) .btn{color:#fff}
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){html[data-appearance=light] :is(.glass-top,.tabbar){background:linear-gradient(120deg,#d4afea99,#ead6f6bd 60%,#d8baeaa3)}}
 /* Início em painéis: fotografias livres, nomes abaixo e movimento contínuo. */
@@ -4980,18 +5015,18 @@ function dmProfileNudgeBtn(uid){if(!COMM.me||uid===TEAM.user?.id)return '';dmEns
 async function dmProfileNudge(uid){const owner=TEAM.user?.id,generation=DM.generation;if(!owner||!COMM.me||uid===owner||DM.profileAttentionBusy||DM.attentionBusy||!DM.attentionReady||DM.blocks.has(uid)||!termsGate())return;DM.profileAttentionBusy=uid;dmRerender();try{const c=await dmWith(uid,false);if(c&&TEAM.user?.id===owner&&DM.generation===generation)await dmAttentionSend(c.id);}catch(_){if(TEAM.user?.id===owner&&DM.generation===generation)flash('Não consegui chamar agora. Confira sua conexão.');}finally{if(TEAM.user?.id===owner&&DM.generation===generation){DM.profileAttentionBusy=null;dmRerender();}}}
 
 function viewChats(){
-  const back = `<div class="top"><button class="btn ghost" data-a="tab" data-v="community">‹ Comunidade</button></div><h1 class="page-title" style="margin:0 0 6px">Mensagens</h1>`;
+  const back = `<div class="top glass-top nb-community-head dm-list-head"><button class="btn ghost" data-a="tab" data-v="community" aria-label="Voltar para a Comunidade">‹</button><h1 class="page-title">Mensagens</h1></div>`;
   if (!commIn()) return back + '<div class="panel"><p style="margin:0">Entre com sua conta para usar as mensagens.</p></div>' + tabbar("community");
   if (COMM.me === undefined) { commLoadMe(); return back + '<p class="muted">Carregando…</p>' + tabbar("community"); }
   if (!COMM.me) return back + '<div class="panel"><p>Crie seu perfil na Comunidade para mandar mensagens.</p><div class="actions"><button class="btn primary" data-a="cm-edit">Criar meu perfil</button></div></div>' + tabbar("community");
   dmEnsure();
-  const note = '<button class="dm-lock lnk2" data-a="dm-safe">🔒 Conversa segura: só você e a outra pessoa leem. <u>Saiba mais</u></button>';
+  const note = '<button class="dm-safe-chip" data-a="dm-safe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Só você e a outra pessoa leem</button>';
   setTimeout(() => dmSafeNotice(false));
   if (DM.missing) return back + `<div class="panel"><p class="muted" style="margin:0">${teamRole() === "admin" ? "Falta rodar o arquivo <b>supabase-chat.sql</b> no Supabase." : "As mensagens estão chegando. Volte daqui a pouco."}</p></div>` + tabbar("community");
   if (DM.convs === null) return back + note + '<p class="muted">Carregando…</p>' + tabbar("community");
   const rows = DM.convs.filter(dmConvVisible).map(c => { const o = dmOther(c), p = COMM.profiles[o] || {}, un = dmUnread(c);
-    return `<div style="display:flex;align-items:center;gap:4px"><button style="flex:1;min-width:0" class="dm-row${un ? " un" : ""}" data-a="dm-open" data-id="${esc(c.id)}">${commAvatar(p, 52)}<span class="dm-row-t"><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><span class="muted">${c.last_text ? (c.last_author === TEAM.user.id ? "Você: " : "") + esc(c.last_text) : "Conversa nova"}</span></span><span class="dm-row-x"><small class="muted">${commAgo(c.last_at)}</small>${un ? '<i class="dm-dot" aria-label="não lida"></i>' : ""}</span></button><button class="btn ghost" data-a="dm-clear" data-id="${esc(c.id)}" aria-label="Limpar conversa com ${esc(p.display_name || "esta pessoa")}">⌫</button></div>`; }).join("");
-  return back + note + (rows ? `<div class="dm-rows">${rows}</div>` : '<div class="panel"><p style="margin:0">Nenhuma conversa ainda. Abra o perfil de alguém da Comunidade e toque em <b>✉ Mensagem</b>.</p></div>') + tabbar("community");
+    return `<div class="dm-card${un ? " un" : ""}"><button class="dm-row${un ? " un" : ""}" data-a="dm-open" data-id="${esc(c.id)}">${commAvatar(p, 52)}<span class="dm-row-t"><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><span class="muted">${c.last_text ? (c.last_author === TEAM.user.id ? "Você: " : "") + esc(c.last_text) : "Conversa nova"}</span></span><span class="dm-row-x"><small class="muted">${commAgo(c.last_at)}</small>${un ? '<i class="dm-dot" aria-label="não lida"></i>' : ""}</span></button><button class="dm-trash" data-a="dm-clear" data-id="${esc(c.id)}" aria-label="Limpar conversa com ${esc(p.display_name || "esta pessoa")}" title="Limpar conversa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg></button></div>`; }).join("");
+  return back + note + (rows ? `<div class="dm-cards">${rows}</div>` : '<div class="dm-empty"><span class="dm-empty-i">✉</span><h3>Nenhuma conversa ainda</h3><p>Abra o perfil de alguém da Comunidade e toque em <b>Mensagem</b> para começar.</p><button class="btn primary" data-a="tab" data-v="community">Encontrar pessoas</button></div>') + tabbar("community");
 }
 function viewChat(){
   const c = (DM.convs || []).find(x => x.id === DM.open);
