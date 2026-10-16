@@ -1058,6 +1058,7 @@ html[data-appearance=light] .nf-head.home-dashboard-head{--cream:#372440;--ink:#
 .pf-tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:58px;padding:7px 2px;border-radius:14px;white-space:normal;line-height:1.2}
 .pf-tabs .pf-tab-icon{display:grid;place-items:center;width:21px;height:21px;flex:none}.pf-tab-icon svg{display:block;width:21px;height:21px}
 .pf-tabs .pf-tab-label{display:block;max-width:100%;font-size:clamp(8px,2.2vw,12px);font-weight:600;letter-spacing:-.1px;white-space:nowrap}
+.community-invite{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 18px;padding:12px 14px;border:1px solid var(--line);border-radius:20px;background:var(--surface)}.community-invite>span{font-size:13px;color:var(--muted)}.community-invite .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px}.community-invite svg{width:18px;height:18px;flex:none}
 .news-page-heading{padding:0 16px 15px}.news-page-heading h2{font:650 24px var(--f-display);letter-spacing:-.5px;margin:0;color:var(--cream)}
 </style>
 
@@ -3325,7 +3326,7 @@ function pcJoin(label='Participar'){return `<button class="btn primary" data-a="
 function pcPerson(p,page){return `<button class="pc-person" data-a="pc-profile" data-id="${esc(p.id)}">${pcAvatar(p,page,52)}<span><b>${esc(p.display_name||'')}${commBadge(p)}</b><small>@${esc(p.handle||'')}</small>${p.church||p.city?`<small>${commWhere(p)}</small>`:''}</span><span aria-hidden="true">›</span></button>`;}
 function pcPost(p,page,detail=false){
  const author=page.people.find(a=>a.id===p.author)||{},photo=page.urls[detail?p.image_path:commThumb(p.image_path||'')]||page.urls[p.image_path];
- return `<article class="cm-post pc-post"><button class="cm-post-h" data-a="pc-profile" data-id="${esc(p.author)}">${pcAvatar(author,page,38)}<span><b>${esc(author.display_name||'')}${commBadge(author)}</b><small>@${esc(author.handle||'')}</small></span></button>${placeLink(p.place)}${p.image_path?photo?`<button class="cm-post-img" data-a="pc-post" data-id="${esc(p.id)}"><img src="${esc(photo)}" alt="Publicação de ${esc(author.display_name||'')}" loading="lazy"></button>`:'<p class="muted">Imagem indisponível.</p>':`<button class="cm-post-text" data-a="pc-post" data-id="${esc(p.id)}" style="${txStyle(p)}">${esc(p.caption||'')}</button>`}${p.image_path&&p.caption?`<p class="cm-cap">${esc(p.caption)}</p>`:''}<div class="cm-bar"><button class="cm-act" data-a="pc-interact" aria-label="Curtir">${CM_ICONS.heart}</button><button class="cm-act" data-a="pc-interact" aria-label="Comentar">${CM_ICONS.comment}</button><span class="muted">${commAgo(p.created_at)}</span></div></article>`;
+ return `<article class="cm-post pc-post"><button class="cm-post-h" data-a="pc-profile" data-id="${esc(p.author)}">${pcAvatar(author,page,38)}<span><b>${esc(author.display_name||'')}${commBadge(author)}</b><small>@${esc(author.handle||'')}</small></span></button>${placeLink(p.place)}${p.image_path?photo?`<button class="cm-post-img" data-a="pc-post" data-id="${esc(p.id)}"><img src="${esc(photo)}" alt="Publicação de ${esc(author.display_name||'')}" loading="lazy"></button>`:'<p class="muted">Imagem indisponível.</p>':`<button class="cm-post-text" data-a="pc-post" data-id="${esc(p.id)}" style="${txStyle(p)}">${esc(p.caption||'')}</button>`}${p.image_path&&p.caption?`<p class="cm-cap">${esc(p.caption)}</p>`:''}<div class="cm-bar"><button class="cm-act" data-a="pc-interact" aria-label="Curtir">${CM_ICONS.heart}</button><button class="cm-act" data-a="pc-interact" aria-label="Comentar">${CM_ICONS.comment}</button><button class="cm-act" data-a="pc-share" data-id="${esc(p.id)}" aria-label="Compartilhar publicação">${CM_ICONS.share}</button><span class="muted">${commAgo(p.created_at)}</span></div></article>`;
 }
 function pcStatus(page){return page.loading&&!page.posts.length&&!page.people.length?'<p class="muted" role="status">Carregando a comunidade…</p>':page.error?`<div class="panel"><p role="status">${esc(page.error)}</p><button class="btn" data-a="pc-retry" data-person="${esc(page.person)}" data-entry="${esc(page.entry)}">Tentar novamente</button></div>`:'';}
 function pcCommunity(){
@@ -3346,6 +3347,7 @@ function pcArtist(name){return artistPage(name,pcSongList().filter(s=>norm(s.art
 function pcArtists(){const groups=[...new Set(pcSongList().map(s=>s.artist).filter(Boolean))];return `<div class="rows"><section class="row" id="artistas"><h3>Artistas e louvor <small>${groups.length}</small></h3><div class="rail">${groups.map(name=>`<button class="artist" data-a="pc-artist" data-n="${esc(name)}"><span class="ph" style="${coverStyle(name)}">${artistPhoto(name)?'':esc(initials(name))}</span><b>${esc(name)}</b></button>`).join('')}</div></section></div>`;}
 function pcClick(action,button){
  if(action==='pc-profile'){closePix();state.profileId=button.dataset.id;state.view='profile';render();scrollTo(0,0);}
+ else if(action==='pc-share')shareBlessedLink('Veja esta publicação no Blessed',location.origin+location.pathname+'?foto='+encodeURIComponent(button.dataset.id));
  else if(action==='pc-post'){closePix();state.postId=button.dataset.id;state.view='post';render();scrollTo(0,0);}
  else if(action==='pc-back'){state.view='community';render();scrollTo(0,0);}
  else if(action==='pc-tab'){PC.tab=button.dataset.v==='people'?'people':'posts';rerenderKeepScroll();}
@@ -3474,12 +3476,18 @@ async function commLoadSaved(){
   COMM.savedIds = ids.filter(id => COMM.posts[id]); ids.forEach(id => COMM.mySaves.add(id));
   commRerender("profile");
 }
+function communityInvite(){return `<div class="community-invite"><span>Tem alguém que você quer por perto?</span><button class="btn" data-a="cm-invite">${CM_ICONS.share}<span>Convidar alguém</span></button></div>`;}
+async function shareBlessedLink(text,url,invite=false){
+  try{if(navigator.share){await navigator.share({title:"Blessed",text,url});return;}}catch(e){if(e?.name==="AbortError")return;}
+  try{await navigator.clipboard.writeText(invite?text+"\n"+url:url);flash(invite?"Convite copiado ✓ É só colar e enviar.":"Link copiado ✓ Cole e compartilhe.");}
+  catch(e){const m=$("#modal");m.className="modal";m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="share-link-title"><h2 id="share-link-title">${invite?"Convidar alguém":"Compartilhar publicação"}</h2><p>Selecione e copie:</p><textarea readonly aria-label="Texto para compartilhar" rows="5">${esc(invite?text+"\n"+url:url)}</textarea><button class="btn" data-a="pix-close">Fechar</button></div>`;m.hidden=false;}
+}
+function inviteSomeone(){return shareBlessedLink("Vem conhecer o Blessed! Uma comunidade para compartilhar a fé, momentos e louvores. Te espero por lá!",location.origin+location.pathname,true);}
 async function commShare(id){
   const p = COMM.posts[id], a = p ? COMM.profiles[p.author] || {} : {};
   const url = location.origin + location.pathname + "?foto=" + encodeURIComponent(id);
   const text = (a.display_name ? a.display_name + " no Blessed" : "Foto no Blessed") + (p && p.caption ? ": " + p.caption.slice(0, 80) : "");
-  try { if (navigator.share) { await navigator.share({title: "Blessed", text, url}); return; } } catch(e) { if (e && e.name === "AbortError") return; }
-  try { await navigator.clipboard.writeText(url); flash("Link copiado ✓ Cole no WhatsApp ou onde quiser."); } catch(e) { flash("Copie este link: " + url); }
+  return shareBlessedLink(text,url);
 }
 // Link direto de uma foto (…/?foto=ID): abre a foto depois do login
 function commOpenDeep(){
@@ -4908,7 +4916,7 @@ function recentBubbles(list){
 function viewCommunity(){
   if((!TEAM.user||COMM.me===null)&&state.deepPost){state.postId=state.deepPost;state.deepPost=null;state.view="post";return pcPostPage();}
   const head = `<div class="top glass-top nb-community-head"><h1 class="page-title">Comunidade</h1>${COMM.me ? dmIconBtn()+nbIconBtn() : ""}${COMM.me ? `<button class="cm-me lm-profile-button" data-a="lm-account" aria-label="Meu perfil e música" title="Meu perfil e música">${commAvatar(COMM.me, 40)}${!lmLive(COMM.me.listening_now)?'<span class="lm-profile-hint" aria-hidden="true">♫</span>':""}</button>` : ""}</div>`;
-  const wrap = inner => head + inner + tabbar("community");
+  const wrap = inner => head + communityInvite() + inner + tabbar("community");
   if (!TEAM.user&&teamAvailable()) return wrap(pcCommunity());
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
   if (teamRole() === "blocked") return wrap(`<div class="panel"><p>O acesso desta conta não foi liberado.</p></div>`);
@@ -5275,6 +5283,7 @@ function commClick(a, b){
   else if (a === "cm-follow") commToggleFollow(b.dataset.id);
   else if (a === "cm-like") commToggleLike(b.dataset.id);
   else if (a === "cm-save") commToggleSave(b.dataset.id);
+  else if (a === "cm-invite") inviteSomeone();
   else if (a === "cm-share") pfShareMenu("post", b.dataset.id);
   else if (a === "cm-cmt-del") { if (confirm("Apagar este comentário?")) commDelComment(b.dataset.id, b.dataset.p); }
   else if (a === "cm-comments") {
