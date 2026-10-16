@@ -1370,6 +1370,10 @@ html[data-appearance=light] .sel-fact b{color:#8a5a0a}
 html[data-appearance=light] .ch-h span{color:#8a5a0a}
 .onb-list{display:grid;gap:8px;max-height:46vh;overflow-y:auto;margin-top:6px}.onb-row{display:flex;align-items:center;gap:10px}.onb-av{flex:none}.onb-t{flex:1;min-width:0;display:grid}.onb-t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.onb-t small{color:var(--muted);font-size:12px}
 .onb-row .btn{flex:none;min-height:36px;padding:6px 14px}
+
+.mb-lock{border:1px solid var(--glass-edge,var(--line))}.mb-list{margin:0 0 14px;padding-left:4px;list-style:none;display:grid;gap:6px;font-size:14px}
+.pbl-tile video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}.pbl-tile::after{z-index:1}.pbl-tile .bl-tile-play,.pbl-tile b{z-index:2}
+.pbl-tile .bl-tile-play{opacity:.55}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -2291,7 +2295,7 @@ function viewSelah(){
   const thread=SEL.thread.map(m=>'<div class="sel-q"><span>'+esc(m.q)+'</span></div><div class="sel-a"><p>'+esc(m.a)+'</p>'+(m.refs&&m.refs.length?'<div class="sel-refs">'+m.refs.map(r=>'<button class="btn" data-a="sel-ref" data-b="'+esc(r.book)+'" data-c="'+r.chapter+'" data-s="'+r.start+'" data-e="'+r.end+'">📖 '+esc(bibleRef(r.book,r.chapter,Array.from({length:r.end-r.start+1},(_,i)=>r.start+i)))+'</button>').join("")+'</div>':'')+'</div>').join("")
     +(SEL.busy?'<div class="sel-a"><p class="muted">A Selah está pensando…</p></div>':"");
   let box;
-  if(!TEAM.user)box='<div class="panel"><p style="margin:0 0 10px">Entre com a sua conta para conversar com a Selah.</p><button class="btn primary" data-a="bb-ask-login">Entrar</button></div>';
+  if(!TEAM.user)box='<div class="panel mb-lock"><h3 style="margin:0 0 4px">🔒 Perguntas só para membros</h3><p class="muted" style="margin:0 0 12px">Crie sua conta gratuita para conversar com a Selah, tirar dúvidas da Bíblia e receber respostas com o seu nome.</p><div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></div>';
   else if(!ok)box='<div class="panel"><p style="margin:0">'+(teamRole()==="blocked"?"Sua conta não tem acesso à IA.":"A conversa com a Selah ainda está sendo liberada para a sua conta. As curiosidades acima já estão abertas para você.")+'</p></div>';
   else box='<form id="sel-form" class="sel-form"><textarea id="sel-q" maxlength="800" rows="2" placeholder="Pergunte à Selah…" aria-label="Pergunta para a Selah"'+(SEL.busy?' disabled':'')+'>'+esc(SEL.q)+'</textarea><button class="btn primary" type="submit"'+(SEL.busy?' disabled':'')+'>Enviar</button></form>'+(SEL.error?'<p class="sel-err" role="alert">'+esc(SEL.error)+'</p>':'')+'<p class="muted sel-note">Respostas geradas por IA. Confira sempre o texto na Bíblia.</p>';
   return head+hello+fact+(ok?chips:"")+(thread?'<div class="sel-thread">'+thread+'</div>':"")+box+tabbar("study");
@@ -3434,6 +3438,7 @@ function agBanner(ev){
 }
 // Avisa em cima, uma vez, quando falta até 1 hora para um compromisso da agenda
 function agAlertTick(){
+  if (!TEAM.user) return;
   try {
     const now = Date.now(), seen = lsGet("cc-ag-alerted", []);
     const due = agUpcoming().find(e => { const d = e.at.getTime() - now; return d <= 3600000 && d > -300000 && !seen.includes(agKey(e)); });
@@ -5102,8 +5107,24 @@ function pblLoad(){
   }).catch(() => { PBL.list = []; }).finally(() => { PBL.loading = false; if (!TEAM.user && (state.view === "blessings" || state.view === "community") && PBL.list && PBL.list.length) rerenderKeepScroll(); });
 }
 function pblTile(x){
-  return '<button class="bl-tile pbl-tile" data-a="pbl-open" data-id="' + esc(x.id) + '" style="background-image:url(\'' + esc(blUrl(x.thumb_key)) + '\')" aria-label="Assistir o Blessing de ' + esc(x.author.display_name) + '"><span class="bl-tile-play">' + BL_ICONS.play + '</span><b>' + esc(x.author.display_name) + (x.views ? '<small> · ▶ ' + fmtN(x.views) + '</small>' : '') + '</b></button>';
+  return '<button class="bl-tile pbl-tile" data-a="pbl-open" data-id="' + esc(x.id) + '" style="background-image:url(\'' + esc(blUrl(x.thumb_key)) + '\')" aria-label="Assistir o Blessing de ' + esc(x.author.display_name) + '"><video muted playsinline preload="none" aria-hidden="true" tabindex="-1" poster="' + esc(blUrl(x.thumb_key)) + '" data-src="' + esc(blUrl(x.video_key)) + '"></video><span class="bl-tile-play">' + BL_ICONS.play + '</span><b>' + esc(x.author.display_name) + (x.views ? '<small> · ▶ ' + fmtN(x.views) + '</small>' : '') + '</b></button>';
 }
+// Prévia muda: toca só o que está na tela (no máximo 3 ao mesmo tempo), repete os 5 primeiros segundos e não toca no modo economia de dados
+function pblWire(){
+  const vids = [...document.querySelectorAll(".pbl-tile video")];
+  if (!vids.length) return;
+  const vh = innerHeight, vw = innerWidth; let playing = 0;
+  vids.forEach(v => {
+    if (!v.dataset.w) { v.dataset.w = "1"; v.addEventListener("timeupdate", () => { if (v.currentTime > 5) { try { v.currentTime = 0.1; } catch (e) {} } }); }
+    const r = v.getBoundingClientRect(), vis = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0)) * Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) / Math.max(1, r.width * r.height);
+    if (vis >= .6 && !document.hidden && !blSaveData() && playing < 3) {
+      playing++;
+      if (!v.getAttribute("src")) v.src = v.dataset.src + "#t=0.1";
+      if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    } else if (!v.paused) v.pause();
+  });
+}
+setInterval(pblWire, 700);
 function pblRow(){
   if (TEAM.user || !blOn()) return "";
   pblLoad();
@@ -7799,7 +7820,11 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)clearTimeou
 
 function plPage(){const d=plGet(),model=PL_MODELS.find(m=>m[0]===d.model),day=plDate(d.date);if(model[2]==='weekly')day.setDate(day.getDate()-((day.getDay()+6)%7));return {kind:model[2],day,key:model[2]+':'+plISO(day)};}
 function plBlocks(p){return p.kind==='weekly'?['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo','Metas da semana']:['Prioridades','Lembrar','Gratidão','Anotações do dia'];}
+function agLockView(){
+  return '<div class="top"><h1 class="page-title">Agenda</h1></div><section class="panel mb-lock"><h3 style="margin:0 0 4px">🔒 Agenda para membros</h3><p class="muted" style="margin:0 0 12px">Com a sua conta gratuita você organiza seus compromissos, recebe avisos antes dos cultos e ensaios, vê os cultos das igrejas que segue e planeja a semana no seu caderno.</p><ul class="mb-list"><li>🗓️ Compromissos, ensaios e lembretes</li><li>⛪ Cultos das igrejas que você segue</li><li>🔔 Aviso no topo antes de cada compromisso</li><li>📝 Caderno de planejamento diário e semanal</li></ul><div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>' + tabbar("setlist");
+}
 function plannerView(){
+ if(!TEAM.user)return agLockView();
  const d=plGet(),p=plPage(),notes=d.pages[p.key]||{},labels=plBlocks(p),end=new Date(p.day);end.setDate(end.getDate()+6);
  const selectedDate=plDate(d.date).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
  const range=p.kind==='weekly'?p.day.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' — '+end.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}):p.day.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
