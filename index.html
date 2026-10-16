@@ -952,6 +952,8 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.ex-h2{display:flex;align-items:center;justify-content:space-between;gap:10px}.ex-more{border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:4px 2px}
+.ex-bl{position:relative;flex:none;width:124px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#1c1230;scroll-snap-align:start;cursor:pointer;box-shadow:0 8px 20px rgba(40,10,70,.25)}.ex-bl video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ex-bl-p{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,4,24,.6);color:#fff;display:grid;place-items:center}.ex-bl-p svg{width:14px;height:14px}.ex-bl-o{position:absolute;left:0;right:0;bottom:0;padding:26px 9px 8px;display:flex;justify-content:space-between;align-items:center;gap:6px;color:#fff;font:700 12px var(--f-body);background:linear-gradient(0deg,rgba(10,4,24,.85),rgba(10,4,24,0))}.ex-bl-o b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rp-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.rp-c{padding:12px;border-radius:16px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.rp-c b{display:block;font-size:24px;line-height:1.1}.rp-c small{display:block;margin-top:2px;font-size:12px;opacity:.75}.rp h4{margin:16px 0 6px}.rp-l{margin:0;padding-left:22px;display:grid;gap:6px}.rp-l li span{float:right;opacity:.75;font-size:13px}.rp-l small{opacity:.65}
 .perm-list{list-style:none;margin:12px 0 16px;padding:0;display:grid;gap:10px}.perm-list li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;padding:12px 14px;border-radius:14px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.perm-list small{flex-basis:100%;opacity:.75;font-size:13px}
 /* Barra de digitar: [foto] [chamar atenção] [mensagem] [microfone ou enviar] */
@@ -3290,7 +3292,7 @@ const BL_ICON = `<svg class="bl-ic" viewBox="0 0 512 512" aria-hidden="true"><de
    segue outras pessoas e posta fotos. As cifras da equipe continuam só para quem o administrador aprovou.
    Tabelas e fotos: supabase-comunidade.sql (fotos numa pasta privada, abertas por link temporário). */
 const COMM = {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(),
-  likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
+  likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, exBl: null, counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
 // cores prontas + qualquer cor escolhida na roda (guardada como #RRGGBB)
 const THEMES = new Proxy({red: "#E50914", pink: "#FF5FA2", lilac: "#B05CF0", violet: "#B99AF7", blue: "#4F8CFF", teal: "#46D3C3", green: "#3DDC84", gold: "#F5B451", orange: "#FF8A3D", white: "#F4F1F8"},
   {get: (t, k) => typeof k === "string" && /^#[0-9a-f]{6}$/i.test(k) ? k : t[k]});
@@ -3299,7 +3301,7 @@ const REPORT_REASONS = ["Conteúdo impróprio", "Não tem a ver com música ou l
 function commOn(){ return teamAvailable() && !!TEAM.client; }
 function commIn(){ return commOn() && !!TEAM.user && teamRole() !== "blocked"; }
 function commMissing(error){ return !!error && (error.code === "42P01" || error.code === "PGRST205" || /does not exist|schema cache/i.test(error.message || "")); }
-function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
+function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, exBl: null, counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
 function commRerender(...views){ if (views.includes(state.view) || state.view === "library" || state.view === "setlist") rerenderKeepScroll(); }
 function commUrl(p){ return p ? COMM.urls[p] || "" : ""; }
 // Miniatura (~400 px) guardada ao lado da foto: a grade e os stories usam ela; a foto cheia só baixa ao abrir.
@@ -3351,7 +3353,7 @@ async function commLoadPosts(which){
   list.forEach(p => COMM.posts[p.id] = p);
   COMM[which] = list.map(p => p.id);
   await commAfterPosts(list);
-  if (which === "explore") commLoadFeatured();
+  if (which === "explore") { commLoadFeatured(); commLoadExBless(); }
   commRerender("community");
 }
 async function commLoadAuthorPosts(id){
@@ -3904,6 +3906,35 @@ document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-a^='rp-']"); if (!b) return;
   if (b.dataset.a === "rp-load") rpLoad(); else if (b.dataset.a === "rp-csv") rpCsv(); else if (b.dataset.a === "rp-pdf") rpPdf();
 });
+/* Blessings (vídeos curtos) no Explorar: capinhas pequenas; só toca (mudo) o que está na tela */
+async function commLoadExBless(){
+  if (!blOn()) return;
+  try {
+    const {data, error} = await TEAM.client.from("blessings").select("*").order("created_at", {ascending: false}).limit(8);
+    if (error || !data) return;
+    await blAfter(data); data.forEach(x => BLS.items[x.id] = x);
+    COMM.exBl = data.map(x => x.id); commRerender("community");
+  } catch (e) {}
+}
+function exBlCard(id){
+  const x = BLS.items[id]; if (!x) return "";
+  const a = COMM.profiles[x.author] || {};
+  return `<div class="ex-bl" role="button" tabindex="0" data-a="ex-bl" data-id="${esc(id)}" aria-label="Abrir o Blessing de ${esc(a.display_name || "")}"><video muted playsinline loop preload="none" poster="${esc(blUrl(x.thumb_key))}" data-src="${esc(blUrl(x.video_key))}"></video><span class="ex-bl-p">${BL_ICONS.play}</span><div class="ex-bl-o"><b>${esc((a.display_name || "").split(" ")[0])}</b><span>♥ ${BLS.likes[id] || 0}</span></div></div>`;
+}
+function exBlRow(){
+  const ids = (COMM.exBl || []).filter(id => BLS.items[id]); if (!ids.length) return "";
+  return `<section class="ex-sec"><h3 class="ex-h2">🎬 Blessings <button class="ex-more" data-a="tab" data-v="blessings">Ver todos ›</button></h3><div class="ex-row ex-blr">${ids.map(exBlCard).join("")}</div></section>`;
+}
+const EXV = {io: null};
+function exBlObs(){
+  if (!EXV.io && "IntersectionObserver" in window) EXV.io = new IntersectionObserver(es => es.forEach(en => {
+    const v = en.target;
+    if (en.isIntersecting && en.intersectionRatio >= .8 && !blSaveData() && !document.hidden) { if (!v.getAttribute("src")) v.src = v.dataset.src + "#t=0.1"; const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    else { v.pause(); if (v.getAttribute("src")) { v.removeAttribute("src"); v.load(); } }
+  }), {threshold: [0, .8]});
+  document.querySelectorAll(".ex-bl video:not([data-obs])").forEach(v => { v.dataset.obs = "1"; if (EXV.io) EXV.io.observe(v); });
+}
+new MutationObserver(() => exBlObs()).observe(document.documentElement, {childList: true, subtree: true});
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
 function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); if (full && !COMM.urls[p.image_path]) commSign([p.image_path]); return full ? (commUrl(p.image_path) || t) : t; }
@@ -3978,10 +4009,11 @@ function exploreView(){
     const best = feat || posts.filter(p => p.image_path).sort((a, b) => (COMM.likes[b.id] || 0) - (COMM.likes[a.id] || 0) || String(b.created_at).localeCompare(String(a.created_at)))[0];
     if (best) { out += exHero(best); heroId = best.id; }
     out += exRow(hasNear ? "⛪ Igrejas perto de você" : "⛪ Igrejas para conhecer", near.map(exChurchCard));
+    out += exBlRow();
     out += exRow("🙏 Orando agora", pray.slice(0, 6).map(exPrayCard), "Pedidos de oração recentes. Ore por alguém hoje.");
   } else if (f === "igreja") out += exRow("⛪ Igrejas no Blessed", near.map(exChurchCard));
   else if (f === "musico") out += exRow("🎹 Músicos para seguir", fresh(musicians).map(exPersonCard));
-  else if (f === "louvor") out += exTrending(posts);
+  else if (f === "louvor") out += exBlRow() + exTrending(posts);
   if (f === "oracao") out += shown.length ? shown.map(p => twCard(p.id)).join("") : '<p class="muted">Ainda não tem pedidos de oração. Seja o primeiro: toque em ＋ Postar e escolha 🙏 Oração.</p>';
   else {
     const grid = shown.filter(p => p.id !== heroId);
@@ -5976,6 +6008,7 @@ function commClick(a, b){
   else if (a === "inv-copy") inviteCopy();
   else if (a === "vd-share") vdShare();
   else if (a === "ex-tile") exTap(b.dataset.id, b);
+  else if (a === "ex-bl") blOpen(b.dataset.id);
   else if (a === "ex-f") { state.exF = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "ch-share") { const c = COMM.profiles[b.dataset.id] || {}; shareBlessedLink((c.display_name || "Igreja") + " no Blessed: cultos, agenda e comunidade.", location.origin + location.pathname); }
   else if (a === "vd-read") { const d = VD.data; if (d) { state.view = "study"; state.studyTab = "biblia"; bibleGo(d.code, d.c, d.vs[0]); } }
