@@ -4887,8 +4887,8 @@ function commDemoInvite(){
    O vídeo é comprimido no próprio celular (até 30 s, 720p, ~2,2 Mbps: uns 8 MB) e vai direto para o Cloudflare R2
    por um link temporário que a função "blessings" do Supabase assina. No feed só baixa o vídeo que está na tela
    (o próximo baixa só o começo); com "economia de dados" ligada, o vídeo só toca quando a pessoa toca nele. */
-const BLS = {list: null, items: {}, likes: {}, my: new Set(), more: true, loading: false, muted: true, up: null, file: null, msg: "", focus: null};
-const BL_MAX_S = 30, BL_SIDE = 720, BL_VBPS = 2200000;
+const BLS = {list: null, items: {}, likes: {}, my: new Set(), more: true, loading: false, muted: false, blocked: false, up: null, file: null, msg: "", focus: null};
+const BL_MAX_S = 90, BL_MAX_TXT = "1 min 30 s", BL_SIDE = 720, BL_VBPS = 2200000, BL_BUDGET = 13 * 8e6; // 13 MB no máximo por vídeo (o servidor aceita 15 MB)
 function blBase(){ return String((window.CC_SUPABASE && window.CC_SUPABASE.blessings) || "").replace(/\/$/, ""); }
 function blOn(){ return commOn() && !!blBase(); }
 function blUrl(key){ return key ? blBase() + "/" + key.split("/").map(encodeURIComponent).join("/") : ""; }
@@ -4966,7 +4966,7 @@ function blTeaser(){
   const tiles = DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
     return `<button class="bl-tile" data-a="cm-demo" style="background-image:url('${esc(x.img)}')"><em class="cm-demo-tag">Exemplo</em><span class="bl-tile-play">${BL_ICONS.play}</span><b>${esc(a.n)}</b></button>`; }).join("");
   return `<section class="cm-hero"><p class="cm-kicker">Vídeos curtos de louvor</p><h2>Blessings</h2>
-      <p>Trechos de ensaio, solos, momentos do culto e testemunhos em vídeos de até 30 segundos. Leves para o seu plano de dados: o app comprime antes de enviar.</p>
+      <p>Trechos de ensaio, solos, momentos do culto e testemunhos em vídeos de até 1 min 30 s. Leves para o seu plano de dados: o app comprime antes de enviar.</p>
       <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
     <p class="cm-demo-note">👀 Exemplos de como fica. Os vídeos de verdade aparecem quando você entra.</p>
     <div class="bl-tiles">${tiles}</div>`;
@@ -5003,15 +5003,30 @@ function blSetup(){
     if (e.isIntersecting && e.intersectionRatio > .6) {
       if (!v.src) v.src = v.dataset.src;
       v.preload = "auto";
-      if (!blSaveData() || v.dataset.go) v.play().then(() => blPlayIcon(e.target, false)).catch(() => blPlayIcon(e.target, true)); else blPlayIcon(e.target, true);
+      if (!blSaveData() || v.dataset.go) blAutoPlay(v, e.target); else blPlayIcon(e.target, true);
       const next = e.target.nextElementSibling && e.target.nextElementSibling.querySelector("video");
       if (next && !next.src && !blSaveData()) { next.preload = "metadata"; next.src = next.dataset.src; }
     } else if (!v.paused) v.pause();
   }), {root: feed, threshold: [0, .6]});
   items.forEach(el => blObs.observe(el));
+  // se o celular travou o som no início, o primeiro toque ou deslize liga o som
+  if (!feed._ul) { feed._ul = 1; feed.addEventListener("pointerup", () => { if (BLS.blocked && BLS.muted) { BLS.blocked = false; blSetMuted(false); const cur = [...document.querySelectorAll(".bl-v")].find(x => !x.paused); if (cur) cur.play().catch(() => {}); } }, {passive: true}); }
   const end = $("#bl-end");
   if (end) { blEndObs = new IntersectionObserver(es => { if (es[0].isIntersecting) blLoad(); }, {root: feed, rootMargin: "0px 0px 100% 0px"}); blEndObs.observe(end); }
   if (BLS.focus) { const el = feed.querySelector(`.bl-item[data-id="${CSS.escape(BLS.focus)}"]`); if (el) el.scrollIntoView(); BLS.focus = null; }
+}
+// Tenta tocar COM som. Se o celular não deixar (acontece até em apps grandes), toca mudo e avisa.
+function blAutoPlay(v, item){
+  v.muted = BLS.muted;
+  const p = v.play();
+  if (!p || !p.then) return;
+  p.then(() => blPlayIcon(item, false)).catch(() => {
+    if (!BLS.muted) {
+      BLS.blocked = true; blSetMuted(true);
+      if (!BLS.hinted) { BLS.hinted = true; flash("🔊 Toque na tela para ligar o som"); }
+      v.play().then(() => blPlayIcon(item, false)).catch(() => blPlayIcon(item, true));
+    } else blPlayIcon(item, true);
+  });
 }
 function blPlayIcon(item, show){ const p = item.querySelector(".bl-play"); if (p) p.hidden = !show; }
 // Atualiza a tela sem perder a posição do feed nem reiniciar o vídeo que está tocando
@@ -5108,8 +5123,8 @@ function viewBlessingNew(){
   return `<div class="top">${back}<h1 class="page-title" style="font-size:28px">Novo Blessing</h1></div>
     <section class="panel bl-form">
       ${f ? `<div class="bl-prev"><video id="bl-prev" src="${esc(f.url)}" playsinline muted loop autoplay></video></div>
-        <p class="muted" style="font-size:13px;margin:8px 0 0">${f.dur > BL_MAX_S ? `O vídeo tem ${Math.round(f.dur)} s: vão os <b>primeiros ${BL_MAX_S} segundos</b>.` : `${Math.round(f.dur)} s`} · o app deixa ele leve (720p) antes de enviar.</p>`
-        : `<label class="bl-pick"><input id="bl-file" type="file" accept="video/*" hidden>${BL_ICONS.plus}<b>Escolher vídeo</b><span class="muted">Até ${BL_MAX_S} segundos. Vídeo em pé fica melhor.</span></label>`}
+        <p class="muted" style="font-size:13px;margin:8px 0 0">${f.dur > BL_MAX_S ? `O vídeo tem ${Math.round(f.dur)} s: vão os <b>primeiros ${BL_MAX_TXT}</b>.` : `${Math.round(f.dur)} s`} · o app deixa ele leve (720p) antes de enviar.</p>`
+        : `<label class="bl-pick"><input id="bl-file" type="file" accept="video/*" hidden>${BL_ICONS.plus}<b>Escolher vídeo</b><span class="muted">Até ${BL_MAX_TXT}. Vídeo em pé fica melhor.</span></label>`}
       <label style="display:block;margin-top:14px"><span class="muted" style="font-size:13px">Legenda</span>
         <textarea id="bl-cap" maxlength="300" rows="3" placeholder="Conte o que está rolando (opcional)" ${u.busy ? "disabled" : ""}>${esc(u.cap || BLS.capDraft || "")}</textarea></label>
       ${u.busy ? "" : `<div style="margin-top:12px">${pfTagPicker()}</div>${placeEditor("blessing")}`}
@@ -5146,7 +5161,7 @@ function blCompress(f, ac, onProg){
     const v = document.createElement("video"); v.src = f.url; v.playsInline = true; v.muted = false; v.volume = 1;
     const stream = cv.captureStream(30);
     try { const src = ac.createMediaElementSource(v), dst = ac.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(t => stream.addTrack(t)); } catch(e) {}
-    const rec = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: BL_VBPS, audioBitsPerSecond: 64000});
+    const rec = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: Math.max(600000, Math.min(BL_VBPS, Math.round(BL_BUDGET / dur - 70000))), audioBitsPerSecond: 64000});
     const parts = []; let thumb = null, done = false;
     rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
     rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); v.pause(); v.removeAttribute("src"); v.load();
