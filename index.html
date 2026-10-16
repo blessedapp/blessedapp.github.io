@@ -952,6 +952,8 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.st-hero{margin:0 0 14px;padding:14px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(176,92,240,.18),rgba(176,92,240,.05));border:1px solid rgba(176,92,240,.35)}.st-hero b{font-size:17px}.st-hero p{margin:4px 0 10px;font-size:13px;color:var(--muted)}.st-hero .btn{font-size:13px;padding:9px 14px;min-height:0}
+.st-list{display:grid;gap:12px}.st-card{border-radius:22px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 22px rgba(70,25,110,.1)}.st-cv{display:block;width:100%;height:88px;border:0;padding:0;background:var(--acc) center/cover no-repeat}.st-b{display:flex;align-items:center;gap:10px;padding:10px 12px}.st-id{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;text-align:left;color:var(--ink);font:inherit}.st-id span{display:grid;min-width:0}.st-id b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.st-id small{color:var(--muted)}.st-bio{margin:0;padding:0 14px 12px;font-size:14px;line-height:1.4;color:var(--ink)}.st-b .btn{flex:none;font-size:13px;padding:8px 14px;min-height:0}
 .pf-private{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .mention{color:#8a2be0;font-weight:700;background:rgba(138,43,224,.12);border-radius:6px;padding:0 3px;cursor:pointer}
 .hashtag{color:#a15cf2;font-weight:600;cursor:pointer}
@@ -968,7 +970,7 @@ html:not([data-appearance=light]) .mention{color:#cf9bff;background:rgba(200,150
 .cm-bub-r .cm-av{width:68px!important;height:68px!important;font-size:24px!important;border:3px solid var(--bg)!important;border-radius:19px!important;box-sizing:border-box;overflow:hidden}
 .cm-bub-r .cm-av>img{border-radius:16px}
 .cm-bub-n{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#a46bff,#6a2aae);color:#fff;font:800 10px var(--f-body);font-style:normal;padding:2px 9px;border-radius:99px;border:2px solid var(--bg);white-space:nowrap}
-.cm-bub b{display:flex;align-items:center;justify-content:center;gap:3px;max-width:78px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-bub b{display:block;text-align:center;width:78px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ex-h2{display:flex;align-items:center;justify-content:space-between;gap:10px}.ex-more{border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:4px 2px}
 .ex-bl{position:relative;flex:none;width:124px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#1c1230;scroll-snap-align:start;cursor:pointer;box-shadow:0 8px 20px rgba(40,10,70,.25)}.ex-bl video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ex-bl-p{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,4,24,.6);color:#fff;display:grid;place-items:center}.ex-bl-p svg{width:14px;height:14px}.ex-bl-o{position:absolute;left:0;right:0;bottom:0;padding:26px 9px 8px;display:flex;justify-content:space-between;align-items:center;gap:6px;color:#fff;font:700 12px var(--f-body);background:linear-gradient(0deg,rgba(10,4,24,.85),rgba(10,4,24,0))}.ex-bl-o b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rp-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.rp-c{padding:12px;border-radius:16px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.rp-c b{display:block;font-size:24px;line-height:1.1}.rp-c small{display:block;margin-top:2px;font-size:12px;opacity:.75}.rp h4{margin:16px 0 6px}.rp-l{margin:0;padding-left:22px;display:grid;gap:6px}.rp-l li span{float:right;opacity:.75;font-size:13px}.rp-l small{opacity:.65}
@@ -3420,7 +3422,7 @@ async function commLoadProfile(id){
 }
 function commAvatar(p, size,showListening=true){
   const u = p && commUrl(p.avatar_path), c = THEMES[(p && p.theme)] || THEMES.red;
-  return `<span class="cm-av${p && p.kind === "igreja" ? " sq" : ""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .4)}px;--acc:${c}">${u ? `<img src="${esc(u)}" alt="">` : esc(initials((p && p.display_name) || "?"))}${showListening&&lmLive(p?.listening_now)?`<span class="lm-avatar-disc" title="${esc(p.listening_now.title)}">${lmCover(p.listening_now.track)}</span>`:""}</span>`;
+  return `<span class="cm-av${p && (p.kind === "igreja" || p.kind === "loja") ? " sq" : ""}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .4)}px;--acc:${c}">${u ? `<img src="${esc(u)}" alt="">` : esc(initials((p && p.display_name) || "?"))}${showListening&&lmLive(p?.listening_now)?`<span class="lm-avatar-disc" title="${esc(p.listening_now.title)}">${lmCover(p.listening_now.track)}</span>`:""}</span>`;
 }
 function commAgo(iso){
   const s = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -4010,6 +4012,40 @@ document.addEventListener("pointerdown", e => {
   const pos = t.selectionStart, before = t.value.slice(0, pos).replace(/@([A-Za-z0-9_.]*)$/, "@" + b.dataset.mn + " ");
   t.value = before + t.value.slice(pos); t.selectionStart = t.selectionEnd = before.length; t.focus(); mnHide();
 });
+/* ---------- Lojas e negócios: área separada do Explorar ---------- */
+function isStore(p){ return !!p && p.kind === "loja"; }
+const STR = {posts: null};
+function commStores(){ return (COMM.people || []).filter(isStore).sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))); }
+async function commLoadStorePosts(){
+  const ids = commStores().map(s => s.id); if (!ids.length) { STR.posts = []; return; }
+  try {
+    const {data} = await TEAM.client.from("posts").select("*").in("author", ids).order("created_at", {ascending: false}).limit(30);
+    const list = data || []; list.forEach(p => COMM.posts[p.id] = p);
+    await commAfterPosts(list); STR.posts = list.map(p => p.id);
+  } catch (e) { STR.posts = []; }
+  commRerender("community");
+}
+function exStoreRow(){
+  const list = commStores().slice(0, 14); if (!list.length) return "";
+  const cards = list.map(p => `<button class="cm-bub st" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}" aria-label="Loja ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}</span><b>${esc(p.display_name || "")}${commBadge(p)}</b></button>`).join("");
+  return `<section class="ex-sec"><h3 class="ex-h2">🛍️ Lojas <button class="ex-more" data-a="cm-tab" data-v="lojas">Ver todas ›</button></h3><div class="cm-bubs">${cards}</div></section>`;
+}
+function commStoreCard(p){
+  const cv = commUrl(p.cover_path);
+  return `<div class="st-card" style="--acc:${THEMES[p.theme] || THEMES.red}"><button class="st-cv" data-a="cm-profile" data-id="${esc(p.id)}" aria-label="Abrir ${esc(p.display_name || "")}"${cv ? ` style="background-image:url(&quot;${esc(cv)}&quot;)"` : ""}></button>
+    <div class="st-b"><button class="st-id" data-a="cm-profile" data-id="${esc(p.id)}">${commAvatar(p, 56, false)}<span><b>${esc(p.display_name || "")}${commBadge(p)}</b><small>${p.city ? "📍 " + esc(p.city) : "@" + esc(p.handle || "")}</small></span></button>${commFollowBtn(p.id)}</div>
+    ${p.bio ? `<p class="st-bio">${esc(p.bio)}</p>` : ""}</div>`;
+}
+function commStoresTab(){
+  const stores = commStores(), mineStore = COMM.me && isStore(COMM.me);
+  if (STR.posts === null && stores.length) { STR.posts = []; commLoadStorePosts(); }
+  let out = `<div class="st-hero"><b>🛍️ Lojas e negócios</b><p>Quem vende ou presta serviço na comunidade. Siga a loja que você gosta.</p>${mineStore ? "" : '<button class="btn" data-a="cm-edit">Tenho um negócio: criar minha loja</button>'}</div>`;
+  if (!stores.length) return out + '<p class="muted">Ainda não há lojas por aqui. Seja a primeira!</p>';
+  out += `<div class="st-list">${stores.map(commStoreCard).join("")}</div>`;
+  const posts = (STR.posts || []).map(id => COMM.posts[id]).filter(Boolean);
+  if (posts.length) out += `<h3 class="ex-h2" style="margin-top:18px">Novidades das lojas</h3><div class="ex-grid">${posts.map(exTile).join("")}</div>`;
+  return out;
+}
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
 function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); if (full && !COMM.urls[p.image_path]) commSign([p.image_path]); return full ? (commUrl(p.image_path) || t) : t; }
@@ -4063,14 +4099,14 @@ function exTrending(posts){
 function exploreView(){
   if (state.exTag) return exTagView();
   const f = state.exF || "all", me = TEAM.user ? TEAM.user.id : "";
-  const posts = (COMM.explore || []).map(id => COMM.posts[id]).filter(Boolean);
-  const people = (COMM.people || []).filter(p => p.id !== me), follow = p => !COMM.following.has(p.id);
+  const posts = (COMM.explore || []).map(id => COMM.posts[id]).filter(Boolean).filter(p => !isStore(exPostAuthor(p)));
+  const people = (COMM.people || []).filter(p => p.id !== me && !isStore(p)), follow = p => !COMM.following.has(p.id);
   const churches = people.filter(isChurch), musicians = people.filter(p => !isChurch(p));
   const myCity = norm((COMM.me && COMM.me.city) || "");
   const near = churches.slice().sort((a, b) => (norm(b.city || "") === myCity && myCity ? 1 : 0) - (norm(a.city || "") === myCity && myCity ? 1 : 0) || commRank(b) - commRank(a)).slice(0, 12);
   const hasNear = myCity && near.some(c => norm(c.city || "") === myCity);
   const fresh = list => list.filter(follow).sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 12);
-  const chips = [["all", "Tudo"], ["igreja", "Igrejas"], ["musico", "Músicos"], ["louvor", "Louvor"], ["oracao", "Oração"]]
+  const chips = [["all", "Tudo"], ["igreja", "Igrejas"], ["louvor", "Louvor"], ["oracao", "Oração"]]
     .map(([v, l]) => `<button type="button" data-a="ex-f" data-v="${v}" aria-pressed="${f === v}">${l}</button>`).join("");
   const pray = posts.filter(p => p.kind === "oracao");
   let shown = posts;
@@ -4225,7 +4261,7 @@ function commGrid(ids){
 
 function commPersonCard(p){
   const s = [p.display_name, p.handle, p.church, p.city, (p.instruments || []).join(" "), isChurch(p) ? "igreja" : ""].join(" ").toLowerCase();
-  return `<div class="cm-person" data-s="${esc(s)}" style="--acc:${THEMES[p.theme] || THEMES.red}">${isChurch(p) ? `<span class="cm-kind">${PPL_ICONS.igreja}Igreja</span>` : ""}
+  return `<div class="cm-person" data-s="${esc(s)}" style="--acc:${THEMES[p.theme] || THEMES.red}">${isChurch(p) ? `<span class="cm-kind">${PPL_ICONS.igreja}Igreja</span>` : isStore(p) ? `<span class="cm-kind">🛍️ Loja</span>` : ""}
     <button class="cm-person-main" data-a="cm-profile" data-id="${esc(p.id)}">${commAvatar(p, 64)}
       <b>${esc(p.display_name)}${commBadge(p)}</b><span class="muted">@${esc(p.handle)}</span>
       ${p.church ? `<span class="cm-church">${isChurch(p) ? "" : PPL_ICONS.igreja}${esc(p.church)}</span>` : ""}${isChurch(p) && p.city ? `<span class="muted" style="font-size:12px">${esc(p.city)}</span>` : ""}
@@ -4238,13 +4274,13 @@ function commStories(){
   const others = all.filter(p => p.id !== TEAM.user.id).slice(0, 30);
   const week = Date.now() - 7 * 86400000, isNew = p => p.created_at && new Date(p.created_at).getTime() > week;
   // os que entraram há pouco, em bolinhas: cabem muitos na mesma linha
-  const fresh = (COMM.people || []).filter(p => p.id !== TEAM.user.id).slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 24);
+  const fresh = (COMM.people || []).filter(p => p.id !== TEAM.user.id && !isStore(p)).slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 24);
   const bubs = fresh.map(p => `<button class="cm-bub${isNew(p) ? " nw" : ""}" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}" aria-label="Perfil de ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}${isNew(p) ? '<em class="cm-bub-n">Novo</em>' : ""}</span><b>${esc((p.display_name || "").split(" ")[0])}${commBadge(p)}</b></button>`).join("");
   return bubs ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-bubs">${bubs}</div>` : "";
 }
 function commStoryStrip(){
   const all = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || "")));
-  return stStrip(all.filter(p => p.id !== TEAM.user.id).slice(0, 30));
+  return stStrip(all.filter(p => p.id !== TEAM.user.id && !isStore(p)).slice(0, 30));
 }
 // Comunidade para quem ainda não entrou: perfis e posts DE EXEMPLO (sem fotos de pessoas reais),
 // só para mostrar como funciona. Os dados de verdade dos membros continuam só para quem tem login.
@@ -4288,9 +4324,9 @@ function commDemoHtml(){
       <p class="cm-cap"><b>${esc(a.n)}</b> ${esc(x.cap)}</p>
       ${x.song ? `<p class="cm-songtag">🎵 ${esc(x.song)}</p>` : ""}
     </article>`; }).join("");
-  return `<section class="cm-hero"><p class="cm-kicker">Músicos, igrejas e membros</p>
+  return `<section class="cm-hero"><p class="cm-kicker">Pessoas, igrejas e lojas</p>
       <h2>A comunidade do louvor</h2>
-      <p>Crie seu perfil de músico, de igreja ou de membro. Siga a sua igreja e os músicos, poste fotos tocando e veja o que a galera está tocando nos cultos.</p>
+      <p>Crie seu perfil de pessoa, de igreja ou de loja. Siga igrejas e amigos, poste seus momentos e conheça as lojas da comunidade.</p>
       <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
     <p class="cm-demo-note">👀 Veja como funciona. Abaixo são <b>exemplos ilustrativos</b> (pessoas e fotos criadas com IA). Os perfis de verdade aparecem quando você entra.</p>
     <div class="cm-stories" role="list" aria-label="Perfis de exemplo">${stories}</div>
@@ -5710,19 +5746,21 @@ function viewCommunity(){
   let body = "";
   if (tab === "people") {
     const pk = state.cmKind && state.cmKind !== "membro" ? state.cmKind : "all";
-    const others = (COMM.people || []).filter(p => p.id !== TEAM.user.id && (pk === "all" || commKindOf(p) === pk)).sort((a, b) => commRank(b) - commRank(a));
+    const others = (COMM.people || []).filter(p => p.id !== TEAM.user.id && (pk === "all" || (isStore(p) ? "loja" : isChurch(p) ? "igreja" : "musico") === pk)).sort((a, b) => commRank(b) - commRank(a));
     const chip = (v, l) => `<button type="button" data-a="cm-pk" data-v="${v}" aria-pressed="${pk === v}">${l}</button>`;
-    body = `<div class="cm-chips pick" style="margin:0 0 12px">${chip("all", PPL_ICONS.all + "Todos")}${chip("musico", PPL_ICONS.musico + "Músicos")}${chip("igreja", PPL_ICONS.igreja + "Igrejas")}</div>
-      <input id="cm-q" class="cm-search" type="search" placeholder="Buscar por nome, igreja ou cidade" aria-label="Buscar músicos e igrejas">
-      <div class="cm-people">${others.map(commPersonCard).join("") || '<p class="muted">Ainda não tem ninguém aqui. Chame os músicos da sua igreja!</p>'}</div>`;
+    body = `<div class="cm-chips pick" style="margin:0 0 12px">${chip("all", PPL_ICONS.all + "Todos")}${chip("musico", PPL_ICONS.all + "Pessoas")}${chip("igreja", PPL_ICONS.igreja + "Igrejas")}${chip("loja", "🛍️ Lojas")}</div>
+      <input id="cm-q" class="cm-search" type="search" placeholder="Buscar por nome, igreja ou cidade" aria-label="Buscar pessoas, igrejas e lojas">
+      <div class="cm-people">${others.map(commPersonCard).join("") || '<p class="muted">Ainda não tem ninguém aqui. Chame as pessoas da sua igreja!</p>'}</div>`;
+  } else if (tab === "lojas") {
+    body = commStoresTab();
   } else if (tab === "feed") {
     body = COMM.feed.length ? COMM.feed.map(commPostCard).join("")
-      : `<div class="panel"><p style="margin:0">Aqui aparecem as fotos de quem você segue. <button class="lnk2" data-a="cm-tab" data-v="people">Encontrar músicos para seguir</button></p></div>`;
+      : `<div class="panel"><p style="margin:0">Aqui aparecem as fotos de quem você segue. <button class="lnk2" data-a="cm-tab" data-v="people">Encontrar pessoas para seguir</button></p></div>`;
   } else {
     body = exploreView();
   }
-  return wrap(`${tab === "people" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
-    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`, false, (tab === "people" ? "" : commStoryStrip() + exBlRow()) + communityInvite());
+  return wrap(`${tab === "people" || tab === "lojas" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
+    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("lojas", "Lojas")}${seg("people", "Pessoas")}</div>${body}`, false, (tab === "people" || tab === "lojas" ? "" : commStoryStrip() + exBlRow() + exStoreRow()) + communityInvite());
 }
 function viewProfile(){
   if(!TEAM.user||COMM.me===null)return pcProfile();
@@ -5745,7 +5783,8 @@ function viewProfile(){
     ${lmCard(p.listening_now)}
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
-    ${(() => { if (isChurch(p)) return p.church || p.city ? `<p class="cm-church big">${commWhere(p)}</p>` : "";
+    ${isStore(p) ? '<p class="cm-kindbar">🛍️ Perfil de loja</p>' : ""}
+    ${(() => { if (isStore(p)) return p.city ? `<p class="cm-church big">📍 ${esc(p.city)}</p>` : ""; if (isChurch(p)) return p.church || p.city ? `<p class="cm-church big">${commWhere(p)}</p>` : "";
       const ch = commChurchOf(p.church);
       if (ch) return `<p class="cm-church big">⛪ <button class="lnk2 cm-chlink" data-a="cm-profile" data-id="${esc(ch.id)}">${esc(commChurchLabel(p.church))}</button>${p.city ? " · " + esc(p.city) : ""}</p>`;
       return p.church || p.city ? `<p class="cm-church big">⛪ ${commWhere(p)}</p>` : ""; })()}
@@ -5763,7 +5802,7 @@ function viewProfile(){
     ${(p.services || []).map((x, i) => `<div class="ag-svc"><span><b>${DOW[x.d]}</b> · ${esc(x.t)}${x.n ? " · " + esc(x.n) : ""}</span><button class="icon-btn" data-a="ag-ics" data-c="${esc(p.id)}" data-i="${i}" aria-label="Lembrar toda semana no calendário">🔔</button></div>`).join("")}
     ${p.schedule ? `<p class="cm-bio" style="margin:6px 0 0">${esc(p.schedule)}</p>` : ""}</section>` : ""}
   ${isChurch(p) ? (() => { if (COMM.people === null) { COMM.people = []; commLoadPeople(); } const ms = commMembersOf(p);
-      return `<section class="panel"><h3 style="font-size:17px;margin-bottom:8px">🎹 Músicos desta igreja${ms.length ? ` (${ms.length})` : ""}</h3>${ms.length ? `<div class="cm-stories" style="margin:0;padding-inline:0">${ms.map(m => `<button class="cm-story" data-a="cm-profile" data-id="${esc(m.id)}" style="--acc:${THEMES[m.theme] || THEMES.red}">${commAvatar(m, 56)}<span>${esc((m.display_name || "").split(" ")[0])}${commBadge(m)}</span></button>`).join("")}</div>` : '<p class="muted" style="margin:0;font-size:14px">Quando os músicos escreverem esta igreja no perfil deles, eles aparecem aqui.</p>'}</section>`; })() : ""}
+      return `<section class="panel"><h3 style="font-size:17px;margin-bottom:8px">🙌 Pessoas desta igreja${ms.length ? ` (${ms.length})` : ""}</h3>${ms.length ? `<div class="cm-stories" style="margin:0;padding-inline:0">${ms.map(m => `<button class="cm-story" data-a="cm-profile" data-id="${esc(m.id)}" style="--acc:${THEMES[m.theme] || THEMES.red}">${commAvatar(m, 56)}<span>${esc((m.display_name || "").split(" ")[0])}${commBadge(m)}</span></button>`).join("")}</div>` : '<p class="muted" style="margin:0;font-size:14px">Quando os músicos escreverem esta igreja no perfil deles, eles aparecem aqui.</p>'}</section>`; })() : ""}
   ${songs.length ? `<section class="panel"><h3 style="font-size:17px;margin-bottom:4px">🎹 ${isChurch(p) ? "Músicas que tocamos" : "Músicas que eu toco"}</h3>${songs.map(commSongLink).join("")}</section>` : ""}
   ${recent.length ? `<section class="rc-sec"><h3 class="cm-sec" style="margin-top:0">🎧 Tocadas recentemente</h3>${recentBubbles(recent.slice(0, 10))}</section>` : ""}
   ${pfTabs(id, me, posts)}
@@ -5792,19 +5831,19 @@ function commSongOptions(){
 const KEYS = ["C", "C#", "Db", "D", "Eb", "E", "F", "F#", "Gb", "G", "Ab", "A", "Bb", "B"].flatMap(k => [k, k + "m"]);
 function viewProfileEdit(){
   const e = state.cmEdit; if (!e) { state.view = "community"; return viewCommunity(); }
-  const isNew = !COMM.me, av = e.avatarData || commUrl(e.avatar_path), cv = e.coverData || commUrl(e.cover_path), church = e.kind === "igreja", member = e.kind === "membro";
+  const isNew = !COMM.me, av = e.avatarData || commUrl(e.avatar_path), cv = e.coverData || commUrl(e.cover_path), church = e.kind === "igreja", member = false, store = e.kind === "loja";
   if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
   return `<div class="top"><button class="btn ghost" data-a="cm-edit-cancel">‹ Voltar</button><h1 style="font-size:20px">${isNew ? "Criar meu perfil" : "Editar perfil"}</h1></div>
   <form class="form cm-form" id="cm-form" style="--acc:${THEMES[e.theme] || THEMES.red}">
     <div class="cm-cover edit"${cv ? ` style="background-image:url(&quot;${esc(cv)}&quot;)"` : ""}><label class="btn file-btn">📷 Foto de capa<input id="cm-cover-file" type="file" accept="image/*"></label></div>
-    <div class="cm-id">${av ? `<span class="cm-av${church ? " sq" : ""}" style="width:96px;height:96px"><img src="${esc(av)}" alt=""></span>` : `<span class="cm-av${church ? " sq" : ""}" style="width:96px;height:96px;font-size:36px">${esc(initials(e.display_name || "?"))}</span>`}
+    <div class="cm-id">${av ? `<span class="cm-av${church || store ? " sq" : ""}" style="width:96px;height:96px"><img src="${esc(av)}" alt=""></span>` : `<span class="cm-av${church || store ? " sq" : ""}" style="width:96px;height:96px;font-size:36px">${esc(initials(e.display_name || "?"))}</span>`}
       <label class="btn file-btn">📷 Foto de perfil<input id="cm-avatar-file" type="file" accept="image/*"></label></div>
     <fieldset class="cm-field"><legend>Tipo de perfil</legend><div class="inst cm-seg" role="group" aria-label="Tipo de perfil" style="margin:0">
-      <button type="button" data-a="cm-kind" data-v="musico" aria-pressed="${!church && !member}">🎹 Sou músico(a)</button><button type="button" data-a="cm-kind" data-v="igreja" aria-pressed="${church}">⛪ Sou uma igreja</button><button type="button" data-a="cm-kind" data-v="membro" aria-pressed="${member}">🙋 Sou membro</button></div>
-      <span class="cm-hmsg">${church ? "Perfil oficial da igreja: horários dos cultos, músicas e os músicos de vocês." : member ? "Para quem quer seguir a igreja e os músicos. Perfil simples, sem instrumentos." : "Para quem toca ou canta: instrumentos e músicas que você toca."}</span></fieldset>
-    <label>${church ? "Nome da igreja" : "Nome"}<input id="cm-name" maxlength="60" value="${esc(e.display_name || "")}" placeholder="${church ? "Ex.: Igreja Batista Central de Olinda" : "Como você quer aparecer"}"></label>
+      <button type="button" data-a="cm-kind" data-v="musico" aria-pressed="${!church && !store}">🙋 Pessoa</button><button type="button" data-a="cm-kind" data-v="loja" aria-pressed="${store}">🛍️ Loja / Negócio</button><button type="button" data-a="cm-kind" data-v="igreja" aria-pressed="${church}">⛪ Igreja</button></div>
+      <span class="cm-hmsg">${church ? "Perfil oficial da igreja: horários dos cultos e as pessoas de vocês." : store ? "Para lojas e negócios: mostre seus produtos e serviços. A loja já aparece na hora, sem esperar aprovação." : "Seu perfil pessoal: siga igrejas e amigos, poste e converse."}</span></fieldset>
+    <label>${church ? "Nome da igreja" : store ? "Nome da loja" : "Nome"}<input id="cm-name" maxlength="60" value="${esc(e.display_name || "")}" placeholder="${church ? "Ex.: Igreja Batista Central de Olinda" : store ? "Ex.: Jaqueline Variedades" : "Como você quer aparecer"}"></label>
     <label>Nome de usuário<input id="cm-handle" maxlength="20" value="${esc(e.handle || "")}" placeholder="ex.: larissa.teclado" autocapitalize="none" spellcheck="false"><span id="cm-handle-msg" class="cm-hmsg" aria-live="polite"></span></label>
-    ${church ? `<label>Denominação / ministério (opcional)<input id="cm-church" maxlength="80" value="${esc(e.church || "")}" placeholder="Ex.: Convenção Batista Brasileira"></label>`
+    ${store ? "" : church ? `<label>Denominação / ministério (opcional)<input id="cm-church" maxlength="80" value="${esc(e.church || "")}" placeholder="Ex.: Convenção Batista Brasileira"></label>`
       : `<label>${member ? "Igreja que você frequenta" : "Igreja que você faz parte"}<input id="cm-church" list="cm-churches" maxlength="80" value="${esc(e.church || "")}" placeholder="Ex.: Assembleia de Deus Ministério Belém"><span class="cm-hmsg">${member ? "Se a sua igreja tiver perfil aqui, escolha o nome dela na lista e siga a igreja." : "Se a sua igreja tiver perfil aqui, escolha o nome dela na lista: você aparece em \"Músicos desta igreja\"."}</span></label>
       <datalist id="cm-churches">${(COMM.people || []).filter(isChurch).map(c => `<option value="${esc(c.display_name)}">`).join("")}</datalist>`}
     <label>Cidade<input id="cm-city" maxlength="60" value="${esc(e.city || "")}" placeholder="Ex.: Recife - PE"></label>
@@ -5813,10 +5852,10 @@ function viewProfileEdit(){
       <div class="cm-addsvc"><select id="cm-svc-d" aria-label="Dia">${DOW.map((d, i) => `<option value="${i}">${d}</option>`).join("")}</select><input id="cm-svc-t" type="time" value="19:00" aria-label="Hora"><input id="cm-svc-n" maxlength="40" placeholder="Nome (ex.: Culto de oração)" aria-label="Nome do culto"><button type="button" class="btn" data-a="cm-svc-add">Adicionar</button></div>
       <span class="cm-hmsg">Os horários aparecem no perfil da igreja, dentro da Comunidade.</span></fieldset>
     <label>Observações sobre os cultos (opcional)<textarea id="cm-schedule" maxlength="300" rows="2" placeholder="Ex.: Santa ceia no 1º domingo do mês">${esc(e.schedule || "")}</textarea></label>` : ""}
-    <fieldset class="cm-field"${church || member ? " hidden" : ""}><legend>O que você toca</legend><div class="cm-chips pick">${INSTRUMENTS.map(i => `<button type="button" data-a="cm-inst" data-v="${esc(i)}" aria-pressed="${(e.instruments || []).includes(i)}">${esc(i)}</button>`).join("")}</div></fieldset>
-    <label>${church ? "Sobre a igreja" : "Sobre você"}<textarea id="cm-bio" maxlength="300" rows="3" placeholder="${church ? "Ex.: Igreja acolhedora no centro de Olinda. Ministério de louvor com 12 músicos." : member ? "Ex.: Membro da igreja há 10 anos, amo o louvor de domingo." : "Ex.: Tecladista há 5 anos, apaixonada por louvor congregacional."}">${esc(e.bio || "")}</textarea></label>
+    <fieldset class="cm-field"${church || store ? " hidden" : ""}><legend>O que você toca</legend><div class="cm-chips pick">${INSTRUMENTS.map(i => `<button type="button" data-a="cm-inst" data-v="${esc(i)}" aria-pressed="${(e.instruments || []).includes(i)}">${esc(i)}</button>`).join("")}</div></fieldset>
+    <label>${church ? "Sobre a igreja" : store ? "Sobre a loja" : "Sobre você"}<textarea id="cm-bio" maxlength="300" rows="3" placeholder="${church ? "Ex.: Igreja acolhedora no centro de Olinda. Ministério de louvor com 12 músicos." : store ? "Ex.: Roupas, presentes e variedades. Entregamos na sua casa. Chame no contato!" : "Ex.: Tecladista há 5 anos, apaixonada por louvor congregacional."}">${esc(e.bio || "")}</textarea></label>
     <fieldset class="cm-field"><legend>Cor do seu perfil</legend><div class="cm-swatches">${Object.entries(THEMES).map(([k, c]) => `<button type="button" data-a="cm-theme" data-v="${k}" aria-pressed="${e.theme === k}" aria-label="Cor ${k}" style="background:${c}"></button>`).join("")}<label class="cm-wheel${/^#/.test(e.theme || "") ? " on" : ""}" title="Escolher qualquer cor" style="${/^#/.test(e.theme || "") ? `--c:${e.theme}` : ""}"><input id="cm-theme-any" type="color" value="${/^#/.test(e.theme || "") ? e.theme : "#b05cf0"}" aria-label="Escolher qualquer cor"></label></div><p class="muted" style="font-size:12px;margin:6px 0 0">Toque na roda colorida para escolher qualquer cor.</p></fieldset>
-    <fieldset class="cm-field"${member ? " hidden" : ""}><legend>${church ? "Músicas que tocamos" : "Músicas que eu toco"}</legend>
+    <fieldset class="cm-field"${store ? " hidden" : ""}><legend>${church ? "Músicas que tocamos" : "Músicas que eu toco"}</legend>
       ${(e.songs || []).map((s, i) => `<div class="set-row"><span class="t" style="flex:1;min-width:0"><b>${esc(s.name)}</b> <span class="muted" style="font-size:13px">${esc(s.artist || "")}</span></span>${s.key ? `<span class="tag">${esc(s.key)}</span>` : ""}<button type="button" class="btn ghost" data-a="cm-song-del" data-i="${i}" aria-label="Tirar ${esc(s.name)}">✕</button></div>`).join("")}
       <div class="cm-addsong"><input id="cm-song" list="cm-songs" placeholder="Nome da música — artista"><select id="cm-song-key" aria-label="Tom que você toca"><option value="">Tom</option>${KEYS.map(k => `<option>${k}</option>`).join("")}</select><button type="button" class="btn" data-a="cm-song-add">Adicionar</button></div>
       <datalist id="cm-songs">${commSongOptions().map(o => `<option value="${esc(o)}">`).join("")}</datalist></fieldset>
@@ -5890,17 +5929,17 @@ async function commSaveProfile(){
   const e = state.cmEdit, isNew = !COMM.me;
   const handle = (e.handle || "").trim().toLowerCase().replace(/^@/, "");
   const fail = m => { COMM.msg = m; COMM.busy = false; render(); };
-  if (!(e.display_name || "").trim()) return fail(e.kind === "igreja" ? "Escreva o nome da igreja." : "Escreva seu nome.");
+  if (!(e.display_name || "").trim()) return fail(e.kind === "igreja" ? "Escreva o nome da igreja." : e.kind === "loja" ? "Escreva o nome da loja." : "Escreva seu nome.");
   if(modReservedName((e.display_name||"").trim().slice(0,60))||modReservedName(handle))return fail(MOD_NAME_MSG);
   if (!/^[a-z0-9_.]{3,20}$/.test(handle)) return fail("O nome de usuário precisa ter de 3 a 20 letras minúsculas, números, ponto ou _ (sem espaço e sem acento).");
   if (isNew && !e.rules) return fail("Para criar o perfil, marque que leu e aceita as regras.");
   COMM.busy = true; COMM.msg = ""; render();
   try {
-    const row = {id: TEAM.user.id, handle, display_name: e.display_name.trim().slice(0, 60), church: (e.church || "").trim().slice(0, 80) || null,
-      city: (e.city || "").trim().slice(0, 60) || null, kind: ["igreja", "membro"].includes(e.kind) ? e.kind : "musico", schedule: e.kind === "igreja" ? (e.schedule || "").trim().slice(0, 300) || null : null, services: e.kind === "igreja" ? (e.services || []).slice(0, 21) : [],
+    const row = {id: TEAM.user.id, handle, display_name: e.display_name.trim().slice(0, 60), church: e.kind === "loja" ? null : (e.church || "").trim().slice(0, 80) || null,
+      city: (e.city || "").trim().slice(0, 60) || null, kind: ["igreja", "loja"].includes(e.kind) ? e.kind : "musico", schedule: e.kind === "igreja" ? (e.schedule || "").trim().slice(0, 300) || null : null, services: e.kind === "igreja" ? (e.services || []).slice(0, 21) : [],
       instruments: e.kind === "musico" || !e.kind ? e.instruments || [] : [], bio: (e.bio || "").trim().slice(0, 300) || null,
       theme: THEMES[e.theme] ? e.theme : "red", instagram: (e.instagram || "").trim().replace(/^@/, "").slice(0, 40) || null,
-      youtube: (e.youtube || "").trim().slice(0, 120) || null, songs: e.kind === "membro" ? [] : (e.songs || []).slice(0, 40), show_recent: e.show_recent !== false, accepted_rules: true};
+      youtube: (e.youtube || "").trim().slice(0, 120) || null, songs: ["membro", "loja"].includes(e.kind) ? [] : (e.songs || []).slice(0, 40), show_recent: e.show_recent !== false, accepted_rules: true};
     const old = COMM.me || {};
     if (e.avatarData) row.avatar_path = await commUpload(e.avatarData, "avatar");
     if (e.coverData) row.cover_path = await commUpload(e.coverData, "capa");
