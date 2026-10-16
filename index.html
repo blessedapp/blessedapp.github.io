@@ -952,6 +952,14 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.dm-call{width:44px;padding:0;display:grid;place-items:center}.dm-call svg{width:22px;height:22px}
+.call-ui{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:calc(36px + env(safe-area-inset-top,0px)) 24px calc(44px + env(safe-area-inset-bottom,0px));background:radial-gradient(900px 700px at 50% 0,#6a2aae,#2a1058 55%,#12062a);color:#fff;animation:callIn .3s ease-out}
+@keyframes callIn{from{opacity:0;transform:scale(1.04)}}
+.call-top{font:700 14px var(--f-body);opacity:.85;display:flex;align-items:center;gap:8px}.call-top svg{width:18px;height:18px}
+.call-mid{display:grid;justify-items:center;gap:10px;text-align:center}.call-mid .cm-av{box-shadow:0 0 0 6px rgba(255,255,255,.12),0 0 0 14px rgba(255,255,255,.06);animation:callPulse 2s ease-in-out infinite}@keyframes callPulse{50%{box-shadow:0 0 0 10px rgba(255,255,255,.14),0 0 0 22px rgba(255,255,255,.05)}}
+.call-mid h2{margin:10px 0 0;font-size:28px;color:#fff}.call-mid p{margin:0;font-size:17px;opacity:.85;font-variant-numeric:tabular-nums}
+.call-bot{display:flex;gap:40px;justify-content:center}
+.call-b{display:grid;justify-items:center;gap:8px;width:72px;border:0;background:none;color:#fff;font:600 13px var(--f-body);padding:0}.call-b svg{width:72px;height:72px;padding:20px;border-radius:50%;background:rgba(255,255,255,.18);box-sizing:border-box}.call-b.red svg{background:#e5384f;transform:rotate(135deg)}.call-b.green svg{background:#27b567}.call-b.on svg{background:#fff;color:#2a1058}
 .boot{display:grid;justify-items:center;align-content:center;gap:14px;min-height:70vh;color:var(--ink)}.boot .bl-ic{width:84px;height:84px;border-radius:22px;box-shadow:0 12px 40px rgba(110,40,190,.35);animation:bootP 1.6s ease-in-out infinite}.boot b{font:400 30px "Anton",var(--f-brand);letter-spacing:.04em;text-transform:uppercase}@keyframes bootP{50%{transform:scale(1.07)}}
 .dm-card .dm-receipt{margin:0 5px 0 0;color:var(--muted);vertical-align:-3px}.dm-card .dm-receipt svg{width:20px;height:14px}.dm-card .dm-receipt.read{color:#8a2be0;filter:none}
 /* "Chegaram agora": fechadinho num quadrado; ao tocar, abre mostrando as pessoas */
@@ -4081,6 +4089,171 @@ function commStoresTab(){
   if (posts.length) out += `<h3 class="ex-h2" style="margin-top:18px">Novidades das lojas</h3><div class="ex-grid">${posts.map(exTile).join("")}</div>`;
   return out;
 }
+/* ---------- Chamada de voz entre duas pessoas (WebRTC). O áudio vai direto de um celular para o outro; o Supabase só leva os avisos. ---------- */
+const DM_CALL_TEXT = "📞 Chamada de voz";
+const CALL_PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3.5l1.7 4.2-2.2 1.4a11 11 0 0 0 5.4 5.4l1.4-2.2L19 14.5V18a2 2 0 0 1-2 2A14 14 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>';
+const CALL_MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+const CALL = {cur: null, ch: null, owner: null, out: new Map(), done: new Set(), ringT: null, ctx: null};
+function callIce(){ return window.CC_ICE && window.CC_ICE.length ? window.CC_ICE : [{urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"]}]; }
+// canal pessoal: é por aqui que chega o aviso "fulano está ligando"
+function callSubscribe(){
+  const uid = TEAM.user && TEAM.user.id; if (!uid || !TEAM.client) return;
+  if (CALL.ch && CALL.owner === uid) return;
+  callUnsub(); CALL.owner = uid;
+  CALL.ch = TEAM.client.channel("calls:" + uid, {config: {broadcast: {self: false}}})
+    .on("broadcast", {event: "invite"}, ({payload}) => callOnInvite(payload))
+    .subscribe();
+}
+function callUnsub(){
+  if (CALL.cur) callEnd("local", false);
+  try { if (CALL.ch) TEAM.client.removeChannel(CALL.ch); } catch (e) {}
+  CALL.out.forEach(ch => { try { TEAM.client.removeChannel(ch); } catch (e) {} }); CALL.out.clear();
+  CALL.ch = null; CALL.owner = null;
+}
+async function callSendTo(peerId, event, payload){
+  let ch = CALL.out.get(peerId);
+  if (!ch) {
+    ch = TEAM.client.channel("calls:" + peerId); CALL.out.set(peerId, ch);
+    await new Promise(res => { ch.subscribe(st => { if (st === "SUBSCRIBED") res(); }); setTimeout(res, 4000); });
+  }
+  try { await ch.send({type: "broadcast", event, payload}); } catch (e) {}
+}
+// canal da chamada em si (só quem está na ligação)
+function callOpen(c){
+  c.ch = TEAM.client.channel("call:" + c.id, {config: {broadcast: {self: false}}});
+  c.ch.on("broadcast", {event: "sig"}, ({payload}) => callOnSignal(c, payload)).subscribe(st => { if (st === "SUBSCRIBED") { c.subbed = true; if (c.onSub) c.onSub(); } });
+}
+function callSig(c, payload){ try { if (c.ch) c.ch.send({type: "broadcast", event: "sig", payload}); } catch (e) {} }
+async function callMic(){
+  try { return await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}); }
+  catch (e) { flash("Permita o microfone para fazer a chamada."); return null; }
+}
+async function callStart(peerId){
+  if (CALL.cur) { callUi(); return; }
+  const c = (DM.convs || []).find(x => x.id === DM.open);
+  if (!c || DM.blocks.has(peerId)) return;
+  if (!navigator.mediaDevices || !window.RTCPeerConnection) { flash("Este aparelho não consegue fazer chamadas."); return; }
+  const stream = await callMic(); if (!stream) return;
+  const cur = CALL.cur = {id: crypto.randomUUID(), conv: c.id, peer: peerId, role: "caller", status: "ringing", stream, pc: null, pending: [], t0: 0, muted: false};
+  callOpen(cur); callUi();
+  const inv = () => callSendTo(cur.peer, "invite", {callId: cur.id, conv: cur.conv, from: TEAM.user.id});
+  inv(); cur.inv = setInterval(inv, 3000);
+  cur.to = setTimeout(() => { if (CALL.cur === cur && cur.status === "ringing") callEnd("noanswer", true); }, 45000);
+  // fica um registro no chat; ele também leva o aviso por notificação a quem está com o app fechado
+  TEAM.client.from("messages").insert({conversation_id: c.id, author: TEAM.user.id, text: DM_CALL_TEXT}).select(dmFields()).single().then(({data}) => { if (data) dmIncoming(data); });
+}
+function callOnInvite(p){
+  try {
+    if (!p || !p.callId || !p.conv || !p.from || !TEAM.user) return;
+    const c = (DM.convs || []).find(x => x.id === p.conv);
+    if (!c || ![c.a, c.b].includes(p.from) || ![c.a, c.b].includes(TEAM.user.id) || p.from === TEAM.user.id || DM.blocks.has(p.from)) return;
+    if (CALL.done.has(p.callId) || (CALL.cur && CALL.cur.id === p.callId)) return;
+    if (CALL.cur) return;
+    const cur = CALL.cur = {id: p.callId, conv: p.conv, peer: p.from, role: "callee", status: "incoming", stream: null, pc: null, pending: [], t0: 0, muted: false};
+    callUi(); callRing(true);
+    cur.to = setTimeout(() => { if (CALL.cur === cur && cur.status === "incoming") callEnd("missed", false); }, 45000);
+  } catch (e) {}
+}
+async function callAccept(){
+  const cur = CALL.cur; if (!cur || cur.role !== "callee" || cur.status !== "incoming") return;
+  callRing(false);
+  const stream = await callMic();
+  if (!stream) { callDecline(); return; }
+  cur.stream = stream; cur.status = "connecting"; clearTimeout(cur.to); callUi();
+  cur.onSub = () => callSig(cur, {t: "accept"});
+  callOpen(cur);
+}
+function callDecline(){
+  const cur = CALL.cur; if (!cur) return;
+  if (cur.role === "callee" && cur.status === "incoming") {
+    // abre o canal só para avisar quem está ligando que não vai atender
+    cur.onSub = () => { callSig(cur, {t: "decline"}); setTimeout(() => callEnd("declined", false), 300); };
+    callOpen(cur); callRing(false); CALL.done.add(cur.id);
+    setTimeout(() => { if (CALL.cur === cur) callEnd("declined", false); }, 2500);
+  } else callEnd("local", true);
+}
+function callPc(c){
+  const pc = c.pc = new RTCPeerConnection({iceServers: callIce()});
+  c.stream.getTracks().forEach(t => pc.addTrack(t, c.stream));
+  pc.onicecandidate = e => { if (e.candidate) callSig(c, {t: "ice", c: e.candidate}); };
+  pc.ontrack = e => {
+    if (!c.audio) { c.audio = document.createElement("audio"); c.audio.autoplay = true; c.audio.setAttribute("playsinline", ""); document.body.appendChild(c.audio); }
+    c.audio.srcObject = e.streams[0]; const p = c.audio.play(); if (p && p.catch) p.catch(() => {});
+  };
+  pc.onconnectionstatechange = () => {
+    if (CALL.cur !== c) return;
+    if (pc.connectionState === "connected" && c.status !== "active") { c.status = "active"; c.t0 = Date.now(); callUi(); c.tick = setInterval(callTick, 1000); }
+    else if (["failed", "closed"].includes(pc.connectionState)) callEnd("failed", true);
+    else if (pc.connectionState === "disconnected") { clearTimeout(c.dc); c.dc = setTimeout(() => { if (CALL.cur === c && pc.connectionState === "disconnected") callEnd("failed", true); }, 8000); }
+  };
+  return pc;
+}
+async function callOnSignal(c, m){
+  if (!m || CALL.cur !== c) return;
+  try {
+    if (m.t === "accept" && c.role === "caller" && !c.pc) {
+      clearInterval(c.inv); clearTimeout(c.to); c.status = "connecting"; callUi();
+      const pc = callPc(c), offer = await pc.createOffer({offerToReceiveAudio: true}); await pc.setLocalDescription(offer); callSig(c, {t: "offer", sdp: pc.localDescription});
+    } else if (m.t === "offer" && c.role === "callee") {
+      const pc = c.pc || callPc(c); await pc.setRemoteDescription(m.sdp);
+      for (const x of c.pending.splice(0)) { try { await pc.addIceCandidate(x); } catch (e) {} }
+      const ans = await pc.createAnswer(); await pc.setLocalDescription(ans); callSig(c, {t: "answer", sdp: pc.localDescription});
+    } else if (m.t === "answer" && c.role === "caller" && c.pc) {
+      await c.pc.setRemoteDescription(m.sdp);
+      for (const x of c.pending.splice(0)) { try { await c.pc.addIceCandidate(x); } catch (e) {} }
+    } else if (m.t === "ice") {
+      if (c.pc && c.pc.remoteDescription) { try { await c.pc.addIceCandidate(m.c); } catch (e) {} } else c.pending.push(m.c);
+    } else if (["hangup", "decline"].includes(m.t)) callEnd(m.t === "decline" ? "declinedByPeer" : "remote", false);
+  } catch (e) {}
+}
+function callEnd(reason, send){
+  const c = CALL.cur; if (!c) return;
+  CALL.cur = null; CALL.done.add(c.id);
+  if (send) callSig(c, {t: "hangup"});
+  clearInterval(c.inv); clearInterval(c.tick); clearTimeout(c.to); clearTimeout(c.dc); callRing(false);
+  setTimeout(() => { try { if (c.ch) TEAM.client.removeChannel(c.ch); } catch (e) {} }, 400);
+  try { if (c.pc) c.pc.close(); } catch (e) {}
+  try { if (c.stream) c.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  if (c.audio) { c.audio.srcObject = null; c.audio.remove(); }
+  const ui = document.getElementById("call-ui"); if (ui) ui.remove();
+  const msg = {noanswer: "Ninguém atendeu.", missed: "Chamada perdida.", declinedByPeer: "A pessoa não pôde atender.", failed: "A chamada caiu.", remote: "Chamada encerrada."}[reason];
+  if (msg) flash(msg);
+}
+function callTick(){ const c = CALL.cur, el = document.getElementById("call-st"); if (!c || !el || c.status !== "active") return; const s = Math.floor((Date.now() - c.t0) / 1000); el.textContent = String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }
+function callRing(on){
+  clearInterval(CALL.ringT); CALL.ringT = null;
+  if (!on) { try { navigator.vibrate && navigator.vibrate(0); } catch (e) {} return; }
+  const beep = () => {
+    try { navigator.vibrate && navigator.vibrate([400, 200, 400]); } catch (e) {}
+    try {
+      CALL.ctx = CALL.ctx || new (window.AudioContext || window.webkitAudioContext)(); const x = CALL.ctx; if (x.state === "suspended") x.resume();
+      [0, .45].forEach(d => { const o = x.createOscillator(), g = x.createGain(); o.type = "sine"; o.frequency.value = 440 + (d ? 60 : 0); g.gain.setValueAtTime(.0001, x.currentTime + d); g.gain.exponentialRampToValueAtTime(.25, x.currentTime + d + .05); g.gain.exponentialRampToValueAtTime(.0001, x.currentTime + d + .38); o.connect(g); g.connect(x.destination); o.start(x.currentTime + d); o.stop(x.currentTime + d + .4); });
+    } catch (e) {}
+  };
+  beep(); CALL.ringT = setInterval(beep, 2400);
+}
+function callUi(){
+  const c = CALL.cur; if (!c) return;
+  const p = COMM.profiles[c.peer] || {}, st = {incoming: "está ligando…", ringing: "Chamando…", connecting: "Conectando…", active: "00:00"}[c.status] || "";
+  let ui = document.getElementById("call-ui");
+  if (!ui) { ui = document.createElement("div"); ui.id = "call-ui"; ui.className = "call-ui"; ui.setAttribute("role", "dialog"); ui.setAttribute("aria-label", "Chamada de voz"); document.body.appendChild(ui); }
+  const incoming = c.status === "incoming";
+  ui.innerHTML = `<div class="call-top"><span>${CALL_PHONE} Chamada de voz</span></div>
+    <div class="call-mid">${commAvatar(p, 128, false)}<h2>${esc(p.display_name || "Alguém")}</h2><p id="call-st">${esc(st)}</p></div>
+    <div class="call-bot">${incoming
+      ? `<button class="call-b red" data-a="call-decline" aria-label="Recusar">${CALL_PHONE}<small>Recusar</small></button><button class="call-b green" data-a="call-accept" aria-label="Atender">${CALL_PHONE}<small>Atender</small></button>`
+      : `<button class="call-b${c.muted ? " on" : ""}" data-a="call-mute" aria-label="${c.muted ? "Ligar o microfone" : "Silenciar"}">${CALL_MIC}<small>${c.muted ? "Mudo" : "Silenciar"}</small></button><button class="call-b red" data-a="call-hang" aria-label="Encerrar">${CALL_PHONE}<small>Encerrar</small></button>`}</div>`;
+  if (c.status === "active") callTick();
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-a^='call-']"); if (!b) return;
+  const a = b.dataset.a;
+  if (a === "call-start") callStart(b.dataset.id);
+  else if (a === "call-accept") callAccept();
+  else if (a === "call-decline") callDecline();
+  else if (a === "call-hang") callEnd("local", true);
+  else if (a === "call-mute") { const c = CALL.cur; if (!c || !c.stream) return; c.muted = !c.muted; c.stream.getAudioTracks().forEach(t => t.enabled = !c.muted); callUi(); }
+});
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
 function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); if (full && !COMM.urls[p.image_path]) commSign([p.image_path]); return full ? (commUrl(p.image_path) || t) : t; }
@@ -5161,7 +5334,7 @@ function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
 function dmUnread(c){ return dmConvVisible(c) && !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
 function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
 function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
-function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;DM.reply=null;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,profileAttentionBusy:null,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+function dmReset(){ try { callUnsub(); } catch (e) {} dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;DM.reply=null;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,profileAttentionBusy:null,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
 async function dmLoad(incoming=null){
   const generation=DM.generation, client=TEAM.client, owner=TEAM.user?.id;
   if(!owner)return;
@@ -5194,6 +5367,7 @@ async function dmLoad(incoming=null){
   }catch(_){}finally{if(current())dmRerender();}
 }
 function dmSubscribe(){
+  callSubscribe();
   if (DM.ch) return;
   const owner=TEAM.user.id,generation=DM.generation;
   DM.ch = TEAM.client.channel("dm-" + TEAM.user.id)
@@ -5384,11 +5558,11 @@ function viewChat(){
   let last = "", html = "";
   (list || []).filter(dmVisible).forEach(m => { const day = dmDay(m.created_at); if (day !== last) { html += `<p class="dm-day">${day}</p>`; last = day; }
     const mine = m.author === TEAM.user.id;
-    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${dmQuote(m)}${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></button></div>`; });
+    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_CALL_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${CALL_PHONE}<span>${mine?"Você ligou":"Ligou para você"}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></span></div>`:m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${dmQuote(m)}${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></button></div>`; });
   setTimeout(()=>{dmmHydrate();dwpLoad();dmSyncSend();});
   return `<section class="dm-shell" aria-label="Conversa"><div class="dm-head"><button class="btn ghost" data-a="dm-back" aria-label="Voltar">‹</button>
       <button class="dm-who" data-a="cm-profile" data-id="${esc(o)}">${commAvatar(p, 40)}<span><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><small class="muted">@${esc(p.handle || "")}</small></span></button>
-      <button class="btn ghost" data-a="dm-menu" data-id="${esc(o)}" aria-label="Opções da conversa">⋯</button></div>
+      ${blocked ? "" : `<button class="btn ghost dm-call" data-a="call-start" data-id="${esc(o)}" aria-label="Ligar: chamada de voz" title="Chamada de voz">${CALL_PHONE}</button>`}<button class="btn ghost" data-a="dm-menu" data-id="${esc(o)}" aria-label="Opções da conversa">⋯</button></div>
     <div class="dm-list" id="dm-list" data-conversation="${esc(c.id)}" data-owner="${esc(TEAM.user.id)}">${list === undefined ? '<p class="muted">Carregando…</p>' : html || `<p class="dm-lock">🔒 Só você e ${esc((p.display_name || "a outra pessoa").split(" ")[0])} leem esta conversa. Diga oi! 👋</p>`}</div>
     ${blocked ? `<div class="dm-form"><p style="margin:0;flex:1">Você bloqueou esta pessoa.</p><button class="btn" data-a="dm-block" data-id="${esc(o)}">Desbloquear</button></div>`
       : `<form class="dm-form" id="dm-form"><div class="dm-tools">${dmReplyBar()}${DMM.ready?`<button type="button" class="dm-ic" data-a="dmm-photo" aria-label="Enviar foto" title="Foto">${DMM_PHOTO_ICON}</button>`:''}${DM.attentionReady?`<button class="dm-ic dm-nudge-button" type="button" data-a="dm-attention-send" aria-label="Chamar atenção: balançar a tela da outra pessoa" title="Chamar atenção" ${DM.attentionBusy?"disabled":""}>${DM_ATTENTION_ICON}</button>`:""}${DMM.ready?`<button type="button" class="dm-mic" data-a="dmm-audio" aria-label="Gravar mensagem de áudio" title="Gravar áudio">${DMM_MIC_ICON}</button>`:''}</div><textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="dm-send" type="submit" aria-label="Enviar">${DM_SEND_ICON}</button></form>`}</section>`;
