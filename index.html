@@ -4109,17 +4109,17 @@ function dmSubscribe(){
   if (DM.ch) return;
   const owner=TEAM.user.id,generation=DM.generation;
   DM.ch = TEAM.client.channel("dm-" + TEAM.user.id)
-    .on("postgres_changes", {event: "INSERT", schema: "public", table: "messages"}, p => {if(TEAM.user?.id===owner&&DM.generation===generation)dmIncoming(p.new);})
+    .on("postgres_changes", {event: "INSERT", schema: "public", table: "messages"}, p => {if(TEAM.user?.id===owner&&DM.generation===generation)dmIncoming(p.new,true);})
     .on("postgres_changes", {event: "DELETE", schema: "public", table: "messages"}, p => { if(TEAM.user?.id!==owner||DM.generation!==generation)return; const id = p.old && p.old.id; if (!id) return; Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender(); })
     .subscribe();
 }
-function dmIncoming(m){
+function dmIncoming(m,fresh=false){
   if (!m || !DM.convs) return;
   const list = DM.msgs[m.conversation_id];
   if (list && !list.some(x => x.id === m.id)) list.push(m);
   const c = DM.convs.find(x => x.id === m.conversation_id);
-  if (!c) { const generation=DM.generation; dmLoad(m).then(()=>{if(DM.generation===generation&&DM.convs?.some(c=>c.id===m.conversation_id))dmIncoming(m);}); return; }
-  dmAttentionReceive(m,true);ntfMessage(m);
+  if (!c) { const generation=DM.generation; dmLoad(m).then(()=>{if(DM.generation===generation&&DM.convs?.some(c=>c.id===m.conversation_id))dmIncoming(m,fresh);}); return; }
+  dmAttentionReceive(m,true,fresh);ntfMessage(m);
   Object.assign(c, {last_at: m.created_at, last_author: m.author, last_text: String(m.text).slice(0, 120)});
   DM.convs.sort((x, y) => x.last_at < y.last_at ? 1 : -1);
   if (state.view === "chat" && DM.open === m.conversation_id && m.author !== TEAM.user.id) dmMarkRead(m.conversation_id);
@@ -4205,7 +4205,7 @@ function dmIconBtn(){
 function dmAttentionBadge(){
   const a=DM.attention;if(!a||!TEAM.user||DM.blocks.has(a.author))return '';
   const p=COMM.profiles[a.author]||{},name=p.display_name||'Alguém';
-  return `<button class="dm-attention-badge" data-a="dm-attention-open" data-id="${esc(a.conversation_id)}" aria-label="${esc(name)} chamou sua atenção. Abrir conversa">${DM_ATTENTION_ICON}<span><b>${esc(name)}</b><small>Chamou você</small></span></button>`;
+  return `<button class="dm-attention-badge" data-a="dm-attention-open" data-id="${esc(a.conversation_id)}" aria-label="${esc(name)} chamou sua atenção. Abrir conversa">${DM_ATTENTION_ICON}<span><b>${esc(name)}</b><small>${matchMedia('(prefers-reduced-motion: reduce)').matches?'Chamou você · movimento reduzido':'Chamou você'}</small></span></button>`;
 }
 function dmAttentionPaint(){
   let live=$('#dm-attention-live');
@@ -4217,12 +4217,12 @@ function dmAttentionPaint(){
 }
 function dmVibrationStop(){if(!DM.vibrating)return;DM.vibrating=false;try{navigator.vibrate?.(0);}catch(_){}}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)dmVibrationStop();});
-function dmAttentionReceive(m,animate){
+function dmAttentionReceive(m,animate,fresh=false){
   const owner=TEAM.user?.id,c=DM.convs?.find(c=>c.id===m.conversation_id);
   if(!owner||!c||m.text!==DM_ATTENTION_TEXT||m.author===owner||!([c.a,c.b].includes(owner)&&[c.a,c.b].includes(m.author))||DM.blocks.has(m.author)||(DM.attentionSeen.has(m.id)&&(!animate||DM.attentionAnimated.has(m.id))))return;
   DM.attentionSeen.add(m.id);if(DM.attentionSeen.size>300)DM.attentionSeen.delete(DM.attentionSeen.values().next().value);
   DM.attention={id:m.id,author:m.author,conversation_id:m.conversation_id,created_at:m.created_at};
-  if(animate&&!document.hidden&&Date.now()-Date.parse(m.created_at)<30000&&Date.parse(m.created_at)<=Date.now()+5000&&Date.now()-DM.shakeAt>=10000){
+  if(animate&&!document.hidden&&(fresh||(Date.now()-Date.parse(m.created_at)<120000&&Date.parse(m.created_at)<=Date.now()+120000))&&Date.now()-DM.shakeAt>=10000){
     DM.shakeAt=Date.now();DM.attentionAnimated.add(m.id);if(DM.attentionAnimated.size>300)DM.attentionAnimated.delete(DM.attentionAnimated.values().next().value);ntfSound('attention');
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
       try{if(navigator.vibrate){DM.vibrating=navigator.vibrate(Array.from({length:35},(_,i)=>i%2?40:70))===true;}}catch(_){}
@@ -4233,7 +4233,7 @@ function dmAttentionReceive(m,animate){
   dmAttentionPaint();
 }
 // A notificação push é só um aviso: conteúdo e remetente são confirmados com a sessão do destinatário.
-async function dmPushAttention(data){const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i,owner=TEAM.user?.id,generation=DM.generation,client=TEAM.client;if(document.hidden||!owner||data?.account!==owner||data.activity!=='attention'||!uuid.test(data.actor||'')||!uuid.test(data.target||'')||data.actor===owner||DM.blocks.has(data.actor)||DM.attentionPush.has(data.target))return;if(DM.attention?.author===data.actor&&DM.attention?.conversation_id===data.target&&DM.attentionAnimated.has(DM.attention.id)&&Date.now()-DM.shakeAt<10000)return;DM.attentionPush.add(data.target);try{const {data:rows,error}=await client.from('messages').select('id,conversation_id,author,text,created_at').eq('conversation_id',data.target).eq('author',data.actor).eq('text',DM_ATTENTION_TEXT).order('created_at',{ascending:false}).limit(1);if(error||owner!==TEAM.user?.id||generation!==DM.generation||document.hidden)return;const m=rows?.[0];if(!m||m.conversation_id!==data.target||m.author!==data.actor||m.text!==DM_ATTENTION_TEXT)return;if(!DM.convs?.some(c=>c.id===m.conversation_id))await dmLoad(m);if(owner!==TEAM.user?.id||generation!==DM.generation||document.hidden)return;dmIncoming(m);}catch(_){}finally{if(owner===TEAM.user?.id&&generation===DM.generation)DM.attentionPush.delete(data.target);}}
+async function dmPushAttention(data,fresh=false){const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i,owner=TEAM.user?.id,generation=DM.generation,client=TEAM.client;if(document.hidden||!owner||data?.account!==owner||data.activity!=='attention'||!uuid.test(data.actor||'')||!uuid.test(data.target||'')||data.actor===owner||DM.blocks.has(data.actor)||DM.attentionPush.has(data.target))return;if(DM.attention?.author===data.actor&&DM.attention?.conversation_id===data.target&&DM.attentionAnimated.has(DM.attention.id)&&Date.now()-DM.shakeAt<10000)return;DM.attentionPush.add(data.target);try{const {data:rows,error}=await client.from('messages').select('id,conversation_id,author,text,created_at').eq('conversation_id',data.target).eq('author',data.actor).eq('text',DM_ATTENTION_TEXT).order('created_at',{ascending:false}).limit(1);if(error||owner!==TEAM.user?.id||generation!==DM.generation||document.hidden)return;const m=rows?.[0];if(!m||m.conversation_id!==data.target||m.author!==data.actor||m.text!==DM_ATTENTION_TEXT)return;if(!DM.convs?.some(c=>c.id===m.conversation_id))await dmLoad(m);if(owner!==TEAM.user?.id||generation!==DM.generation||document.hidden)return;dmIncoming(m,fresh);}catch(_){}finally{if(owner===TEAM.user?.id&&generation===DM.generation)DM.attentionPush.delete(data.target);}}
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='BLESSED_PUSH_ACTIVITY')dmPushAttention(e.data);});
 
 async function dmAttentionSend(){
@@ -4512,7 +4512,7 @@ function ntfWorkerOwner(reg,owner){
 async function ntfInit(){
  const owner=TEAM.user?.id;if(!owner||NTF.owner===owner)return;NTF.owner=owner;NTF.generation++;NTF.configChecked=false;NTF.publicKey='';const generation=NTF.generation,client=TEAM.client;
  NTF.channel=client.channel('notices-'+owner).on('postgres_changes',{event:'INSERT',schema:'public',table:'notification_events',filter:'recipient=eq.'+owner},e=>{
-  const n=e.new;if(NTF.generation===generation&&TEAM.user?.id===owner)nbIncoming(n);if(NTF.generation!==generation||TEAM.user?.id!==owner||n.recipient!==owner||n.actor===owner||DM.blocks.has(n.actor)||!(/_(like|comment)$/.test(String(n.kind)))||NTF.seen.has(n.id))return;
+  const n=e.new;if(NTF.generation===generation&&TEAM.user?.id===owner&&n.recipient===owner){nbIncoming(n);if(n.kind==='attention'&&!document.hidden)void dmPushAttention({account:owner,activity:'attention',actor:n.actor,target:n.target},true);}if(NTF.generation!==generation||TEAM.user?.id!==owner||n.recipient!==owner||n.actor===owner||DM.blocks.has(n.actor)||!(/_(like|comment)$/.test(String(n.kind)))||NTF.seen.has(n.id))return;
   NTF.seen.add(n.id);if(NTF.seen.size>300)NTF.seen.delete(NTF.seen.values().next().value);
   if(!document.hidden){ntfSound(String(n.kind).endsWith('_comment')?'message':'like');flash(n.kind==='post_comment'?'Sua publicação recebeu um comentário.':n.kind==='blessing_comment'?'Seu Blessing recebeu um comentário.':n.kind==='story_like'?'Seu story recebeu uma curtida.':n.kind==='blessing_like'?'Seu Blessing recebeu uma curtida.':'Sua publicação recebeu uma curtida.');}
  }).subscribe();
