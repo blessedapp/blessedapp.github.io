@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610161744";
+const CACHE = "cifra-campo-202610161748";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const FILES = ["img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "./", "index.html", "tema-vidro.css?v=20261014-lilas", "manifest.json", "info.json", "img/icon-192.png?v=lilas", "img/icon-512.png?v=lilas", "img/apple-touch-icon.png"];
