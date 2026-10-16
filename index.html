@@ -1083,6 +1083,9 @@ html[data-appearance=light] .vb-n{color:#372440}html[data-appearance=light] .vb-
 .vd{margin:0 0 16px;padding:16px 18px;border-radius:22px;background:linear-gradient(150deg,rgba(150,80,230,.35),rgba(30,14,60,.85));border:1px solid rgba(218,194,239,.3);color:#fff}.vd-k{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#e7c2ff;margin-bottom:8px}.vd-s{float:right;font-size:12px;font-weight:700;color:#ffd9ff;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:99px}.vd-t{font-size:17px;line-height:1.45;margin:0 0 8px;font-weight:600}.vd-r{display:block;color:#ffd9ff;font-size:13px;margin-bottom:12px}.vd-b{display:flex;gap:8px;flex-wrap:wrap}.vd-b .btn{font-size:13px;padding:8px 14px;min-height:0}
 .vb{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:0;flex:none}.vb-r1{display:flex;align-items:center;gap:6px}.vb .bl-ic{width:26px;height:26px;flex:none;border-radius:8px;box-shadow:0 0 0 1px rgba(202,78,255,.35)}.vb-n{font-family:"Anton",var(--f-brand);font-size:19px;letter-spacing:.02em;color:#f3eaff;text-transform:uppercase;line-height:1}.vb-r2{display:flex;align-items:center;gap:6px;font-size:9.5px;white-space:nowrap;line-height:1;color:rgba(243,234,255,.7)}.vb-r2 b{color:#f3eaff}.vb-b{border:0;background:linear-gradient(135deg,#9b4fd8,#6a2aae);color:#fff;font:700 11px var(--f-body);padding:6px 12px;border-radius:99px;white-space:nowrap}
 .vp{position:relative;aspect-ratio:4/5;max-height:560px;max-width:560px;margin:0 auto 18px;border-radius:28px;overflow:hidden;background:radial-gradient(120% 80% at 50% 0,#5b2aa6 0,#2a1058 55%,#160a30 100%);color:#fff;box-shadow:0 14px 40px rgba(60,20,120,.35);isolation:isolate}
+.vp[data-set=mon]{aspect-ratio:4/4.6}.vp-lvs{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:2}.lvb{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.45;filter:grayscale(.8);transition:opacity .4s,filter .4s,transform .4s}.lvb small{font-size:11px;font-weight:700}.lvb.lit{opacity:1;filter:none;transform:translateY(-3px)}
+.vp-mon{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding:96px 10px 10px;text-align:center}.vm-b.pop{animation:vmPop .5s ease-out}.vm-lv{font-weight:800;font-size:16px}.vm-n b{font:800 34px/1 var(--f-body,system-ui)}.vm-n small{display:block;font-size:12px;opacity:.8}.vm-r{display:flex;gap:14px;font-size:12px;opacity:.9}.vm-r b{font-size:14px}@keyframes vmPop{0%{transform:scale(.6)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.mon-lead{margin:0 0 14px;line-height:1.5}.mon-h{margin:18px 0 8px}.mon-lv{display:grid;gap:8px}.mon-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:16px}.mon-row small{display:block;color:var(--muted);font-size:12px}.mon-row em{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;background:#b085ff;color:#fff}.mon-b{flex:none;display:flex}.mon-note,.mon-rules{color:var(--muted);font-size:13px;line-height:1.55}.mon-rules{padding-left:18px;margin:8px 0 16px}
 .vp-s{position:absolute;inset:0;opacity:0;transition:opacity .6s;pointer-events:none}.vp-s.on{opacity:1}
 .vp-stage{position:absolute;left:14px;right:14px;top:14px;height:56%;border-radius:22px;overflow:hidden;background:#12082a;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .vp-stage video{width:100%;height:100%;object-fit:cover;display:block}
@@ -1833,7 +1836,7 @@ function viewLibrary(){
   return head + `
   ${installBanner()}
   ${pendingCount() ? `<button class="team-alert" data-a="tab" data-v="team">🔔 ${pendingCount()} pessoa${pendingCount() > 1 ? "s" : ""} pedindo para entrar na equipe · <b>Ver</b></button>` : ""}
-  <div class="news-page-heading"><h2>Novidades</h2></div>
+  ${monPage()}
   ${homeCommunity()}
   ${heroMosaic(setSongs)}
   ${pcHomePosts()}
@@ -2010,7 +2013,7 @@ async function teamAuth(kind){
 }
 function viewLogin(){
   const p = TEAM.profile, tab = state.loginTab || "in";
-  const box = inner => `<div class="top"><button class="btn ghost" data-a="home">‹ Novidades</button></div>
+  const box = inner => `<div class="top"><button class="btn ghost" data-a="home">‹ Voltar</button></div>
     <div class="login"><h1 class="page-title">Equipe</h1>${inner}</div>`;
   if (!teamAvailable()) return box('<p class="muted">O login da equipe funciona no site do Blessed.</p>');
   if (TEAM.user && p && p.role === "pending") return box(`<div class="panel"><h3 style="font-size:18px">Aguardando aprovação</h3>
@@ -2129,7 +2132,7 @@ function tabbar(active){
   const dmn = commOn() && TEAM.user ? dmUnreadCount() : 0;
   const comm = commOn() ? t("community", "Início" + (dmn ? ` <span class="badge" aria-label="${dmn} mensage${dmn > 1 ? "ns" : "m"} não lida${dmn > 1 ? "s" : ""}">${dmn}</span>` : "")) : "";
   const bl = blOn() || (commOn() && teamRole() === "admin") ? t("blessings", "Blessings") : "";
-  return `<nav class="tabbar" aria-label="Abas">${comm}${t("library",commOn()?"Novidades":"Início")}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
+  return `<nav class="tabbar" aria-label="Abas">${comm}${t("library",commOn()?"Monetizar":"Início")}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
 }
 
 /* ---------- Estudo: Bíblia (Bíblia Livre, CC BY 4.0 BR) ----------
@@ -3763,7 +3766,15 @@ const VP_SCENES=[
  {k:"a",d:6000,t:"Nunca perca um culto",s:["Agenda com lembretes","Cultos, ensaios e células"]},
  {k:"v",f:"cena6",d:5200,t:"Faça parte da comunidade",s:["Entre e comece a seguir hoje"]}
 ];
-const VP={i:0,el:null,io:null,timer:null,heart:null,vis:false,hit:null};
+const VP_MON=[
+ {k:"v",f:"cena1",d:5200,t:"Poste seu dia a dia",s:["Cada publicação é uma chance de crescer","Mostre quem você é"]},
+ {k:"v",f:"cena4",d:5200,t:"Receba visualizações",s:["Seus vídeos e fotos sendo vistos","O contador não para de subir"]},
+ {k:"m",d:6800,t:"Suba de nível",s:["Seguidores, curtidas e visualizações","O selo muda de cor a cada nível"]},
+ {k:"v",f:"cena2",d:5200,t:"Ganhe corações",s:["Curtidas e comentários contam","Quem participa cresce mais rápido"]},
+ {k:"v",f:"cena5",d:5200,t:"Cresça acompanhado",s:["Ore, louve e inspire","Sua comunidade cresce com você"]},
+ {k:"v",f:"cena6",d:5200,t:"Chegue ao programa de parcerias",s:["Quanto mais cresce, mais chance de ganhar","Sempre de acordo com os termos"]}
+];
+const VP={i:0,sc:null,raf:0,el:null,io:null,timer:null,heart:null,vis:false,hit:null};
 function vpLite(){try{return !!(navigator.connection&&navigator.connection.saveData)||matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}}
 // Versículo do dia: um por dia, tirado da Bíblia que já vem no app (sem internet extra)
 const VD_REFS=[["JOH",3,[16]],["PSA",23,[1,2,3]],["PRO",3,[5,6]],["ISA",41,[10]],["JER",29,[11]],["PHI",4,[13]],["ROM",8,[28]],["MAT",11,[28]],["PSA",46,[1]],["JOS",1,[9]],["PSA",119,[105]],["ROM",12,[2]],["1CO",13,[4,5]],["EPH",2,[8,9]],["HEB",11,[1]],["MAT",6,[33]],["PSA",27,[1]],["PSA",121,[1,2]],["ISA",40,[31]],["PHI",4,[6,7]],["JOH",14,[6]],["ROM",15,[13]],["2TI",1,[7]],["PSA",37,[4,5]],["PRO",16,[3]],["MAT",5,[16]],["1JO",4,[19]],["LAM",3,[22,23]],["PSA",91,[1,2]],["COL",3,[23]]];
@@ -3814,6 +3825,7 @@ function visitorBrand(){return `<div class="vb"><div class="vb-r1">${BL_ICON}<sp
 function visitorPanel(){return `<section class="vp" role="region" aria-label="Veja o Blessed em ação"></section>`;}
 function vpScene(c,i){
  const cap=`<div class="vp-cap"><h2>${esc(c.t)}</h2>${c.s.map((l,k)=>`<p style="--k:${k}">${esc(l)}</p>`).join("")}</div>`,wrapS=(cls,inner)=>`<div class="vp-s ${cls}" data-i="${i}"><div class="vp-stage">${inner}${cap}</div></div>`;
+ if(c.k==="m")return wrapS("ncap",'<div class="vp-mon"><div class="vm-b"></div><div class="vm-lv">🌱 Semente</div><div class="vm-n"><b data-r="v">0</b><small>visualizações</small></div><div class="vm-r"><span><b data-r="f">0</b> seguidores</span><span><b data-r="l">0</b> curtidas</span></div></div>');
  if(c.k==="v")return wrapS("",`<video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video><div class="vp-hearts"></div>`);
  if(c.k==="c")return wrapS("ch",`<div class="vp-ph"><video muted playsinline loop preload="none" aria-hidden="true" data-src="img/painel/${c.f}.mp4?v=2"></video></div><div class="vp-wrap vp-wv"><div class="vp-ph vp-fr"><i>B</i><span class="wait">Seu amigo ainda não respondeu…</span><span class="hit">Chamou sua atenção!</span></div><div class="ring"></div><div class="ring"></div></div>`);
  if(c.k==="n"){const N=[[48,42,"#e0589a"],[272,40,"#4aa8ff"],[34,118,"#ffb347"],[286,124,"#5fd38d"],[110,152,"#ff7a59"],[214,150,"#b085ff"]];
@@ -3827,20 +3839,23 @@ function vpScene(c,i){
 function vpStrip(){const o=[[1,2,3,4,5],[3,4,5,1,2],[5,1,2,3,4],[2,3,4,5,1]];return `<div class="vp-strip" aria-hidden="true"><span class="vp-tag">Igrejas no Blessed · exemplos</span>${o.map((c,j)=>{const t=c.concat(c).map(n=>`<img src="img/painel/igreja${n}.jpg" alt="" loading="lazy" decoding="async">`).join("");return `<div class="vp-col ${j%2?"dn":"up"}">${t}</div>`;}).join("")}</div>`;}
 function vpMount(el){
  el.dataset.on="1";
- el.innerHTML=VP_SCENES.map(vpScene).join("")+vpStrip();
+ const mon=el.dataset.set==="mon";VP.sc=mon?VP_MON:VP_SCENES;
+ el.innerHTML=VP.sc.map(vpScene).join("")+(mon?'<div class="vp-lvs" aria-hidden="true">'+MON_LV.map(l=>'<div class="lvb">'+monBadge(l,44)+'<small>'+l.n+'</small></div>').join("")+'</div>':vpStrip());
  VP.el=el;
  if(VP.io)VP.io.disconnect();
- if("IntersectionObserver" in window){VP.vis=false;VP.io=new IntersectionObserver(es=>{const v=es[es.length-1].isIntersecting;if(v!==VP.vis){VP.vis=v;v?vpGo(VP.i):vpStop();}},{threshold:.35});VP.io.observe(el);}
+ if("IntersectionObserver" in window){VP.vis=false;VP.io=new IntersectionObserver(es=>{const v=es[es.length-1].isIntersecting;if(v!==VP.vis){VP.vis=v;v?vpGo(VP.i):vpStop();}},{threshold:.35});VP.io.observe(el);
+  // garantia: se o navegador não avisar que o painel está na tela, começa mesmo assim
+  [400,1200,2500].forEach(t=>setTimeout(()=>{if(VP.el===el&&el.isConnected&&!VP.vis){const r=el.getBoundingClientRect();if(r.bottom>80&&r.top<innerHeight*.65&&!document.hidden){VP.vis=true;vpGo(VP.i);}}},t));}
  else{VP.vis=true;vpGo(VP.i);}
 }
-function vpStop(){clearTimeout(VP.timer);clearInterval(VP.heart);clearTimeout(VP.hit);if(VP.el)VP.el.querySelectorAll("video").forEach(v=>v.pause());}
-function vpOk(i){const k=VP_SCENES[i].k;return !vpLite()||k==="n"||k==="a"||k==="c";}
+function vpStop(){cancelAnimationFrame(VP.raf);clearTimeout(VP.timer);clearInterval(VP.heart);clearTimeout(VP.hit);if(VP.el)VP.el.querySelectorAll("video").forEach(v=>v.pause());}
+function vpOk(i){const k=VP.sc[i].k;return !vpLite()||k==="n"||k==="a"||k==="c"||k==="m";}
 function vpGo(i){
  const el=VP.el;if(!el||!el.isConnected)return;
  vpStop();
- while(!vpOk(i))i=(i+1)%VP_SCENES.length;
+ while(!vpOk(i))i=(i+1)%VP.sc.length;
  VP.i=i;
- const ss=el.querySelectorAll(".vp-s"),s=ss[i],c=VP_SCENES[i];el.classList.toggle("nostrip",c.k==="c");
+ const ss=el.querySelectorAll(".vp-s"),s=ss[i],c=VP.sc[i];el.classList.toggle("nostrip",c.k==="c");
  ss.forEach((x,j)=>{x.classList.toggle("on",j===i);if(j!==i)x.classList.remove("hit");});
  if(!vpLite()){
   const v=s.querySelector("video");
@@ -3851,7 +3866,19 @@ function vpGo(i){
  if(c.k==="c")VP.hit=setTimeout(()=>s.classList.add("hit"),3000);
  const box=s.querySelector(".vp-hearts");
  if(box&&!vpLite())VP.heart=setInterval(()=>vpHeart(box),380);
- VP.timer=setTimeout(()=>vpGo((i+1)%VP_SCENES.length),c.d);
+ if(el.dataset.set==="mon"){el.querySelectorAll(".lvb").forEach(x=>x.classList.remove("lit"));if(c.k==="m")vpMon(s);}
+ VP.timer=setTimeout(()=>vpGo((i+1)%VP.sc.length),c.d);
+}
+// Contadores subindo e o selo trocando de cor conforme o nível
+function vpMon(s){
+ const q=r=>s.querySelector('[data-r="'+r+'"]'),bd=s.querySelector(".vm-b"),nm=s.querySelector(".vm-lv"),lvs=VP.el.querySelectorAll(".lvb"),T=5600,t0=performance.now(),fmt=n=>Math.round(n).toLocaleString("pt-BR");
+ let L=-1;
+ const step=t=>{const p=Math.min(1,(t-t0)/T),e=1-Math.pow(1-p,2);
+  q("v").textContent=fmt(e*520000);q("f").textContent=fmt(e*10000);q("l").textContent=fmt(e*50000);
+  const n=Math.min(3,Math.floor(p*4.2));
+  if(n!==L){L=n;bd.innerHTML=monBadge(MON_LV[n],70);bd.classList.remove("pop");void bd.offsetWidth;bd.classList.add("pop");nm.textContent=MON_LV[n].i+" "+MON_LV[n].n;lvs.forEach((x,j)=>x.classList.toggle("lit",j<=n));}
+  if(p<1)VP.raf=requestAnimationFrame(step);};
+ VP.raf=requestAnimationFrame(step);
 }
 function vpHeart(box){
  const h=document.createElement("i"),sz=14+Math.random()*16,side=Math.random()<.78?"right":"left",cols=["#ff5d8f","#ff8fb3","#e7c2ff","#ffffff","#ff7aa8"];
@@ -4440,7 +4467,20 @@ async function shareBlessedLink(text,url,invite=false){
   try{await navigator.clipboard.writeText(invite?text+"\n"+url:url);flash(invite?"Convite copiado ✓ É só colar e enviar.":"Link copiado ✓ Cole e compartilhe.");}
   catch(e){const m=$("#modal");m.className="modal";m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="share-link-title"><h2 id="share-link-title">${invite?"Convidar alguém":"Compartilhar publicação"}</h2><p>Selecione e copie:</p><textarea readonly aria-label="Texto para compartilhar" rows="5">${esc(invite?text+"\n"+url:url)}</textarea><button class="btn" data-a="pix-close">Fechar</button></div>`;m.hidden=false;}
 }
-const MON_LV=[{n:"Semente",i:"🌱",f:100,l:500},{n:"Broto",i:"🌿",f:1000,l:5000},{n:"Árvore",i:"🌳",f:5000,l:25000},{n:"Parceiro",i:"🍇",f:10000,l:50000}];
+const MON_LV=[{n:"Semente",i:"🌱",f:100,l:500,v:1000,c:"#f5c542",h:"#e0393e"},{n:"Broto",i:"🌿",f:1000,l:5000,v:20000,c:"#f5c542",h:"#3ecf8e"},{n:"Árvore",i:"🌳",f:5000,l:25000,v:100000,c:"#f5c542",h:"#4aa8ff"},{n:"Parceiro",i:"🍇",f:10000,l:50000,v:500000,c:"#ffffff",h:"#b085ff"}];
+// Selo do nível: o B com a auréola, que muda de cor a cada nível
+function monBadge(l,px){return '<svg viewBox="0 0 100 100" width="'+(px||64)+'" height="'+(px||64)+'" aria-hidden="true"><circle cx="50" cy="52" r="46" fill="#1b0f2e" stroke="'+l.h+'" stroke-opacity=".35" stroke-width="2"/><ellipse cx="50" cy="22" rx="27" ry="8" fill="none" stroke="'+l.h+'" stroke-width="6" transform="rotate(-8 50 22)"/><text x="50" y="80" text-anchor="middle" font-family="Anton,Impact,sans-serif" font-size="58" fill="'+l.c+'">B</text></svg>';}
+function monPage(){
+  const lv=MON_LV.map((l,i)=>'<div class="mon-row"><span class="mon-b">'+monBadge(l,52)+'</span><div><b>'+l.i+' '+l.n+'</b><small>'+l.f.toLocaleString("pt-BR")+' seguidores · '+l.l.toLocaleString("pt-BR")+' curtidas · '+l.v.toLocaleString("pt-BR")+' visualizações</small></div>'+(i===3?'<em>Elegível</em>':'')+'</div>').join("");
+  return '<section class="mon"><div class="news-page-heading"><h2>💰 Monetizar</h2></div>'
+   +'<p class="mon-lead">Poste, receba visualizações, curtidas e seguidores e suba de nível. <b>Quanto mais você cresce, maior a possibilidade de ganhar dinheiro</b>, sempre de acordo com os termos do programa de parcerias.</p>'
+   +'<section class="vp" data-set="mon" role="region" aria-label="Como crescer e ganhar no Blessed"></section>'
+   +'<h3 class="mon-h">Os níveis</h3><div class="mon-lv">'+lv+'</div>'
+   +'<p class="mon-note">Para subir de nível é preciso bater <b>as três metas juntas</b>: seguidores, curtidas e visualizações. A contagem de visualizações dos seus vídeos está chegando em breve.</p>'
+   +'<ul class="mon-rules"><li>Só conta gente de verdade. Perfil falso ou compra de seguidores tira você do programa.</li><li>No nível Parceiro você fica elegível ao programa de parcerias com anunciantes.</li><li>Não prometemos valores: o que cada um recebe depende dos termos do programa.</li></ul>'
+   +(TEAM&&TEAM.user?'<button class="btn primary" data-a="cm-money">Ver meu progresso</button>':'')
+   +'</section>';
+}
 async function moneyOpen(){
   const id=TEAM.user.id,m=$("#modal");m.className="modal";
   m.innerHTML='<div class="modal-box" role="dialog" aria-modal="true"><h2>💰 Monetizar</h2><p class="muted">Carregando seus números…</p></div>';m.hidden=false;
@@ -4456,7 +4496,7 @@ async function moneyOpen(){
   const nx=MON_LV[k+1],cur=MON_LV[k];
   const ok=k===MON_LV.length-1;
   m.innerHTML='<div class="modal-box" role="dialog" aria-modal="true"><h2>💰 Monetizar</h2>'
-   +'<p>Seu nível: <b>'+(cur?cur.i+' '+cur.n:'Ainda sem nível')+'</b></p>'
+   +'<p style="display:flex;align-items:center;gap:10px">'+(cur?monBadge(cur,56):'')+'<span>Seu nível: <b>'+(cur?cur.i+' '+cur.n:'Ainda sem nível')+'</b></span></p>'
    +(ok?'<p>🎉 Você está <b>elegível ao programa de parcerias</b> do Blessed.</p>':'<p class="muted">Próximo nível: <b>'+nx.i+' '+nx.n+'</b></p>'
     +'<p style="margin:10px 0 4px">Seguidores: '+n(fo)+' / '+n(nx.f)+'</p>'+bar(fo,nx.f)
     +'<p style="margin:10px 0 4px">Curtidas: '+n(lk)+' / '+n(nx.l)+'</p>'+bar(lk,nx.l))
@@ -7316,7 +7356,7 @@ function viewSetlist(){
       : `<div class="actions" style="margin-top:8px"><button class="btn ghost" data-a="set-clear">Limpar escala</button></div>`}
   </section>` : `<p class="muted" style="font-size:14px;margin:0 0 12px">Monte a <b>escala do culto</b>: toque em <b>+ Escala</b> nas músicas, na ordem em que vão ser tocadas.</p>`;
   if (state.view === "escala") return `
-  <div class="top"><button class="btn ghost" data-a="home">‹ Novidades</button><h1 style="font-size:22px">Escala do culto</h1></div>
+  <div class="top"><button class="btn ghost" data-a="home">‹ Voltar</button><h1 style="font-size:22px">Escala do culto</h1></div>
   ${setPanel}
   <h3 style="font-size:18px;margin:4px 0 8px">Adicionar da sua lista</h3>
   <input id="q" class="search" type="search" placeholder="Buscar no repertório" value="${esc(state.q)}" aria-label="Buscar música">
