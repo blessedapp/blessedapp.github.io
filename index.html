@@ -952,6 +952,8 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+#ptr .ptr-l{position:absolute;top:50px;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 12px var(--f-body);color:#fff;background:rgba(30,12,55,.82);padding:3px 10px;border-radius:99px}
+.new-pill{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 74px);transform:translateX(-50%);z-index:125;border:0;border-radius:99px;padding:10px 18px;background:linear-gradient(135deg,#a46bff,#6a2aae);color:#fff;font:800 14px var(--f-body);box-shadow:0 10px 28px rgba(60,20,110,.45);animation:npIn .35s ease-out}@keyframes npIn{from{opacity:0;transform:translate(-50%,-14px)}}
 .st-hero{margin:0 0 14px;padding:14px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(176,92,240,.18),rgba(176,92,240,.05));border:1px solid rgba(176,92,240,.35)}.st-hero b{font-size:17px}.st-hero p{margin:4px 0 10px;font-size:13px;color:var(--muted)}.st-hero .btn{font-size:13px;padding:9px 14px;min-height:0}
 .st-list{display:grid;gap:12px}.st-card{border-radius:22px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 22px rgba(70,25,110,.1)}.st-cv{display:block;width:100%;height:88px;border:0;padding:0;background:var(--acc) center/cover no-repeat}.st-b{display:flex;align-items:center;gap:10px;padding:10px 12px}.st-id{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;text-align:left;color:var(--ink);font:inherit}.st-id span{display:grid;min-width:0}.st-id b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.st-id small{color:var(--muted)}.st-bio{margin:0;padding:0 14px 12px;font-size:14px;line-height:1.4;color:var(--ink)}.st-b .btn{flex:none;font-size:13px;padding:8px 14px;min-height:0}
 .pf-private{margin:0 0 10px;font-size:13px;color:var(--muted)}
@@ -4138,20 +4140,44 @@ function exploreView(){
 /* ---------- puxar para baixo para atualizar o Início ---------- */
 const PTR = {x: 0, y: null, dy: 0, busy: false, el: null};
 const PTR_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>';
-function ptrEl(){ if (!PTR.el) { const d = document.createElement("div"); d.id = "ptr"; d.setAttribute("role", "status"); d.innerHTML = PTR_ICON; document.body.appendChild(d); PTR.el = d; } return PTR.el; }
+function ptrEl(){ if (!PTR.el) { const d = document.createElement("div"); d.id = "ptr"; d.setAttribute("role", "status"); d.innerHTML = PTR_ICON + '<span class="ptr-l"></span>'; document.body.appendChild(d); PTR.el = d; } return PTR.el; }
 function ptrShow(px, rot){ const e = ptrEl(); e.style.opacity = Math.min(1, px / 40); e.style.transform = "translate(-50%," + (px - 56) + "px)"; if (rot !== undefined) e.firstChild.style.transform = "rotate(" + rot + "deg)"; }
+function ptrLabel(t){ const l = ptrEl().querySelector(".ptr-l"); if (l) l.textContent = t; }
+/* avisa sozinho quando saem publicações novas ("⬆ Novas publicações") */
+function ptrPillHide(){ const p = document.getElementById("new-pill"); if (p) p.remove(); }
+function ptrPillShow(){
+  if (document.getElementById("new-pill")) return;
+  const b = document.createElement("button"); b.id = "new-pill"; b.className = "new-pill"; b.type = "button"; b.dataset.a = "ex-refresh"; b.textContent = "⬆ Novas publicações";
+  document.body.appendChild(b);
+}
+async function commCheckNew(){
+  try {
+    if (document.hidden || state.view !== "community" || !TEAM.user || !COMM.me || PTR.busy) { if (state.view !== "community") ptrPillHide(); return; }
+    const tab = state.cmTab || "explore"; if (tab === "people" || tab === "lojas") return;
+    const key = tab === "feed" ? "feed" : "explore", topId = (COMM[key] || [])[0], top = topId && COMM.posts[topId];
+    let q = TEAM.client.from("posts").select("id,created_at").order("created_at", {ascending: false}).limit(1);
+    if (tab === "feed") q = q.in("author", [...COMM.following, TEAM.user.id]);
+    const {data} = await q, n = data && data[0];
+    if (n && n.id !== topId && (!top || String(n.created_at) > String(top.created_at))) ptrPillShow();
+  } catch (e) {}
+}
+setInterval(commCheckNew, 40000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(commCheckNew, 1500); });
 function ptrHide(){ const e = ptrEl(); e.classList.remove("spin", "ready"); e.style.transition = "transform .25s, opacity .25s"; e.style.opacity = 0; e.style.transform = "translate(-50%,-60px)"; setTimeout(() => { e.style.transition = ""; }, 300); }
 async function ptrRefresh(){
   try {
+    if (state.view === "chats") { if (typeof dmLoad === "function") await dmLoad(); return; }
+    if (state.view === "profile") { if (TEAM.user && state.profileId) { await commLoadProfile(state.profileId); } return; }
     if (!TEAM.user || COMM.me === null) { await pcLoad(pcPage()); return; }
     const tab = state.cmTab || "explore", jobs = [commLoadPeople()];
     if (tab !== "people") jobs.push(commLoadPosts(tab === "feed" ? "feed" : "explore")); jobs.push(commLoadExBless());
     await Promise.all(jobs);
+    ptrPillHide();
   } catch (e) {}
 }
 document.addEventListener("touchstart", e => {
   const m = document.getElementById("modal");
-  if (state.view !== "community" || PTR.busy || window.scrollY > 0 || (m && !m.hidden) || e.touches.length !== 1) { PTR.y = null; return; }
+  if (!["community", "chats", "profile"].includes(state.view) || PTR.busy || window.scrollY > 0 || (m && !m.hidden) || e.touches.length !== 1) { PTR.y = null; return; }
   PTR.y = e.touches[0].clientY; PTR.x = e.touches[0].clientX; PTR.dy = 0;
 }, {passive: true});
 document.addEventListener("touchmove", e => {
@@ -4159,13 +4185,13 @@ document.addEventListener("touchmove", e => {
   const t = e.touches[0], dy = t.clientY - PTR.y, dx = Math.abs(t.clientX - PTR.x);
   if (dy <= 0 || dx > dy || window.scrollY > 0) { if (dy < -4 || window.scrollY > 0) { PTR.y = null; if (PTR.el) ptrHide(); } return; }
   if (e.cancelable) e.preventDefault();
-  PTR.dy = dy; ptrShow(Math.min(dy * .5, 78), dy * 3); ptrEl().classList.toggle("ready", dy > 90);
+  PTR.dy = dy; ptrShow(Math.min(dy * .5, 78), dy * 3); ptrEl().classList.toggle("ready", dy > 64); ptrLabel(dy > 64 ? "Solte para atualizar" : "Puxe para atualizar");
 }, {passive: false});
 async function ptrEnd(){
   if (PTR.y === null) return;
-  const go = PTR.dy > 90; PTR.y = null; PTR.dy = 0;
+  const go = PTR.dy > 64; PTR.y = null; PTR.dy = 0;
   if (!go) { if (PTR.el) ptrHide(); return; }
-  PTR.busy = true; const e = ptrEl(); e.firstChild.style.transform = ""; e.classList.add("spin"); ptrShow(56);
+  PTR.busy = true; const e = ptrEl(); e.firstChild.style.transform = ""; e.classList.add("spin"); ptrShow(56); ptrLabel("Atualizando…");
   await Promise.all([ptrRefresh(), new Promise(r => setTimeout(r, 700))]);
   PTR.busy = false; ptrHide();
 }
@@ -6127,6 +6153,7 @@ function commClick(a, b){
   else if (a === "ex-tile") exTap(b.dataset.id, b);
   else if (a === "ex-bl") blOpen(b.dataset.id);
   else if (a === "ex-mention") exMention(b.dataset.h);
+  else if (a === "ex-refresh") { ptrPillHide(); scrollTo({top: 0, behavior: "smooth"}); PTR.busy = true; const e = ptrEl(); e.classList.add("spin"); ptrShow(56); ptrLabel("Atualizando…"); Promise.all([ptrRefresh(), new Promise(r => setTimeout(r, 600))]).then(() => { PTR.busy = false; ptrHide(); }); }
   else if (a === "ex-tag") { const t = b.dataset.t; state.exTag = t; state.cmTab = "explore"; state.view = "community"; if (!COMM.tagRes[t]) exTagLoad(t); render(); scrollTo(0, 0); }
   else if (a === "ex-tag-x") { state.exTag = null; rerenderKeepScroll(); }
   else if (a === "ex-how") { const m = $("#modal"); m.className = "modal"; m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exh-t"><h2 id="exh-t">⭐ Como virar destaque do dia</h2><p>O destaque do dia fica <b>no topo do Explorar</b> e é visto por todo mundo que abre o Blessed.</p><ul class="perm-list"><li>📸 <b>Poste com frequência</b><small>fotos e textos que inspirem quem caminha com você</small></li><li>❤️ <b>Interaja</b><small>curta e comente nas publicações dos outros</small></li><li>🙏 <b>Participe</b><small>ore pelos pedidos e siga igrejas e amigos</small></li></ul><p class="muted" style="font-size:13px">O destaque é escolhido entre as publicações que mais engajam, ou direto pela equipe do Blessed.</p><button class="btn primary" data-a="pix-close">Entendi</button></div>`; m.hidden = false; }
