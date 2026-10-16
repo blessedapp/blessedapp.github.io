@@ -952,6 +952,13 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.mention{color:#8a2be0;font-weight:700;background:rgba(138,43,224,.12);border-radius:6px;padding:0 3px;cursor:pointer}
+.hashtag{color:#a15cf2;font-weight:600;cursor:pointer}
+html:not([data-appearance=light]) .mention{color:#cf9bff;background:rgba(200,150,255,.16)}html:not([data-appearance=light]) .hashtag{color:#b98bff}
+.dm-msg.me .mention,.dm-msg.me .hashtag{color:#fff}
+.ex-tagbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:10px 14px;border-radius:16px;background:rgba(176,92,240,.14);border:1px solid rgba(176,92,240,.35)}.ex-tagbar b{font-size:18px;color:#8a2be0}.ex-tagbar button{border:0;background:none;color:var(--muted);font:700 13px var(--f-body)}
+.mn-pop{position:fixed;z-index:200;display:grid;gap:2px;padding:6px;border-radius:16px;background:var(--surface,#fff);border:1px solid var(--line);box-shadow:0 14px 40px rgba(40,10,70,.35)}.mn-i{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:8px;border-radius:12px;color:var(--ink);text-align:left;font:inherit}.mn-i:active,.mn-i:hover{background:rgba(176,92,240,.16)}.mn-i span{display:grid;min-width:0}.mn-i b{font-size:14px}.mn-i small{color:var(--muted);font-size:12px}
+.pf-invite{display:inline-flex;align-items:center;gap:8px;margin:-6px 0 14px;padding:8px 14px;border:1px solid var(--line);border-radius:99px;background:none;color:var(--muted);font:600 13px var(--f-body)}.pf-invite svg{width:16px;height:16px}
 .ex-tip{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(176,92,240,.2),rgba(176,92,240,.06));border:1px solid rgba(176,92,240,.35)}.ex-tip-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a46bff,#6a2aae);font-size:18px}.ex-tip p{margin:0;flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--ink)}.ex-tip p b{display:block;font-size:14px}.ex-tip button{flex:none;border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:6px 2px}
 .cm-bubs{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}.cm-bubs::-webkit-scrollbar{display:none}
 .cm-bub{flex:none;width:78px;display:grid;justify-items:center;gap:7px;border:0;background:none;padding:0;color:var(--ink);scroll-snap-align:start;font:inherit}
@@ -3301,7 +3308,7 @@ const BL_ICON = `<svg class="bl-ic" viewBox="0 0 512 512" aria-hidden="true"><de
    segue outras pessoas e posta fotos. As cifras da equipe continuam só para quem o administrador aprovou.
    Tabelas e fotos: supabase-comunidade.sql (fotos numa pasta privada, abertas por link temporário). */
 const COMM = {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(),
-  likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, exBl: null, counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
+  likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, exBl: null, tagRes: {}, counts: {}, urls: {}, reports: null, missing: false, busy: false, msg: ""};
 // cores prontas + qualquer cor escolhida na roda (guardada como #RRGGBB)
 const THEMES = new Proxy({red: "#E50914", pink: "#FF5FA2", lilac: "#B05CF0", violet: "#B99AF7", blue: "#4F8CFF", teal: "#46D3C3", green: "#3DDC84", gold: "#F5B451", orange: "#FF8A3D", white: "#F4F1F8"},
   {get: (t, k) => typeof k === "string" && /^#[0-9a-f]{6}$/i.test(k) ? k : t[k]});
@@ -3310,7 +3317,7 @@ const REPORT_REASONS = ["Conteúdo impróprio", "Não tem a ver com música ou l
 function commOn(){ return teamAvailable() && !!TEAM.client; }
 function commIn(){ return commOn() && !!TEAM.user && teamRole() !== "blocked"; }
 function commMissing(error){ return !!error && (error.code === "42P01" || error.code === "PGRST205" || /does not exist|schema cache/i.test(error.message || "")); }
-function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, exBl: null, counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
+function commReset(){ placeReset(); bsReset(); stReset(); Object.assign(COMM, {ccount: {}, comments: {}, mySaves: new Set(), savedIds: undefined, myRequest: undefined, verifyReqs: undefined, me: undefined, profiles: {}, people: null, feed: null, explore: null, posts: {}, byAuthor: {}, following: new Set(), likes: {}, myLikes: new Set(), prayers: {}, myPrayers: new Set(), featured: null, exBl: null, tagRes: {}, counts: {}, reports: null, missing: false, busy: false, msg: ""}); }
 function commRerender(...views){ if (views.includes(state.view) || state.view === "library" || state.view === "setlist") rerenderKeepScroll(); }
 function commUrl(p){ return p ? COMM.urls[p] || "" : ""; }
 // Miniatura (~400 px) guardada ao lado da foto: a grade e os stories usam ela; a foto cheia só baixa ao abrir.
@@ -3362,7 +3369,7 @@ async function commLoadPosts(which){
   list.forEach(p => COMM.posts[p.id] = p);
   COMM[which] = list.map(p => p.id);
   await commAfterPosts(list);
-  if (which === "explore") { commLoadFeatured(); commLoadExBless(); }
+  if (which === "explore") commLoadFeatured();
   commRerender("community");
 }
 async function commLoadAuthorPosts(id){
@@ -3606,7 +3613,7 @@ function commPostCard(id){
   if (!u && !tx) commSign([p.image_path]);
   return `<article class="cm-post">
     <button class="cm-post-h" data-a="cm-profile" data-id="${esc(p.author)}">${commAvatar(a, 38)}<span style="min-width:0"><b>${esc(a.display_name || "")}${commBadge(a)}</b><span class="muted">${commWhere(a) || "@" + esc(a.handle || "")}</span></span></button>
-    ${placeLink(p.place)}${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}" style="${txStyle(p)}">${esc(p.caption || "")}</button>` : `${Array.isArray(p.images) && p.images.length ? commCarousel(p, a) : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}`}
+    ${placeLink(p.place)}${tx ? `<button class="cm-post-text" data-a="cm-post" data-id="${esc(id)}" style="${txStyle(p)}">${rich(p.caption || "")}</button>` : `${Array.isArray(p.images) && p.images.length ? commCarousel(p, a) : `<button class="cm-post-img" data-a="cm-post" data-id="${esc(id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="Foto de ${esc(a.display_name || "")}" loading="lazy">` : ""}</button>`}`}
     <div class="cm-bar">
       <button class="cm-act" data-a="cm-comments" data-id="${esc(id)}" aria-label="Comentar">${CM_ICONS.comment}<span>${COMM.ccount[id] || 0}</span></button>
       <button class="cm-act like" data-a="cm-like" data-id="${esc(id)}" aria-pressed="${liked}" aria-label="Curtir">${liked ? CM_ICONS.heartOn : CM_ICONS.heart}<span>${COMM.likes[id] || 0}</span></button>
@@ -3614,7 +3621,7 @@ function commPostCard(id){
       <button class="cm-act" data-a="cm-share" data-id="${esc(id)}" aria-label="Compartilhar">${CM_ICONS.share}</button>
     </div>
     <p class="cm-time">${commAgo(p.created_at)}</p>
-    ${p.caption && !tx ? `<p class="cm-cap"><b>${esc(a.display_name || "")}</b> ${esc(p.caption)}</p>` : ""}
+    ${p.caption && !tx ? `<p class="cm-cap"><b>${esc(a.display_name || "")}</b> ${rich(p.caption)}</p>` : ""}
     ${pfWith("post", id)}
     ${p.song && p.song.name ? `<p class="cm-songtag">🎵 ${esc(p.song.name)}${p.song.artist ? " · " + esc(p.song.artist) : ""}${p.song.key ? ` <span class="tag">${esc(p.song.key)}</span>` : ""}</p>` : ""}
   </article>`;
@@ -3649,7 +3656,7 @@ function commCommentsHtml(p){
   const rows = (list || []).map(c => { const a = COMM.profiles[c.author] || {};
     const canDel = c.author === TEAM.user.id || p.author === TEAM.user.id || teamRole() === "admin";
     return `<div class="cm-cmt"><button class="cm-cmt-av" data-a="cm-profile" data-id="${esc(c.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 34)}</button>
-      <div class="cm-cmt-b"><p><button class="lnk2 cm-cmt-n" data-a="cm-profile" data-id="${esc(c.author)}">${esc(a.display_name || "")}</button>${commBadge(a)} <span class="muted">· ${commAgo(c.created_at)}</span></p><p class="cm-cmt-t">${esc(c.text)}</p>
+      <div class="cm-cmt-b"><p><button class="lnk2 cm-cmt-n" data-a="cm-profile" data-id="${esc(c.author)}">${esc(a.display_name || "")}</button>${commBadge(a)} <span class="muted">· ${commAgo(c.created_at)}</span></p><p class="cm-cmt-t">${rich(c.text)}</p>
       <p class="cm-cmt-x">${canDel ? `<button class="lnk2" data-a="cm-cmt-del" data-id="${esc(c.id)}" data-p="${esc(p.id)}">Apagar</button>` : ""}${c.author === TEAM.user.id ? "" : `<button class="lnk2" data-a="cm-report" data-k="comment" data-id="${esc(p.id + "/" + c.id)}">Denunciar</button>`}</p></div></div>`; }).join("");
   return `<section class="cm-comments" id="comentarios"><h3>Comentários${list && list.length ? ` <small>${list.length}</small>` : ""}</h3>
     ${list === null ? '<p class="muted">Carregando…</p>' : rows || '<p class="muted" style="margin:0 0 10px">Seja o primeiro a comentar.</p>'}
@@ -3944,6 +3951,59 @@ function exBlObs(){
   document.querySelectorAll(".ex-bl video:not([data-obs])").forEach(v => { v.dataset.obs = "1"; if (EXV.io) EXV.io.observe(v); });
 }
 new MutationObserver(() => exBlObs()).observe(document.documentElement, {childList: true, subtree: true});
+/* @menções (lilás forte) e #hashtags que abrem uma busca */
+function rich(t){
+  let h = esc(t);
+  h = h.replace(/(^|[\s(])@([A-Za-z0-9_.]{2,30})/g, (m, a, n) => { const k = n.replace(/\.+$/, ""), rest = n.slice(k.length); return k.length < 2 ? m : a + '<span class="mention" role="link" tabindex="0" data-a="ex-mention" data-h="' + k + '">@' + k + "</span>" + rest; });
+  h = h.replace(/(^|[\s(])#([\p{L}0-9_]{2,40})/gu, (m, a, n) => a + '<span class="hashtag" role="link" tabindex="0" data-a="ex-tag" data-t="' + n.toLowerCase() + '">#' + n + "</span>");
+  return h;
+}
+async function exMention(h){
+  const lh = String(h).toLowerCase();
+  const find = () => [...(COMM.people || []), ...Object.values(COMM.profiles || {})].find(p => p && String(p.handle || "").toLowerCase() === lh);
+  let p = find();
+  if (!p) {
+    try { const {data} = await TEAM.client.from("community_profiles").select("id,handle,display_name,church,city,instruments,avatar_path,cover_path,theme,created_at,verified,official,kind,schedule,services").ilike("handle", h).maybeSingle(); if (data) { commKeep([data]); p = data; } } catch (e) {}
+  }
+  if (!p) { flash("Não encontrei @" + h); return; }
+  commClick("cm-profile", {dataset: {id: p.id}});
+}
+async function exTagLoad(t){
+  try {
+    const {data} = await TEAM.client.from("posts").select("*").ilike("caption", "%#" + t + "%").order("created_at", {ascending: false}).limit(40);
+    const list = data || []; list.forEach(p => COMM.posts[p.id] = p);
+    await commAfterPosts(list); COMM.tagRes[t] = list.map(p => p.id);
+  } catch (e) { COMM.tagRes[t] = []; }
+  commRerender("community");
+}
+function exTagView(){
+  const t = state.exTag, ids = COMM.tagRes[t];
+  const bar = '<div class="ex-tagbar"><b>#' + esc(t) + '</b><button type="button" data-a="ex-tag-x">Limpar ✕</button></div>';
+  if (!ids) return bar + '<p class="muted">Buscando…</p>';
+  const posts = ids.map(id => COMM.posts[id]).filter(Boolean);
+  return bar + (posts.length ? '<div class="ex-grid">' + posts.map(exTile).join("") + "</div>" : '<p class="muted">Ainda não há publicações com #' + esc(t) + ". Seja o primeiro!</p>");
+}
+// sugestão de pessoas ao digitar @ numa legenda ou comentário
+function mnHide(){ const p = document.getElementById("mn-pop"); if (p) p.remove(); }
+function mnShow(t){
+  const before = t.value.slice(0, t.selectionStart), m = /(?:^|\s)@([A-Za-z0-9_.]*)$/.exec(before);
+  if (!m) { mnHide(); return; }
+  const q = m[1].toLowerCase(), seen = new Map();
+  [...(COMM.people || []), ...Object.values(COMM.profiles || {})].forEach(p => { if (p && p.handle && p.id !== (TEAM.user && TEAM.user.id) && !seen.has(p.id)) seen.set(p.id, p); });
+  const list = [...seen.values()].filter(p => String(p.handle).toLowerCase().startsWith(q) || String(p.display_name || "").toLowerCase().split(" ").some(w => w.startsWith(q))).slice(0, 5);
+  mnHide(); if (!list.length) return;
+  const r = t.getBoundingClientRect(), pop = document.createElement("div");
+  pop.id = "mn-pop"; pop.className = "mn-pop"; pop.style.cssText = "left:" + Math.max(8, r.left) + "px;width:" + Math.min(340, innerWidth - 16) + "px;bottom:" + (innerHeight - r.top + 6) + "px";
+  pop.innerHTML = list.map(p => '<button type="button" class="mn-i" data-mn="' + esc(p.handle) + '">' + commAvatar(p, 32, false) + "<span><b>" + esc(p.display_name || "") + "</b><small>@" + esc(p.handle) + "</small></span></button>").join("");
+  document.body.appendChild(pop); pop._t = t;
+}
+document.addEventListener("input", e => { const t = e.target; if (t && (t.id === "cm-caption" || t.id === "cm-comment")) mnShow(t); });
+document.addEventListener("pointerdown", e => {
+  const b = e.target.closest && e.target.closest("#mn-pop .mn-i"); if (!b) { if (!(e.target.closest && e.target.closest("#mn-pop"))) mnHide(); return; }
+  e.preventDefault(); const pop = document.getElementById("mn-pop"), t = pop && pop._t; if (!t) return;
+  const pos = t.selectionStart, before = t.value.slice(0, pos).replace(/@([A-Za-z0-9_.]*)$/, "@" + b.dataset.mn + " ");
+  t.value = before + t.value.slice(pos); t.selectionStart = t.selectionEnd = before.length; t.focus(); mnHide();
+});
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
 function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); if (full && !COMM.urls[p.image_path]) commSign([p.image_path]); return full ? (commUrl(p.image_path) || t) : t; }
@@ -3995,6 +4055,7 @@ function exTrending(posts){
   return top.length ? `<section class="ex-sec"><h3 class="ex-h2">🎵 Música em alta</h3><ol class="ex-songs">${top.map(x => `<li><b>${esc(x.s.name)}</b>${x.s.key ? `<small> · ${esc(x.s.key)}</small>` : ""}<span>${x.n} ${x.n > 1 ? "posts" : "post"}</span></li>`).join("")}</ol></section>` : "";
 }
 function exploreView(){
+  if (state.exTag) return exTagView();
   const f = state.exF || "all", me = TEAM.user ? TEAM.user.id : "";
   const posts = (COMM.explore || []).map(id => COMM.posts[id]).filter(Boolean);
   const people = (COMM.people || []).filter(p => p.id !== me), follow = p => !COMM.following.has(p.id);
@@ -4019,11 +4080,10 @@ function exploreView(){
     out += '<div class="ex-tip"><span class="ex-tip-i">⭐</span><p><b>Quer ser o destaque do dia?</b> Poste, curta e comente: o destaque aparece no topo do Explorar para todo mundo que abre o app.</p><button type="button" data-a="ex-how">Como funciona</button></div>';
     if (best) { out += exHero(best); heroId = best.id; }
     out += exRow(hasNear ? "⛪ Igrejas perto de você" : "⛪ Igrejas para conhecer", near.map(exChurchCard));
-    out += exBlRow();
     out += exRow("🙏 Orando agora", pray.slice(0, 6).map(exPrayCard), "Pedidos de oração recentes. Ore por alguém hoje.");
   } else if (f === "igreja") out += exRow("⛪ Igrejas no Blessed", near.map(exChurchCard));
   else if (f === "musico") out += exRow("🎹 Músicos para seguir", fresh(musicians).map(exPersonCard));
-  else if (f === "louvor") out += exBlRow() + exTrending(posts);
+  else if (f === "louvor") out += exTrending(posts);
   if (f === "oracao") out += shown.length ? shown.map(p => twCard(p.id)).join("") : '<p class="muted">Ainda não tem pedidos de oração. Seja o primeiro: toque em ＋ Postar e escolha 🙏 Oração.</p>';
   else {
     const grid = shown.filter(p => p.id !== heroId);
@@ -4043,7 +4103,7 @@ async function ptrRefresh(){
   try {
     if (!TEAM.user || COMM.me === null) { await pcLoad(pcPage()); return; }
     const tab = state.cmTab || "explore", jobs = [commLoadPeople()];
-    if (tab !== "people") jobs.push(commLoadPosts(tab === "feed" ? "feed" : "explore"));
+    if (tab !== "people") jobs.push(commLoadPosts(tab === "feed" ? "feed" : "explore")); jobs.push(commLoadExBless());
     await Promise.all(jobs);
   } catch (e) {}
 }
@@ -4130,7 +4190,7 @@ function twCard(id){
     <button class="tw-av" data-a="cm-profile" data-id="${esc(p.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 44)}</button>
     <div class="tw-b">
       <p class="tw-h"><button class="tw-n" data-a="cm-profile" data-id="${esc(p.author)}">${esc(a.display_name || "")}</button>${commBadge(a)}<span class="tw-m">@${esc(a.handle || "")} · ${commAgo(p.created_at)}</span></p>
-      ${p.kind === "oracao" ? '<span class="tw-or">🙏 Pedido de oração</span>' : ""}<button class="tw-t${long && !open ? " clamp" : ""}" data-a="cm-post" data-id="${esc(id)}">${esc(txt)}</button>${long && state.view !== "post" ? `<button class="tw-more" data-a="tw-more" data-id="${esc(id)}">${open ? "Mostrar menos" : "Mostrar mais"}</button>` : ""}
+      ${p.kind === "oracao" ? '<span class="tw-or">🙏 Pedido de oração</span>' : ""}<button class="tw-t${long && !open ? " clamp" : ""}" data-a="cm-post" data-id="${esc(id)}">${rich(txt)}</button>${long && state.view !== "post" ? `<button class="tw-more" data-a="tw-more" data-id="${esc(id)}">${open ? "Mostrar menos" : "Mostrar mais"}</button>` : ""}
       ${placeLink(p.place)}${pfWith("post", id)}
       ${p.kind === "oracao" ? `<button class="tw-pray${COMM.myPrayers.has(id) ? " on" : ""}" data-a="cm-pray" data-id="${esc(id)}" aria-pressed="${COMM.myPrayers.has(id)}">🙏 ${COMM.myPrayers.has(id) ? "Estou orando" : "Orar por isso"}${COMM.prayers[id] ? ` · ${COMM.prayers[id]}` : ""}</button>` : ""}
       <div class="tw-bar">
@@ -4745,7 +4805,7 @@ function pfBcRender(bid){
   const rows = (list || []).map(c => { const a = COMM.profiles[c.author] || {};
     const canDel = c.author === TEAM.user.id || x.author === TEAM.user.id || teamRole() === "admin";
     return `<div class="cm-cmt"><button class="cm-cmt-av" data-a="cm-profile" data-id="${esc(c.author)}" aria-label="Perfil de ${esc(a.display_name || "")}">${commAvatar(a, 34)}</button>
-      <div class="cm-cmt-b"><p><button class="lnk2 cm-cmt-n" data-a="cm-profile" data-id="${esc(c.author)}">${esc(a.display_name || "")}</button>${commBadge(a)} <span class="muted">· ${commAgo(c.created_at)}</span></p><p class="cm-cmt-t">${esc(c.text)}</p>
+      <div class="cm-cmt-b"><p><button class="lnk2 cm-cmt-n" data-a="cm-profile" data-id="${esc(c.author)}">${esc(a.display_name || "")}</button>${commBadge(a)} <span class="muted">· ${commAgo(c.created_at)}</span></p><p class="cm-cmt-t">${rich(c.text)}</p>
       ${canDel ? `<p class="cm-cmt-x"><button class="lnk2" data-a="pf-bc-del" data-id="${esc(c.id)}" data-b="${esc(bid)}">Apagar</button></p>` : ""}</div></div>`; }).join("");
   m.className = "modal";
   m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="bc-t"><h2 id="bc-t">Comentários${list && list.length ? ` <small class="muted">${list.length}</small>` : ""}</h2>
@@ -5636,6 +5696,7 @@ function viewCommunity(){
   if (COMM.people === null) { COMM.people = []; commLoadPeople(); }
   if (tab === "feed" && COMM.feed === null) { COMM.feed = []; commLoadPosts("feed"); }
   if (tab === "explore" && COMM.explore === null) { COMM.explore = []; commLoadPosts("explore"); }
+  if (COMM.exBl === null) { COMM.exBl = []; commLoadExBless(); }
   const seg = (v, l) => `<button data-a="cm-tab" data-v="${v}" aria-pressed="${tab === v}">${l}</button>`;
   let body = "";
   if (tab === "people") {
@@ -5652,7 +5713,7 @@ function viewCommunity(){
     body = exploreView();
   }
   return wrap(`${tab === "people" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
-    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`, true, tab === "people" ? "" : commStoryStrip());
+    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`, false, (tab === "people" ? "" : commStoryStrip() + exBlRow()) + communityInvite());
 }
 function viewProfile(){
   if(!TEAM.user||COMM.me===null)return pcProfile();
@@ -5671,7 +5732,7 @@ function viewProfile(){
       <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : ""}</div></div>
     <div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2><p class="muted" style="margin:0">@${esc(p.handle || "")}</p></div>
       <div class="cm-counts" aria-label="Atividade do perfil"><button data-a="cm-profile-photos"><b>${c.photos??(posts?posts.filter(id=>COMM.posts[id]?.image_path).length:'–')}</b><span>Fotos</span></button><button data-a="cm-connections" data-v="followers" data-id="${esc(id)}"><b>${c.followers??'–'}</b><span>Seguidores</span></button><button data-a="cm-connections" data-v="following" data-id="${esc(id)}"><b>${c.following??'–'}</b><span>Seguindo</span></button></div></div>
-    ${!me?`<div class="cm-profile-actions" role="group" aria-label="Interagir com o perfil">${commFollowBtn(id)}${dmBtn(id)}${dmProfileNudgeBtn(id)}</div>`:""}
+    ${!me?`<div class="cm-profile-actions" role="group" aria-label="Interagir com o perfil">${commFollowBtn(id)}${dmBtn(id)}${dmProfileNudgeBtn(id)}</div><button type="button" class="pf-invite" data-a="cm-invite">${CM_ICONS.share}<span>Convidar alguém</span></button>`:""}
     ${lmCard(p.listening_now)}
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
@@ -5998,7 +6059,7 @@ function commClick(a, b){
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tstyle") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.style = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "cm-pkind") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.oracao = b.dataset.v === "oracao"; d.kind = d.oracao ? "texto" : b.dataset.v; COMM.msg = ""; render(); }
-  else if (a === "cm-tab") { state.cmTab = b.dataset.v; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
+  else if (a === "cm-tab") { state.cmTab = b.dataset.v; state.exTag = null; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; state.pfTab = "fotos"; delete PF.bl[b.dataset.id]; delete PF.tags[b.dataset.id]; delete PF.shares[b.dataset.id]; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
   else if (a === "cm-back") { state.view = state.cmBack && state.cmBack !== "post" && state.cmBack !== "post-new" ? state.cmBack : "community"; if (state.view === "profile") state.profileId = state.cmBackProfile || state.profileId; render(); scrollTo(0, 0); }
@@ -6019,6 +6080,9 @@ function commClick(a, b){
   else if (a === "vd-share") vdShare();
   else if (a === "ex-tile") exTap(b.dataset.id, b);
   else if (a === "ex-bl") blOpen(b.dataset.id);
+  else if (a === "ex-mention") exMention(b.dataset.h);
+  else if (a === "ex-tag") { const t = b.dataset.t; state.exTag = t; state.cmTab = "explore"; state.view = "community"; if (!COMM.tagRes[t]) exTagLoad(t); render(); scrollTo(0, 0); }
+  else if (a === "ex-tag-x") { state.exTag = null; rerenderKeepScroll(); }
   else if (a === "ex-how") { const m = $("#modal"); m.className = "modal"; m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exh-t"><h2 id="exh-t">⭐ Como virar destaque do dia</h2><p>O destaque do dia fica <b>no topo do Explorar</b> e é visto por todo mundo que abre o Blessed.</p><ul class="perm-list"><li>📸 <b>Poste com frequência</b><small>fotos e textos que inspirem quem caminha com você</small></li><li>❤️ <b>Interaja</b><small>curta e comente nas publicações dos outros</small></li><li>🙏 <b>Participe</b><small>ore pelos pedidos e siga igrejas e amigos</small></li></ul><p class="muted" style="font-size:13px">O destaque é escolhido entre as publicações que mais engajam, ou direto pela equipe do Blessed.</p><button class="btn primary" data-a="pix-close">Entendi</button></div>`; m.hidden = false; }
   else if (a === "ex-f") { state.exF = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "ch-share") { const c = COMM.profiles[b.dataset.id] || {}; shareBlessedLink((c.display_name || "Igreja") + " no Blessed: cultos, agenda e comunidade.", location.origin + location.pathname); }
