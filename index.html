@@ -952,6 +952,7 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.ex-tip{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(176,92,240,.2),rgba(176,92,240,.06));border:1px solid rgba(176,92,240,.35)}.ex-tip-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a46bff,#6a2aae);font-size:18px}.ex-tip p{margin:0;flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--ink)}.ex-tip p b{display:block;font-size:14px}.ex-tip button{flex:none;border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:6px 2px}
 .cm-bubs{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}.cm-bubs::-webkit-scrollbar{display:none}
 .cm-bub{flex:none;width:78px;display:grid;justify-items:center;gap:7px;border:0;background:none;padding:0;color:var(--ink);scroll-snap-align:start;font:inherit}
 .cm-bub-r{position:relative;display:block;width:76px;height:76px;border-radius:50%;padding:3px;background:var(--line)}
@@ -4015,6 +4016,7 @@ function exploreView(){
   if (f === "all") {
     const feat = COMM.featured && COMM.posts[COMM.featured.id] && Date.now() - Date.parse(COMM.featured.at) < 172800000 ? COMM.posts[COMM.featured.id] : null;
     const best = feat || posts.filter(p => p.image_path).sort((a, b) => (COMM.likes[b.id] || 0) - (COMM.likes[a.id] || 0) || String(b.created_at).localeCompare(String(a.created_at)))[0];
+    out += '<div class="ex-tip"><span class="ex-tip-i">⭐</span><p><b>Quer ser o destaque do dia?</b> Poste, curta e comente: o destaque aparece no topo do Explorar para todo mundo que abre o app.</p><button type="button" data-a="ex-how">Como funciona</button></div>';
     if (best) { out += exHero(best); heroId = best.id; }
     out += exRow(hasNear ? "⛪ Igrejas perto de você" : "⛪ Igrejas para conhecer", near.map(exChurchCard));
     out += exBlRow();
@@ -6014,6 +6016,7 @@ function commClick(a, b){
   else if (a === "vd-share") vdShare();
   else if (a === "ex-tile") exTap(b.dataset.id, b);
   else if (a === "ex-bl") blOpen(b.dataset.id);
+  else if (a === "ex-how") { const m = $("#modal"); m.className = "modal"; m.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exh-t"><h2 id="exh-t">⭐ Como virar destaque do dia</h2><p>O destaque do dia fica <b>no topo do Explorar</b> e é visto por todo mundo que abre o Blessed.</p><ul class="perm-list"><li>📸 <b>Poste com frequência</b><small>fotos e textos que inspirem quem caminha com você</small></li><li>❤️ <b>Interaja</b><small>curta e comente nas publicações dos outros</small></li><li>🙏 <b>Participe</b><small>ore pelos pedidos e siga igrejas e amigos</small></li></ul><p class="muted" style="font-size:13px">O destaque é escolhido entre as publicações que mais engajam, ou direto pela equipe do Blessed.</p><button class="btn primary" data-a="pix-close">Entendi</button></div>`; m.hidden = false; }
   else if (a === "ex-f") { state.exF = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "ch-share") { const c = COMM.profiles[b.dataset.id] || {}; shareBlessedLink((c.display_name || "Igreja") + " no Blessed: cultos, agenda e comunidade.", location.origin + location.pathname); }
   else if (a === "vd-read") { const d = VD.data; if (d) { state.view = "study"; state.studyTab = "biblia"; bibleGo(d.code, d.c, d.vs[0]); } }
