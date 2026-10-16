@@ -1489,7 +1489,7 @@ function viewLibrary(){
 /* ---------- equipe: login com e-mail e senha (Supabase), só no site ----------
    Quem cria conta fica "aguardando aprovação"; o administrador aprova na aba Equipe.
    Repertório, pastas e escala ficam na tabela items; tom e capo de cada pessoa ficam no aparelho dela. */
-const TEAM = {client: null, user: null, profile: null, sub: null, users: null, msg: "", busy: false};
+const TEAM = {client: null, user: null, profile: null, sub: null, users: null, msg: "", busy: false,recovering:false,profileIntroPending:null};
 const ROLE_NAME = {pending: "Aguardando", member: "Membro", editor: "Editor", admin: "Administrador", blocked: "Bloqueado"};
 function teamAvailable(){ return !window.claude && !!(window.CC_SUPABASE && window.CC_SUPABASE.url && window.CC_SUPABASE.key && window.supabase); }
 function teamRole(){ return TEAM.profile ? TEAM.profile.role : "none"; }
@@ -1500,7 +1500,7 @@ async function teamInit(){
   if (!teamAvailable()) return;
   TEAM.client = window.supabase.createClient(window.CC_SUPABASE.url, window.CC_SUPABASE.key, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   TEAM.client.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT" && TEAM.user) teamLeave();
-    if (ev === "PASSWORD_RECOVERY") setTimeout(() => { state.ajBack = "community"; state.aj = {msg: "Você entrou pelo link do e-mail. Crie sua senha nova abaixo."}; state.view = "ajustes"; render(); scrollTo(0, 0); }, 600); });
+    if (ev === "PASSWORD_RECOVERY") {TEAM.recovering=true;setTimeout(() => { state.ajBack = "community"; state.aj = {msg: "Você entrou pelo link do e-mail. Crie sua senha nova abaixo."}; state.view = "ajustes"; render(); scrollTo(0, 0); }, 600);} });
   try {
     const {data} = await TEAM.client.auth.getSession();
     if (data && data.session) await teamEnter(data.session.user);
@@ -1514,15 +1514,16 @@ async function loadVitrine(){
     state.vitrine = error ? [] : (data || []);
   } catch(e) { state.vitrine = []; }
 }
-async function teamEnter(user){
+async function teamEnter(user,onboard=false){
   if(PR.owner) { prBeat(false); prStop(); }
   TEAM.user = user;
   const {data: prof} = await TEAM.client.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  if(TEAM.user?.id!==user.id)return;
   TEAM.profile = prof || {role: "pending", email: user.email};
   prStart();
-  COMM.me = undefined; commLoadMe();
+  COMM.me = undefined; const community=commLoadMe();
   const after = state.afterLogin; state.afterLogin = null;
-  if (!["member", "editor", "admin"].includes(TEAM.profile.role)) { state.view = (after === "blessings" || state.view === "blessings") ? "blessings" : (after === "community" || state.view === "community") ? "community" : "login"; return; }
+  if (!["member", "editor", "admin"].includes(TEAM.profile.role)) { state.view = (after === "blessings" || state.view === "blessings") ? "blessings" : (after === "community" || state.view === "community") ? "community" : "login"; if(await community)commProfileIntro(user,onboard); return; }
   store.mode = "team";
   await teamLoad();
   if (!TEAM.sub) TEAM.sub = TEAM.client.channel("items-live")
@@ -1532,6 +1533,7 @@ async function teamEnter(user){
     }).subscribe();
   if (state.view === "login") state.view = after === "community" ? "community" : after === "blessings" ? "blessings" : after === "bible" ? "study" : "library";
   if (TEAM.profile.role === "admin") loadTeamUsers();
+  if(await community)commProfileIntro(user,onboard);
 }
 async function teamLoad(){
   const {data, error} = await TEAM.client.from("items").select("id,kind,data").limit(5000);
@@ -1546,7 +1548,7 @@ async function teamLoad(){
 }
 function teamLeave(){
   prBeat(false);prStop();
-  bibleAskReset();ntfReset();lmReset();
+  bibleAskReset();ntfReset();lmReset();TEAM.recovering=false;TEAM.profileIntroPending=null;
   if (TEAM.sub) { TEAM.client.removeChannel(TEAM.sub); TEAM.sub = null; }
   TEAM.user = null; TEAM.profile = null; TEAM.users = null; store.mode = "local"; commReset(); blReset(); dmReset(); state.vitrine = null; if (TEAM.client) loadVitrine().then(render);
   state.songs = lsGet("cc-local-songs", []); state.artists = lsGet("cc-local-artists", []); state.setlist = lsGet("cc-local-setlist", []);
@@ -1599,7 +1601,7 @@ async function termsAccept(){
   const {data, error} = await TEAM.client.auth.updateUser({data: {terms_v: TERMS_V, terms_at: new Date().toISOString()}});
   if (error) { flash("Não consegui salvar agora. Tente de novo."); return; }
   if (data && data.user) TEAM.user = data.user;
-  closePix(); flash("Obrigado! Bem-vindo(a) à comunidade 🙏");
+  closePix(); flash("Obrigado! Bem-vindo(a) à comunidade 🙏");if(TEAM.profileIntroPending===TEAM.user?.id)commProfileIntro(TEAM.user,true);
 }
 document.addEventListener('change',ev=>{const group=ev.target.dataset.showPasswords;if(group!=='login'&&group!=='settings')return;for(const id of group==='login'?['l-pass','l-pass2']:['aj-p1','aj-p2']){const input=document.getElementById(id);if(input)input.type=ev.target.checked?'text':'password';}});
 function teamAuthFail(message){ TEAM.msg=message;const el=$("#login-msg");if(el){el.textContent=message;el.hidden=false;}else render(); }
@@ -1614,12 +1616,12 @@ async function teamAuth(kind){
   TEAM.busy = true; TEAM.msg = ""; render();
   try {
     const res = kind === "signup"
-      ? await TEAM.client.auth.signUp({email, password: pass, options: {data: {name, terms_v: TERMS_V, terms_at: new Date().toISOString()}}})
+      ? await TEAM.client.auth.signUp({email, password: pass, options: {data: {name, terms_v: TERMS_V, terms_at: new Date().toISOString(),community_profile_setup:true}}})
       : await TEAM.client.auth.signInWithPassword({email, password: pass});
     if (res.error) throw res.error;
     const user = res.data.user || (res.data.session && res.data.session.user);
-    if (!res.data.session) { TEAM.msg = "Conta criada! Enviamos um link para o seu e-mail. Abra a mensagem, toque no link para confirmar e depois entre aqui."; state.loginTab = "in"; }
-    else await teamEnter(user);
+    if (!res.data.session) { TEAM.msg = "Conta criada! Enviamos um link para o seu e-mail. Confirme pelo link e entre aqui para completar seu perfil da comunidade."; state.loginTab = "in"; }
+    else await teamEnter(user,true);
   } catch(e) { TEAM.msg = authErr(e); }
   TEAM.busy = false; render(); scrollTo(0, 0);
 }
@@ -2991,16 +2993,26 @@ async function commSign(paths){
   commRerender("community", "profile", "post", "profile-edit", "team");
 }
 function commKeep(list){ queueMicrotask(()=>lmSchedule());(list || []).forEach(p => { COMM.profiles[p.id] = Object.assign(COMM.profiles[p.id] || {}, p); }); commSign((list || []).flatMap(p => [p.avatar_path, p.cover_path])); }
+function commProfileIntro(user,requested=false){
+  if(!user||TEAM.user?.id!==user.id||TEAM.recovering||teamRole()==='blocked'||COMM.me!==null||COMM.missing||(!requested&&!user.user_metadata?.community_profile_setup))return;
+  const key='blessed-profile-intro:'+user.id;if(lsGet(key,false))return;
+  if(!termsOk()){TEAM.profileIntroPending=user.id;termsOpen(true);return;}
+  TEAM.profileIntroPending=null;lsSet(key,true);commClick('cm-edit',{dataset:{}});
+}
 async function commLoadMe(){
-  if (!commIn()) return;
-  const {data, error} = await TEAM.client.from("community_profiles").select("*").eq("id", TEAM.user.id).maybeSingle();
-  if (commMissing(error)) { COMM.missing = true; COMM.me = null; commRerender("community"); return; }
-  COMM.me = data || null;
+  if (!commIn()) return false;
+  const owner=TEAM.user.id,client=TEAM.client,current=()=>TEAM.user?.id===owner&&TEAM.client===client;
+  const {data, error} = await client.from("community_profiles").select("*").eq("id", owner).maybeSingle();
+  if(!current())return false;
+  if(error){if(commMissing(error))COMM.missing=true;COMM.me=null;commRerender("community");return false;}
+  COMM.missing=false;COMM.me = data || null;
   if (data) commKeep([data]);
-  const f = await TEAM.client.from("follows").select("followee").eq("follower", TEAM.user.id);
+  const f = await client.from("follows").select("followee").eq("follower", owner);
+  if(!current())return false;
   COMM.following = new Set((f.data || []).map(r => r.followee));
   commRerender("community", "profile");
   commOpenDeep(); dmEnsure();ntfInit();lmSchedule();if(state.pushStory){const id=state.pushStory;state.pushStory=null;ntfOpenURL('/?story='+id);}
+  return true;
 }
 async function commLoadPeople(){
   const fields="id,handle,display_name,church,city,instruments,avatar_path,cover_path,theme,created_at,verified,official,kind,schedule,services";
@@ -5076,7 +5088,7 @@ function commClick(a, b){
   else if (a === "cm-edit") {
     const m = COMM.me || {};
     state.cmEdit = Object.assign({kind: "musico", theme: "red", instruments: [], songs: [], services: [], show_recent: true}, JSON.parse(JSON.stringify(m)));
-    if (!COMM.me) { state.cmEdit.display_name = (TEAM.profile && TEAM.profile.name) || ""; state.cmEdit.handle = commHandleFrom(state.cmEdit.display_name); }
+    if (!COMM.me) { state.cmEdit.display_name = (TEAM.profile && TEAM.profile.name) || TEAM.user?.user_metadata?.name || ""; state.cmEdit.handle = commHandleFrom(state.cmEdit.display_name); }
     COMM.msg = ""; state.view = "profile-edit"; render(); scrollTo(0, 0);
   }
   else if (a === "cm-edit-cancel") { state.cmEdit = null; COMM.msg = ""; state.view = COMM.me ? "profile" : "community"; state.profileId = TEAM.user.id; render(); scrollTo(0, 0); }
