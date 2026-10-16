@@ -952,6 +952,7 @@ html:has(body.dm-chat-open),body.dm-chat-open{overflow:hidden;overscroll-behavio
 .dm-msg.me .dmm-play-status{color:#6a497e}
 .dm-msg.me .dm-b .btn{color:#503460;border-color:#8d64aa55;background:#8453a211}
 .dm-msg.me audio{color-scheme:light}
+.cm-profile-actions{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1.15fr);gap:10px;align-items:center;max-width:540px;margin:20px 0 18px}.cm-profile-actions>.btn{display:flex;align-items:center;justify-content:center;gap:9px;min-width:0;min-height:48px;padding:11px 15px;border-radius:15px;font-size:13px;font-weight:600;line-height:1.2;white-space:normal;border:1px solid #bc8ed13d;background:#241a2ddd;color:#f2e9f8;box-shadow:inset 0 1px 0 #ffffff0c,0 3px 12px #0002}.cm-profile-actions>.btn svg{width:22px;height:22px;flex:none}.cm-profile-actions>.dm-profile-message{background:linear-gradient(135deg,#a272c65c,#74458b6e);border-color:#d4a8ed66;box-shadow:inset 0 1px 0 #ffffff21,0 4px 18px #6d388424}.cm-profile-actions>.dm-profile-nudge{background:linear-gradient(135deg,#33213eee,#201727ee);border-color:#c58be14d}.cm-profile-actions>.dm-profile-nudge svg{color:#dfb2f5}.cm-profile-actions>.cm-follow{min-width:94px;font-size:12px;color:#dccce6;background:#211a27b3}.cm-profile-actions>.btn:disabled{opacity:.48;cursor:default}.cm-profile-actions>.btn:focus-visible{outline:2px solid #e4b4ff;outline-offset:3px}@media(max-width:480px){.cm-profile-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:18px}.cm-profile-actions>.cm-follow{grid-column:1/-1;justify-self:start;min-height:38px;padding:8px 14px}.cm-profile-actions>.btn:not(.cm-follow){min-height:48px;padding:10px 9px;gap:7px;font-size:12px}.cm-profile-actions>.btn svg{width:21px;height:21px}}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -3217,7 +3218,7 @@ function pcCommunity(){
 function pcProfile(){
  const page=pcPage(state.profileId),p=page.people.find(p=>p.id===state.profileId),back='<div class="top"><button class="btn ghost" data-a="pc-back">‹ Comunidade</button></div>';
  if(!p)return back+pcStatus(page)+(!page.loading&&!page.error?'<p class="muted">Este perfil não está disponível.</p>':'')+tabbar('community');
- return `${back}<section class="cm-prof"><div class="cm-cover" ${page.urls[p.cover_path]?`style="background-image:url(&quot;${esc(page.urls[p.cover_path])}&quot;)"`:''}></div><div class="cm-id">${pcAvatar(p,page,104)}<div class="cm-actions"><button class="btn primary" data-a="pc-interact">Seguir</button><button class="btn" data-a="pc-interact">Mensagem</button></div></div><div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name)}${commBadge(p,true)}</h2><p class="muted">@${esc(p.handle)}</p></div><div class="cm-counts"><span><b>${p.photos||0}</b> Fotos</span><span><b>${p.followers||0}</b> Seguidores</span><span><b>${p.following||0}</b> Seguindo</span></div></div><p class="muted">${commWhere(p)}</p>${p.bio?`<p>${esc(p.bio)}</p>`:''}</section><h3>Publicações</h3>${pcStatus(page)}${page.posts.map(p=>pcPost(p,page)).join('')}${page.more?`<button class="btn cm-more" data-a="pc-more" data-person="${esc(p.id)}">Ver mais publicações</button>`:''}${tabbar('community')}`;
+ return `${back}<section class="cm-prof"><div class="cm-cover" ${page.urls[p.cover_path]?`style="background-image:url(&quot;${esc(page.urls[p.cover_path])}&quot;)"`:''}></div><div class="cm-id">${pcAvatar(p,page,104)}</div><div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name)}${commBadge(p,true)}</h2><p class="muted">@${esc(p.handle)}</p></div><div class="cm-counts"><span><b>${p.photos||0}</b> Fotos</span><span><b>${p.followers||0}</b> Seguidores</span><span><b>${p.following||0}</b> Seguindo</span></div></div><div class="cm-profile-actions" role="group" aria-label="Interagir com o perfil"><button class="btn cm-follow" data-a="pc-interact">Seguir</button><button class="btn dm-profile-message" data-a="pc-interact">${DM_CHAT_ICON}<span>Mensagem</span></button><button class="btn dm-profile-nudge" data-a="pc-interact">${DM_ATTENTION_ICON}<span>Chamar atenção</span></button></div><p class="muted">${commWhere(p)}</p>${p.bio?`<p>${esc(p.bio)}</p>`:''}</section><h3>Publicações</h3>${pcStatus(page)}${page.posts.map(p=>pcPost(p,page)).join('')}${page.more?`<button class="btn cm-more" data-a="pc-more" data-person="${esc(p.id)}">Ver mais publicações</button>`:''}${tabbar('community')}`;
 }
 function pcPostPage(){const page=pcPage('',state.postId),post=page.posts.find(p=>p.id===state.postId);return '<div class="top"><button class="btn ghost" data-a="pc-back">‹ Comunidade</button></div>'+pcStatus(page)+(post?pcPost(post,page,true):!page.loading&&!page.error?'<p class="muted">Esta publicação não está disponível.</p>':'')+tabbar('community');}
 function pcHomePosts(){
@@ -4100,7 +4101,7 @@ function dwpShow(p){if(!dwpCurrent(p))return;const box=$('#modal');box.className
 function dwpPick(){const p=DWP.edit;if(!dwpCurrent(p)||p.busy)return;const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=async()=>{const file=input.files?.[0];if(!file)return;p.busy=true;p.error='';dwpShow(p);try{const blob=await dmmPreparePhoto(file,1600);if(!dwpCurrent(p))return;if(p.url)URL.revokeObjectURL(p.url);p.blob=blob;p.url=URL.createObjectURL(blob);}catch(e){if(dwpCurrent(p))p.error='Não consegui abrir essa foto. Escolha uma imagem JPG ou PNG de até 25 MB.';}finally{if(dwpCurrent(p)){p.busy=false;dwpShow(p);}}};input.click();}
 async function dwpSave(clear=false){const p=DWP.edit;if(!dwpCurrent(p)||p.busy||(!clear&&!p.blob))return;p.busy=true;p.error='';dwpShow(p);try{await dwpStore(clear?'delete':'put',p.key,p.blob);if(!dwpCurrent(p))return;if(DWP.url)URL.revokeObjectURL(DWP.url);DWP.url=clear?null:URL.createObjectURL(p.blob);DWP.key=p.key;DWP.request++;p.busy=false;closePix();dwpPaint();flash(clear?'Fundo padrão restaurado.':'Papel de parede salvo neste aparelho ✓');}catch(e){if(dwpCurrent(p)){p.busy=false;p.error='Não consegui salvar neste aparelho. Verifique o espaço disponível e tente novamente.';dwpShow(p);}}}
 
-const DM = {generation:0,receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false, attentionReady:false, attention:null, attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(), attentionBusy:false, attentionSent:{}, shakeAt:0, convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
+const DM = {generation:0,receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false, attentionReady:false, attention:null, attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(), attentionBusy:false,profileAttentionBusy:null, attentionSent:{}, shakeAt:0, convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
 // Limpeza pessoal neste aparelho, separada por conta e sem apagar mensagens do destinatário.
 function dmClearKey(id){return 'blessed-dm-clear:'+TEAM.user?.id+':'+id;}
 function dmClearAt(id){try{return localStorage.getItem(dmClearKey(id))||'';}catch(e){return '';}}
@@ -4119,7 +4120,7 @@ function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
 function dmUnread(c){ return dmConvVisible(c) && !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
 function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
 function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
-function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,profileAttentionBusy:null,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
 async function dmLoad(incoming=null){
   const generation=DM.generation, client=TEAM.client, owner=TEAM.user?.id;
   if(!owner)return;
@@ -4181,20 +4182,23 @@ function dmRerender(){
   const n = $("#dm-in"); if (n && draft !== null) { n.value = draft; if (focus) n.focus(); }
 }
 function dmScroll(){ const l = $("#dm-list"); if (l) l.scrollTop = l.scrollHeight; }
-async function dmWith(uid){
+async function dmWith(uid,open=true){
+  const owner=TEAM.user?.id,generation=DM.generation,client=TEAM.client;if(!owner||uid===owner)return;
   if (!COMM.me) { flash("Crie seu perfil na Comunidade para mandar mensagens."); return; }
   if (DM.convs === null) { DM.loading = true; await dmLoad(); DM.loading = false; }
   if (DM.missing) { flash("As mensagens ainda não foram ligadas."); return; }
-  const [a, b] = [TEAM.user.id, uid].sort();
+  if(TEAM.user?.id!==owner||DM.generation!==generation||!DM.convs)return;
+  const [a, b] = [owner, uid].sort();
   let c = DM.convs.find(x => x.a === a && x.b === b);
   if (!c) {
-    const {data, error} = await TEAM.client.from("conversations").insert({a, b}).select("*").single();
-    if (error) { const r = await TEAM.client.from("conversations").select("*").eq("a", a).eq("b", b).maybeSingle(); c = r.data; }
+    const {data, error} = await client.from("conversations").insert({a, b}).select("*").single();
+    if (error) { const r = await client.from("conversations").select("*").eq("a", a).eq("b", b).maybeSingle(); c = r.data; }
     else c = data;
+    if(TEAM.user?.id!==owner||DM.generation!==generation)return;
     if (!c) { flash("Não consegui abrir a conversa agora."); return; }
     if (!DM.convs.some(x => x.id === c.id)) DM.convs.unshift(c);
   }
-  dmOpen(c.id);
+  if(open)dmOpen(c.id);return c;
 }
 function dmOpen(id){
   closePix();
@@ -4294,8 +4298,8 @@ function dmAttentionReceive(m,animate,fresh=false){
 async function dmPushAttention(data,fresh=false){const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i,owner=TEAM.user?.id,generation=DM.generation,client=TEAM.client;if(document.hidden||!owner||data?.account!==owner||data.activity!=='attention'||!uuid.test(data.actor||'')||!uuid.test(data.target||'')||data.actor===owner||DM.blocks.has(data.actor)||DM.attentionPush.has(data.target))return;if(DM.attention?.author===data.actor&&DM.attention?.conversation_id===data.target&&DM.attentionAnimated.has(DM.attention.id)&&Date.now()-DM.shakeAt<10000)return;DM.attentionPush.add(data.target);try{const {data:rows,error}=await client.from('messages').select('id,conversation_id,author,text,created_at').eq('conversation_id',data.target).eq('author',data.actor).eq('text',DM_ATTENTION_TEXT).order('created_at',{ascending:false}).limit(1);if(error||owner!==TEAM.user?.id||generation!==DM.generation||document.hidden)return;const m=rows?.[0];if(!m||m.conversation_id!==data.target||m.author!==data.actor||m.text!==DM_ATTENTION_TEXT)return;if(!DM.convs?.some(c=>c.id===m.conversation_id))await dmLoad(m);if(owner!==TEAM.user?.id||generation!==DM.generation||document.hidden)return;dmIncoming(m,fresh);}catch(_){}finally{if(owner===TEAM.user?.id&&generation===DM.generation)DM.attentionPush.delete(data.target);}}
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='BLESSED_PUSH_ACTIVITY')dmPushAttention(e.data);});
 
-async function dmAttentionSend(){
-  const id=DM.open,c=DM.convs?.find(c=>c.id===id),owner=TEAM.user?.id;
+async function dmAttentionSend(id=DM.open){
+  const c=DM.convs?.find(c=>c.id===id),owner=TEAM.user?.id;
   if(!owner||!c||!DM.attentionReady||DM.attentionBusy||DM.blocks.has(dmOther(c)))return;
   const stored=c.a===owner?c.attention_a_at:c.attention_b_at,last=Math.max(Date.parse(stored)||0,DM.attentionSent[id]||0);
   if(Date.now()-last<60000){flash('Aguarde um minuto antes de chamar essa pessoa novamente.');return;}
@@ -4309,7 +4313,9 @@ async function dmAttentionSend(){
   finally{if(DM.generation===generation){DM.attentionBusy=false;dmRerender();}}
 }
 
-function dmBtn(uid){ return COMM.me && uid !== TEAM.user.id ? `<button class="btn" data-a="dm-with" data-id="${esc(uid)}">✉ Mensagem</button>` : ""; }
+function dmBtn(uid){return COMM.me&&uid!==TEAM.user?.id?`<button class="btn dm-profile-message" data-a="dm-with" data-id="${esc(uid)}">${DM_CHAT_ICON}<span>Mensagem</span></button>`:'';}
+function dmProfileNudgeBtn(uid){if(!COMM.me||uid===TEAM.user?.id)return '';dmEnsure();const busy=DM.profileAttentionBusy===uid,blocked=DM.blocks.has(uid),disabled=busy||DM.attentionBusy||!DM.attentionReady||blocked;return `<button class="btn dm-profile-nudge" data-a="dm-profile-nudge" data-id="${esc(uid)}" ${disabled?'disabled':''} title="${blocked?'Pessoa bloqueada':!DM.attentionReady?'Preparando chamado':'Chamar atenção sem abrir a conversa'}">${DM_ATTENTION_ICON}<span>${busy?'Chamando…':'Chamar atenção'}</span></button>`;}
+async function dmProfileNudge(uid){const owner=TEAM.user?.id,generation=DM.generation;if(!owner||!COMM.me||uid===owner||DM.profileAttentionBusy||DM.attentionBusy||!DM.attentionReady||DM.blocks.has(uid)||!termsGate())return;DM.profileAttentionBusy=uid;dmRerender();try{const c=await dmWith(uid,false);if(c&&TEAM.user?.id===owner&&DM.generation===generation)await dmAttentionSend(c.id);}catch(_){if(TEAM.user?.id===owner&&DM.generation===generation)flash('Não consegui chamar agora. Confira sua conexão.');}finally{if(TEAM.user?.id===owner&&DM.generation===generation){DM.profileAttentionBusy=null;dmRerender();}}}
 
 function viewChats(){
   const back = `<div class="top"><button class="btn ghost" data-a="tab" data-v="community">‹ Comunidade</button></div><h1 class="page-title" style="margin:0 0 6px">Mensagens</h1>`;
@@ -4398,7 +4404,8 @@ async function dmReportSend(id, reason){
 function dmClick(a, b){
   if(a.startsWith("dwp-")){if(a==="dwp-menu")dwpMenu();else if(a==="dwp-pick")dwpPick();else if(a==="dwp-save")dwpSave();else if(a==="dwp-clear")dwpSave(true);return true;}
   if(a.startsWith("dmm-")){dmmClick(a,b);return true;}
-  if(a === "dm-attention-send")dmAttentionSend();
+  if(a === "dm-profile-nudge")dmProfileNudge(b.dataset.id);
+  else if(a === "dm-attention-send")dmAttentionSend();
   else if(a === "dm-attention-open")dmOpen(b.dataset.id);
   else if(a === "dm-attention-dismiss"){DM.attention=null;dmRerender();dmAttentionPaint();}
   else if (a === "dm-list") { state.view = "chats"; render(); scrollTo(0, 0); }
@@ -4768,9 +4775,10 @@ function viewProfile(){
   return `${back}<div class="cm-prof" style="--acc:${acc}">
     <div class="cm-cover"${cover ? ` style="background-image:url(&quot;${esc(cover)}&quot;)"` : ""}></div>
     <div class="cm-id">${stProfileAvatar(p, 104)}
-      <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : commFollowBtn(id) + dmBtn(id)}</div></div>
+      <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : ""}</div></div>
     <div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2><p class="muted" style="margin:0">@${esc(p.handle || "")}</p></div>
       <div class="cm-counts" aria-label="Atividade do perfil"><button data-a="cm-profile-photos"><b>${c.photos??(posts?posts.filter(id=>COMM.posts[id]?.image_path).length:'–')}</b><span>Fotos</span></button><button data-a="cm-connections" data-v="followers" data-id="${esc(id)}"><b>${c.followers??'–'}</b><span>Seguidores</span></button><button data-a="cm-connections" data-v="following" data-id="${esc(id)}"><b>${c.following??'–'}</b><span>Seguindo</span></button></div></div>
+    ${!me?`<div class="cm-profile-actions" role="group" aria-label="Interagir com o perfil">${commFollowBtn(id)}${dmBtn(id)}${dmProfileNudgeBtn(id)}</div>`:""}
     ${lmCard(p.listening_now)}
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
