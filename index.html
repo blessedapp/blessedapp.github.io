@@ -955,10 +955,10 @@ html{overscroll-behavior-y:contain}
 .ex-tip{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(176,92,240,.2),rgba(176,92,240,.06));border:1px solid rgba(176,92,240,.35)}.ex-tip-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#a46bff,#6a2aae);font-size:18px}.ex-tip p{margin:0;flex:1;min-width:0;font-size:13px;line-height:1.4;color:var(--ink)}.ex-tip p b{display:block;font-size:14px}.ex-tip button{flex:none;border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:6px 2px}
 .cm-bubs{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}.cm-bubs::-webkit-scrollbar{display:none}
 .cm-bub{flex:none;width:78px;display:grid;justify-items:center;gap:7px;border:0;background:none;padding:0;color:var(--ink);scroll-snap-align:start;font:inherit}
-.cm-bub-r{position:relative;display:block;width:76px;height:76px;border-radius:50%;padding:3px;background:var(--line)}
-.cm-bub.nw .cm-bub-r{background:conic-gradient(from 200deg,var(--acc),#c561ff,#ff7ac6,var(--acc))}
-.cm-bub-r .cm-av{width:70px!important;height:70px!important;font-size:24px!important;border:3px solid var(--bg)!important;border-radius:50%!important;box-sizing:border-box;overflow:hidden}
-.cm-bub-r .cm-av>img{border-radius:50%}
+.cm-bub-r{position:relative;display:block;width:76px;height:76px;border-radius:24px;padding:4px;background:var(--acc);box-shadow:0 6px 16px rgba(60,20,100,.22)}
+.cm-bub.nw .cm-bub-r{box-shadow:0 0 0 3px rgba(197,97,255,.35),0 6px 16px rgba(60,20,100,.22)}
+.cm-bub-r .cm-av{width:68px!important;height:68px!important;font-size:24px!important;border:3px solid var(--bg)!important;border-radius:19px!important;box-sizing:border-box;overflow:hidden}
+.cm-bub-r .cm-av>img{border-radius:16px}
 .cm-bub-n{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#a46bff,#6a2aae);color:#fff;font:800 10px var(--f-body);font-style:normal;padding:2px 9px;border-radius:99px;border:2px solid var(--bg);white-space:nowrap}
 .cm-bub b{display:flex;align-items:center;justify-content:center;gap:3px;max-width:78px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ex-h2{display:flex;align-items:center;justify-content:space-between;gap:10px}.ex-more{border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:4px 2px}
@@ -4174,8 +4174,11 @@ function commStories(){
   // os que entraram há pouco, em bolinhas: cabem muitos na mesma linha
   const fresh = (COMM.people || []).filter(p => p.id !== TEAM.user.id).slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 24);
   const bubs = fresh.map(p => `<button class="cm-bub${isNew(p) ? " nw" : ""}" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}" aria-label="Perfil de ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}${isNew(p) ? '<em class="cm-bub-n">Novo</em>' : ""}</span><b>${esc((p.display_name || "").split(" ")[0])}${commBadge(p)}</b></button>`).join("");
-  return stStrip(others)
-    + (bubs ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-bubs">${bubs}</div>` : "");
+  return bubs ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-bubs">${bubs}</div>` : "";
+}
+function commStoryStrip(){
+  const all = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || "")));
+  return stStrip(all.filter(p => p.id !== TEAM.user.id).slice(0, 30));
 }
 // Comunidade para quem ainda não entrou: perfis e posts DE EXEMPLO (sem fotos de pessoas reais),
 // só para mostrar como funciona. Os dados de verdade dos membros continuam só para quem tem login.
@@ -5622,7 +5625,7 @@ function recentBubbles(list){
 function viewCommunity(){
   if((!TEAM.user||COMM.me===null)&&state.deepPost){state.postId=state.deepPost;state.deepPost=null;state.view="post";return pcPostPage();}
   const head = `<div class="top glass-top nb-community-head"><h1 class="page-title">Comunidade</h1>${!TEAM.user ? visitorBrand() : ""}${COMM.me ? dmIconBtn()+nbIconBtn() : ""}${COMM.me ? `<button class="cm-me lm-profile-button" data-a="lm-account" aria-label="Meu perfil e música" title="Meu perfil e música">${commAvatar(COMM.me, 40)}${!lmLive(COMM.me.listening_now)?'<span class="lm-profile-hint" aria-hidden="true">♫</span>':""}</button>` : ""}</div>`;
-  const wrap = (inner, inv = true) => head + (inv ? communityInvite() : "") + inner + tabbar("community");
+  const wrap = (inner, inv = true, top = "") => head + top + (inv ? communityInvite() : "") + inner + tabbar("community");
   if (!TEAM.user&&teamAvailable()) return wrap(pcCommunity(), false);
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
   if (teamRole() === "blocked") return wrap(`<div class="panel"><p>O acesso desta conta não foi liberado.</p></div>`);
@@ -5649,7 +5652,7 @@ function viewCommunity(){
     body = exploreView();
   }
   return wrap(`${tab === "people" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
-    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`);
+    <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("people", "Pessoas")}</div>${body}`, true, tab === "people" ? "" : commStoryStrip());
 }
 function viewProfile(){
   if(!TEAM.user||COMM.me===null)return pcProfile();
