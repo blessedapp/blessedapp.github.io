@@ -1330,6 +1330,15 @@ html[data-appearance=light] .sel-fact b{color:#8a5a0a}
 
 .pf-bl .pf-bl-n{position:absolute;left:6px;bottom:5px;inset:auto auto 5px 6px;display:block;font:700 12px var(--f-body);font-style:normal;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}.pf-bl .pf-bl-n:empty{display:none}
 .bl-vw{font-weight:500}
+
+.ct-hero2{margin:6px 0 14px}.ct-hero2 h2{font-size:24px;line-height:1.2;margin:2px 0 6px}.ct-hero2 p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.ct-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}
+.ct-card{display:grid;gap:2px;justify-items:start;text-align:left;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink)}
+.ct-card .ct-ic{font-size:22px;margin-bottom:4px}.ct-card b{font-size:15px}.ct-card small{color:var(--muted);font-size:12px;line-height:1.35}
+.ct-card[aria-pressed=true]{border-color:#7C5CFF;background:linear-gradient(135deg,rgba(124,92,255,.2),rgba(124,92,255,.05));box-shadow:0 0 0 1px #7C5CFF inset}
+.ct-card:last-child:nth-child(odd){grid-column:1/-1}
+
+.ct-form textarea{font-family:var(--f-body);white-space:pre-wrap;min-height:130px;max-height:260px;resize:vertical;overflow-x:hidden}.ct-form textarea::placeholder{font-family:var(--f-body)}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -4959,9 +4968,10 @@ function blCounts(ids){
   if (BLW.off || !ids || !ids.length) return;
   Promise.resolve(TEAM.client.rpc("blessing_view_counts", {p_ids: ids.slice(0, 100)})).then(r => {
     if (r && r.error) { if (/function|does not exist|schema cache|not found/i.test(r.error.message || "")) BLW.off = true; return; }
+    ids.forEach(id => { if (BLS.views[id] === undefined) BLS.views[id] = 0; });
     (r.data || []).forEach(x => BLS.views[x.blessing_id] = Number(x.views) || 0);
     document.querySelectorAll(".bl-vw[data-id]").forEach(el => { const n = BLS.views[el.dataset.id]; el.textContent = n ? " · " + fmtN(n) + " visualizações" : ""; });
-    document.querySelectorAll(".pf-bl-n[data-id]").forEach(el => { const n = BLS.views[el.dataset.id]; el.textContent = n ? "▶ " + fmtN(n) : ""; });
+    document.querySelectorAll(".pf-bl-n[data-id]").forEach(el => { const n = BLS.views[el.dataset.id]; el.textContent = n !== undefined ? "▶ " + fmtN(n) : ""; });
   }).catch(() => {});
 }
 function blWatchSend(id, final){
@@ -5381,7 +5391,7 @@ function pfCell(x){
   if (x.k === "post" && COMM.posts[x.id] && !COMM.posts[x.id].image_path) { const p = COMM.posts[x.id]; return `<button class="cm-grid-tx" data-a="cm-post" data-id="${esc(x.id)}"><span>${esc((p.caption || "").slice(0, 120))}</span></button>`; }
   if (x.k === "post") { const u = commGridUrl(COMM.posts[x.id]); return `<button data-a="cm-post" data-id="${esc(x.id)}" aria-label="Abrir a foto">${u ? `<img src="${esc(u)}" alt="" loading="lazy">` : ""}</button>`; }
   const b = BLS.items[x.id];
-  return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span><em class="pf-bl-n" data-id="${esc(x.id)}">${BLS.views[x.id] ? "▶ " + fmtN(BLS.views[x.id]) : ""}</em></button>`;
+  return `<button class="pf-bl" data-a="bl-open" data-id="${esc(x.id)}" aria-label="Abrir o Blessing">${b.thumb_key ? `<img src="${esc(blUrl(b.thumb_key))}" alt="" loading="lazy">` : ""}<span>${BL_ICONS.play}</span><em class="pf-bl-n" data-id="${esc(x.id)}">${BLS.views[x.id] !== undefined ? "▶ " + fmtN(BLS.views[x.id]) : ""}</em></button>`;
 }
 const PF_TAB_ICONS={saved:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.5L5 21V4a1 1 0 0 1 1-1z"/></svg>',fotos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/></svg>',blessings:TAB_ICONS.blessings,tags:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="9" r="3"/><path d="M6.5 19c.7-3 2.5-4.5 5.5-4.5s4.8 1.5 5.5 4.5"/></svg>',shares:CM_ICONS.share};
 function pfTabs(id, me, posts){
@@ -6053,23 +6063,27 @@ const PPL_ICONS = {
   musico: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>',
   igreja: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v4.5M10 4.5h4"/><path d="M5.5 21v-8.5L12 7l6.5 5.5V21z"/><path d="M10 21v-4.2a2 2 0 0 1 4 0V21"/></svg>'
 };
-const CT_SUBJ = [["patrocinio", "Patrocínio"], ["parceria", "Parceria / marca"], ["apoio", "Apoiar o projeto"], ["sugestao", "Sugestão"], ["outro", "Outro assunto"]];
+const CT_SUBJ = [["patrocinio", "Patrocínio"], ["parceria", "Parceria / marca"], ["apoio", "Trabalhe conosco"], ["sugestao", "Sugestão"], ["outro", "Outro assunto"]];
 function viewContact(){
   const c = state.contact || (state.contact = {subject: "patrocinio"});
   const head = `<div class="top glass-top"><h1 class="page-title">Contato</h1></div>`;
   if (c.sent) return head + `<section class="panel ct-ok"><h2>🙏 Mensagem enviada!</h2><p>Obrigado por falar com a gente. Os desenvolvedores do Blessed vão ler e responder pelo contato que você deixou.</p><div class="actions"><button class="btn" data-a="ct-new">Enviar outra mensagem</button></div></section>` + tabbar("contato");
   const name = c.name !== undefined ? c.name : (COMM.me && COMM.me.display_name) || "";
-  return head + `<section class="cm-hero ct-hero"><p class="cm-kicker">Fale com os desenvolvedores</p><h2>Vamos conversar?</h2>
-      <p>Patrocínio, parcerias com marcas, apoio ao projeto ou uma ideia para o app: sua mensagem chega direto para a equipe do Blessed.</p></section>
-    <form class="form ct-form" id="ct-form">
-      <fieldset class="cm-field"><legend>Assunto</legend><div class="cm-chips pick">${CT_SUBJ.map(([v, l]) => `<button type="button" data-a="ct-subj" data-v="${v}" aria-pressed="${c.subject === v}">${l}</button>`).join("")}</div></fieldset>
+  const INFO = {patrocinio: ["💼", "Patrocínio", "Coloque sua marca no Blessed"], parceria: ["🤝", "Parcerias", "Marcas, lojas e igrejas"], apoio: ["🚀", "Trabalhe conosco", "Venha construir o Blessed"], sugestao: ["💡", "Sugestão", "Uma ideia para o app"], outro: ["✉️", "Outro assunto", "Fale com a equipe"]};
+  const HINT = {patrocinio: "Conte sobre a sua marca e o que você imagina para a parceria…", parceria: "Conte sobre a sua loja, marca ou igreja e como podemos trabalhar juntos…", apoio: "Conte sobre você: área de interesse (design, programação, vídeo, comunidade…) e, se tiver, o link do seu portfólio ou rede social…", sugestao: "Conte a sua ideia para melhorar o Blessed…", outro: "Conte o que você tem em mente…"};
+  const cards = CT_SUBJ.map(([v]) => `<button type="button" class="ct-card" data-a="ct-subj" data-v="${v}" aria-pressed="${c.subject === v}"><span class="ct-ic" aria-hidden="true">${INFO[v][0]}</span><b>${INFO[v][1]}</b><small>${INFO[v][2]}</small></button>`).join("");
+  return head + `<section class="ct-hero2"><p class="cm-kicker">Contato</p><h2>Fale com a equipe do Blessed</h2>
+      <p>Escolha o assunto e envie sua mensagem. Ela chega direto para a equipe, e a resposta vai para o contato que você deixar.</p></section>
+    <div class="ct-cards" role="group" aria-label="Assunto">${cards}</div>
+<form class="form ct-form" id="ct-form">
+      
       <label>Seu nome ou da empresa<input id="ct-name" maxlength="80" autocomplete="name" value="${esc(name)}" required></label>
       <label>WhatsApp ou e-mail para resposta<input id="ct-contact" maxlength="120" autocomplete="email" value="${esc(c.contact || "")}" required></label>
-      <label>Mensagem<textarea id="ct-msg" maxlength="2000" rows="5" placeholder="Conte o que você tem em mente…" required>${esc(c.message || "")}</textarea></label>
+      <label>Mensagem<textarea id="ct-msg" maxlength="2000" rows="5" placeholder="${esc(HINT[c.subject] || HINT.outro)}" required>${esc(c.message || "")}</textarea></label>
       <input id="ct-site" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;opacity:0">
       ${c.msg ? `<p class="confirm">${esc(c.msg)}</p>` : ""}
       <button class="btn primary big-paste" type="submit" ${c.busy ? "disabled" : ""}>${c.busy ? "Enviando…" : "Enviar mensagem"}</button>
-      <p class="muted" style="font-size:13px;margin:0">Seu contato só é visto pela equipe do Blessed e serve apenas para responder você.</p>
+      <p class="muted" style="font-size:13px;margin:0">🔒 Seu contato só é visto pela equipe do Blessed e serve apenas para responder você.</p>
     </form>
     ${TEAM.user ? "" : `<p class="muted" style="margin-top:18px;font-size:14px">Já tem conta? <button class="lnk2" data-a="tab" data-v="login">Entrar</button></p>`}` + tabbar("contato");
 }
@@ -6360,7 +6374,7 @@ function recentBubbles(list){
 }
 function viewCommunity(){
   if((!TEAM.user||COMM.me===null)&&state.deepPost){state.postId=state.deepPost;state.deepPost=null;state.view="post";return pcPostPage();}
-  const head = `<div class="top glass-top nb-community-head"><h1 class="page-title">Comunidade</h1>${!TEAM.user ? visitorBrand() : ""}${COMM.me ? dmIconBtn()+nbIconBtn() : ""}${COMM.me ? `<button class="cm-me lm-profile-button" data-a="lm-account" aria-label="Meu perfil e música" title="Meu perfil e música">${commAvatar(COMM.me, 40)}${!lmLive(COMM.me.listening_now)?'<span class="lm-profile-hint" aria-hidden="true">♫</span>':""}</button>` : ""}</div>`;
+  const head = `<div class="top glass-top nb-community-head"><h1 class="page-title">Comunidade</h1>${!TEAM.user ? visitorBrand() : ""}${COMM.me ? dmIconBtn()+nbIconBtn() : ""}${COMM.me ? `<button class="cm-me" data-a="cm-profile" data-id="${esc(COMM.me.id)}" aria-label="Meu perfil" title="Meu perfil">${commAvatar(COMM.me, 40)}</button>` : ""}</div>`;
   const wrap = (inner, inv = true, top = "") => head + top + (inv ? communityInvite() : "") + inner + tabbar("community");
   if (!TEAM.user&&teamAvailable()) return wrap(pcCommunity(), false);
   if (!commOn()) { state.view = "library"; return viewLibrary(); }
