@@ -15,6 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Blessed · Comunidade e louvor">
 <meta name="twitter:image" content="https://blessedapp.github.io/img/painel/og.jpg">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com">
 <meta name="theme-color" content="#0C0B0E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4098,11 +4099,14 @@ const CALL_MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const CALL = {cur: null, ch: null, owner: null, out: new Map(), done: new Set(), ringT: null, ctx: null};
 function callIce(){ return window.CC_ICE && window.CC_ICE.length ? window.CC_ICE : [{urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"]}]; }
 // canal pessoal: é por aqui que chega o aviso "fulano está ligando"
-function callSubscribe(){
+async function callSubscribe(){
   const uid = TEAM.user && TEAM.user.id; if (!uid || !TEAM.client) return;
-  if (CALL.ch && CALL.owner === uid) return;
-  callUnsub(); CALL.owner = uid;
-  CALL.ch = TEAM.client.channel("calls:" + uid, {config: {broadcast: {self: false}}})
+  if ((CALL.ch || CALL.starting) && CALL.owner === uid) return;
+  callUnsub(); CALL.owner = uid; CALL.starting = true;
+  // se o supabase-chamadas-seguras.sql foi rodado, os canais viram privados (só quem faz parte da conversa entra)
+  try { const r = await TEAM.client.rpc("call_private_ready"); CALL.priv = !!(r && !r.error && r.data === true); } catch (e) { CALL.priv = false; }
+  CALL.starting = false; if (CALL.owner !== uid) return;
+  CALL.ch = TEAM.client.channel("calls:" + uid, {config: {private: CALL.priv, broadcast: {self: false}}})
     .on("broadcast", {event: "invite"}, ({payload}) => callOnInvite(payload))
     .subscribe();
 }
@@ -4115,14 +4119,15 @@ function callUnsub(){
 async function callSendTo(peerId, event, payload){
   let ch = CALL.out.get(peerId);
   if (!ch) {
-    ch = TEAM.client.channel("calls:" + peerId); CALL.out.set(peerId, ch);
-    await new Promise(res => { ch.subscribe(st => { if (st === "SUBSCRIBED") res(); }); setTimeout(res, 4000); });
+    ch = TEAM.client.channel("calls:" + peerId, {config: {private: !!CALL.priv}}); CALL.out.set(peerId, ch);
+    // canal privado: só manda (sem entrar nele), assim ninguém além de quem recebe consegue ouvir
+    if (!CALL.priv) await new Promise(res => { ch.subscribe(st => { if (st === "SUBSCRIBED") res(); }); setTimeout(res, 4000); });
   }
   try { await ch.send({type: "broadcast", event, payload}); } catch (e) {}
 }
 // canal da chamada em si (só quem está na ligação)
 function callOpen(c){
-  c.ch = TEAM.client.channel("call:" + c.id, {config: {broadcast: {self: false}}});
+  c.ch = TEAM.client.channel(CALL.priv ? "call:" + c.conv + ":" + c.id : "call:" + c.id, {config: {private: !!CALL.priv, broadcast: {self: false}}});
   c.ch.on("broadcast", {event: "sig"}, ({payload}) => callOnSignal(c, payload)).subscribe(st => { if (st === "SUBSCRIBED") { c.subbed = true; if (c.onSub) c.onSub(); } });
 }
 function callSig(c, payload){ try { if (c.ch) c.ch.send({type: "broadcast", event: "sig", payload}); } catch (e) {} }
