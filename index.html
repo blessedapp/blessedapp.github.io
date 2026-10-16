@@ -952,6 +952,13 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.dmq{display:block;margin:0 0 6px;padding:6px 10px;border-left:4px solid #d9a8ff;border-radius:8px;background:rgba(255,255,255,.12);text-align:left;cursor:pointer}.dmq b{display:block;font-size:12px;color:#e7c2ff}.dmq i{display:block;font-style:normal;font-size:13px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+.dm-msg.me .dmq{background:rgba(80,40,110,.12);border-left-color:#8b3fc4}.dm-msg.me .dmq b{color:#6a2a9a}
+.dm-reply{flex:1 1 100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px;padding:8px 12px;border-left:4px solid #b05cf0;border-radius:10px;background:rgba(176,92,240,.16);min-width:0}.dm-reply span{min-width:0}.dm-reply b{display:block;font-size:12px;color:#d9b8ff}.dm-reply i{display:block;font-style:normal;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-reply button{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:inherit;font-size:18px;line-height:1;padding:0}
+.dm-tools{flex-wrap:wrap}.dm-swp .dm-b{box-shadow:0 0 0 2px #b05cf0}.dm-flash .dm-b{animation:dmFlash 1.2s}@keyframes dmFlash{0%,60%{box-shadow:0 0 0 3px #e7c2ff}100%{box-shadow:none}}
+.dmm-once{display:flex;gap:10px;align-items:center;margin:10px 0;font-size:14px}.dmm-once input{width:20px;height:20px;accent-color:#B05CF0}
+.dmm-once-b{min-width:200px}.dmo-btn,.dmo-row{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:inherit;text-align:left;padding:8px 4px;font:inherit}.dmo-btn b,.dmo-row b{display:block;font-size:15px}.dmo-btn small,.dmo-row small{display:block;font-size:12px;opacity:.75}.dmo-i{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;background:rgba(176,92,240,.35);font-size:22px}.dmo-row.off{opacity:.6}
+.dmo-note{margin:0 0 8px;text-align:center;font-size:13px;font-weight:700;color:#d9b8ff}
 #ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#9b4fd8,#6a2aae);border:2px solid rgba(255,255,255,.55);display:grid;place-items:center;z-index:130;opacity:0;transform:translate(-50%,-60px);pointer-events:none;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.35)}#ptr svg{width:24px;height:24px}#ptr.spin svg{animation:ptrSpin .8s linear infinite}@keyframes ptrSpin{to{transform:rotate(360deg)}}
 html[data-appearance=light] .vb-n{color:#372440}html[data-appearance=light] .vb-r2{color:#6e6079}html[data-appearance=light] .vb-r2 b{color:#302637}html[data-appearance=light] .vb .bl-ic{box-shadow:0 0 0 1px rgba(131,60,180,.35)}
 .vd{margin:0 0 16px;padding:16px 18px;border-radius:22px;background:linear-gradient(150deg,rgba(150,80,230,.35),rgba(30,14,60,.85));border:1px solid rgba(218,194,239,.3);color:#fff}.vd-k{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#e7c2ff;margin-bottom:8px}.vd-s{float:right;font-size:12px;font-weight:700;color:#ffd9ff;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:99px}.vd-t{font-size:17px;line-height:1.45;margin:0 0 8px;font-weight:600}.vd-r{display:block;color:#ffd9ff;font-size:13px;margin-bottom:12px}.vd-b{display:flex;gap:8px;flex-wrap:wrap}.vd-b .btn{font-size:13px;padding:8px 14px;min-height:0}
@@ -4581,14 +4588,108 @@ function dmmWaveStop(p){cancelAnimationFrame(p?.waveFrame);if(p?.waveContext){p.
 function dmmWaveStart(p){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();p.waveContext=ctx;p.analyser=ctx.createAnalyser();p.analyser.fftSize=256;ctx.createMediaStreamSource(p.stream).connect(p.analyser);ctx.resume().catch(()=>{});}catch(e){}dmmWavePaint(p);}
 function dmmWavePaint(p){cancelAnimationFrame(p.waveFrame);const samples=new Uint8Array(256);let last=0;const draw=now=>{if(!dmmCurrent(p)||p.phase!=='recording')return;const canvas=document.querySelector('#dmm-wave');if(canvas){if(now-last>45){let level=0;if(p.analyser){p.analyser.getByteTimeDomainData(samples);level=Math.sqrt(samples.reduce((n,v)=>n+((v-128)/128)**2,0)/samples.length);}p.waveLevels=(p.waveLevels||[]).concat(Math.min(1,level*5)).slice(-64);last=now;}const g=canvas.getContext('2d'),w=canvas.width,h=canvas.height;g.clearRect(0,0,w,h);const levels=p.waveLevels||[],step=w/64;g.strokeStyle='#cf87ff';g.lineWidth=3;g.lineCap='round';for(let i=0;i<64;i++){const height=3+(levels[i-(64-levels.length)]||0)*(h-8);g.beginPath();g.moveTo(i*step+2,(h-height)/2);g.lineTo(i*step+2,(h+height)/2);g.stroke();}}p.waveFrame=requestAnimationFrame(draw);};p.waveFrame=requestAnimationFrame(draw);}
 function dmmInline(p){const form=$('#dm-form');if(!form)return;const previous=form.querySelector('.dmm-preview-audio'),samePreview=previous&&p.phase==='preview'&&previous.getAttribute('src')===p.url;if(samePreview&&form.dataset.dmmBusy===String(p.busy))return;form.dataset.dmmBusy=String(p.busy);form.classList.add('dm-record-mode');let bar=form.querySelector('.dmm-inline');if(!bar){bar=document.createElement('div');bar.className='dmm-inline';form.appendChild(bar);}bar.innerHTML=`<button type="button" class="dmm-round" data-a="dmm-cancel" aria-label="Cancelar áudio" ${p.busy?'disabled':''}>✕</button><div class="dmm-wave-body">${p.phase==='recording'?'<canvas id="dmm-wave" width="384" height="48" aria-label="Ondas da sua voz"></canvas><small role="status">Gravando · <b id="dmm-seconds">00:00</b></small>':p.phase==='permission'?'<span role="status">Permita o microfone…</span>':p.blob?`<audio class="dmm-preview-audio" src="${esc(p.url)}" controls preload="metadata"></audio>`:`<span>${esc(p.error||'Toque para tentar novamente')}</span>`}</div>${p.phase==='recording'?'<button type="button" class="dmm-round" data-a="dmm-stop" aria-label="Parar gravação">■</button>':p.blob?`<button type="button" class="dmm-round primary" data-a="dmm-send" aria-label="Enviar áudio" ${p.busy?'disabled':''}>${p.busy?'…':'↑'}</button>`:p.phase!=='permission'?'<button type="button" class="dmm-round" data-a="dmm-record" aria-label="Tentar gravar novamente">'+DMM_MIC_ICON+'</button>':''}${p.error&&p.blob?`<small role="alert">${esc(p.error)}</small>`:''}`;if(p.phase==='recording')dmmWavePaint(p);}
-function dmmShow(p){if(!dmmCurrent(p))return;if(p.kind==='audio'){dmmInline(p);return;}const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box dmm-editor" role="dialog" aria-modal="true" aria-labelledby="dmm-title"><h2 id="dmm-title">${p.kind==='photo'?'Enviar foto':'Mensagem de áudio'}</h2>${p.phase==='recording'?'<p class="dmm-recording" role="status">● Gravando <b id="dmm-seconds">00:00</b></p><button class="btn primary" data-a="dmm-stop">Parar gravação</button>':p.phase==='permission'?'<p role="status">Permita o microfone para começar.</p>':p.phase==='processing'?'<p role="status">Preparando sua foto…</p>':p.blob?`${p.kind==='photo'?`<img class="dmm-preview" src="${esc(p.url)}" alt="Foto escolhida para enviar"><label>Legenda opcional<textarea id="dmm-caption" ${p.busy?'disabled':''} maxlength="2000" rows="2" placeholder="Escreva uma legenda…">${esc(p.caption||'')}</textarea></label>`:`<audio class="dmm-preview-audio" src="${esc(p.url)}" controls preload="metadata"></audio><p class="muted">${p.seconds} segundos · ouça antes de enviar.</p>`}<div class="actions"><button class="btn primary" data-a="dmm-send" ${p.busy?'disabled':''}>${p.busy?'Enviando…':p.kind==='photo'?'Enviar foto':'Enviar áudio'}</button>${p.kind==='audio'?'<button class="btn ghost" data-a="dmm-again" '+(p.busy?'disabled':'')+'>Gravar novamente</button>':''}</div>`:p.kind==='photo'?'<p>Escolha uma foto da sua galeria.</p><button class="btn" data-a="dmm-pick">Escolher foto</button>':'<p>Grave até 2 minutos. Você poderá ouvir antes de enviar.</p><button class="btn primary" data-a="dmm-record">Começar gravação</button>'}${p.error?`<p class="confirm" role="alert">${esc(p.error)}</p>`:''}<button class="btn ghost" data-a="pix-close" ${p.busy?'disabled':''}>Cancelar</button><p class="muted" style="font-size:12px">Só as duas pessoas desta conversa têm acesso ao arquivo.</p></section>`;box.hidden=false;}
+/* ---------- Conversa: responder uma mensagem (arrastar para o lado) e foto de visualização única ---------- */
+const DMX = {ok: false};
+function dmFields(){ return DMM_FIELDS + (DMX.ok ? ",reply_to,view_once,viewed_at" : ""); }
+function dmSnippet(o){
+  if (!o) return "Mensagem apagada";
+  if (o.media_kind === "photo") return o.view_once ? "👁 Foto de visualização única" : "📷 Foto";
+  if (o.media_kind === "audio") return "🎤 Áudio";
+  if (o.text === DM_ATTENTION_TEXT) return "Chamar atenção";
+  return String(o.text || "").slice(0, 90);
+}
+function dmFindMsg(id){ return Object.values(DM.msgs).flat().find(x => x && x.id === id); }
+function dmQuote(m){
+  if (!m || !m.reply_to) return "";
+  const o = dmFindMsg(m.reply_to), who = o ? (o.author === TEAM.user.id ? "Você" : ((COMM.profiles[o.author] || {}).display_name || "Alguém").split(" ")[0]) : "";
+  return `<span class="dmq" data-a="dm-jump" data-id="${esc(m.reply_to)}"><b>${esc(who || "Mensagem")}</b><i>${esc(dmSnippet(o))}</i></span>`;
+}
+function dmReplyBar(){
+  if (!DMX.ok || !DM.reply || DM.reply.conv !== DM.open) return "";
+  const o = dmFindMsg(DM.reply.id);
+  if (!o) return "";
+  const who = o.author === TEAM.user.id ? "você" : ((COMM.profiles[o.author] || {}).display_name || "alguém").split(" ")[0];
+  return `<div class="dm-reply"><span><b>Respondendo a ${esc(who)}</b><i>${esc(dmSnippet(o))}</i></span><button type="button" data-a="dm-reply-x" aria-label="Cancelar resposta">×</button></div>`;
+}
+function dmReplyStart(id){
+  if (!DMX.ok) { flash("Responder mensagens ainda não foi ligado."); return; }
+  const m = dmFindMsg(id); if (!m) return;
+  DM.reply = {id, conv: m.conversation_id}; closePix(); dmRerender();
+  const n = $("#dm-in"); if (n) n.focus();
+}
+function dmJump(id){
+  const el = document.querySelector('[data-dm-message="' + CSS.escape(id) + '"]');
+  if (!el) { flash("Essa mensagem não está mais aqui."); return; }
+  el.scrollIntoView({block: "center", behavior: "smooth"}); el.classList.add("dm-flash"); setTimeout(() => el.classList.remove("dm-flash"), 1400);
+}
+// arrastar a mensagem para a direita = responder
+const SW = {el: null, x: 0, y: 0, dx: 0, on: false};
+document.addEventListener("touchstart", e => {
+  const el = e.target.closest && e.target.closest("#dm-list .dm-msg");
+  if (!el || e.touches.length !== 1 || !DMX.ok) { SW.el = null; return; }
+  SW.el = el; SW.x = e.touches[0].clientX; SW.y = e.touches[0].clientY; SW.dx = 0; SW.on = false;
+}, {passive: true});
+document.addEventListener("touchmove", e => {
+  if (!SW.el) return;
+  const dx = e.touches[0].clientX - SW.x, dy = e.touches[0].clientY - SW.y;
+  if (!SW.on) { if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) { SW.el = null; return; } if (dx > 12 && dx > Math.abs(dy) * 1.5) SW.on = true; else return; }
+  SW.dx = Math.max(0, Math.min(dx, 90)); SW.el.style.transform = "translateX(" + SW.dx + "px)"; SW.el.classList.toggle("dm-swp", SW.dx > 56);
+}, {passive: true});
+document.addEventListener("touchend", () => {
+  if (!SW.el) return;
+  const el = SW.el, go = SW.on && SW.dx > 56;
+  el.style.transition = "transform .18s"; el.style.transform = "";
+  setTimeout(() => { el.style.transition = ""; el.classList.remove("dm-swp"); }, 220);
+  SW.el = null; SW.on = false;
+  if (go && el.dataset.dmMessage) dmReplyStart(el.dataset.dmMessage);
+});
+document.addEventListener("touchcancel", () => { if (SW.el) { SW.el.style.transform = ""; SW.el = null; } });
+document.addEventListener("change", e => { if (e.target && e.target.id === "dmm-once" && DMM.panel) DMM.panel.once = e.target.checked; });
+// foto de visualização única
+function dmmOnce(m, mine){
+  const seen = !!m.viewed_at;
+  const body = mine ? `<div class="dmo-row"><span class="dmo-i">👁</span><span><b>Foto de visualização única</b><small>${seen ? "Aberta" : "Ainda não aberta"}</small></span></div>`
+    : seen ? `<div class="dmo-row off"><span class="dmo-i">👁</span><span><b>Foto aberta</b><small>Só dava para ver uma vez</small></span></div>`
+    : `<button class="dmo-btn" data-a="dmm-once" data-id="${esc(m.id)}"><span class="dmo-i">👁</span><span><b>Foto · toque para ver</b><small>Você só pode ver uma vez</small></span></button>`;
+  return `<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><div class="dm-b dmm-bubble dmm-once-b">${dmQuote(m)}${body}<div class="dmm-meta"><small>${dmTime(m.created_at)}${dmReceipt(m)}</small><button data-a="dm-msg" data-id="${esc(m.id)}" class="btn ghost" aria-label="Opções da foto">⋯</button></div></div></div>`;
+}
+function dmOnceRefresh(m){
+  const el = document.querySelector('[data-dm-message="' + CSS.escape(m.id) + '"]');
+  if (el) { const t = document.createElement("template"); t.innerHTML = dmmOnce(m, m.author === TEAM.user.id); el.replaceWith(t.content.firstElementChild); }
+}
+async function dmmOnceOpen(id){
+  const m = (DM.msgs[DM.open] || []).find(x => x.id === id);
+  if (!m || !m.view_once || m.author === TEAM.user.id || DMM.onceBusy) return;
+  DMM.onceBusy = true;
+  const client = TEAM.client;
+  try {
+    const r = await client.rpc("dm_view_once_open", {p_message: id});
+    if (r.error) {
+      const seen = /ja_vista/.test(r.error.message || "");
+      flash(seen ? "Essa foto já foi vista." : "Não consegui abrir agora.");
+      if (seen) { m.viewed_at = m.viewed_at || new Date().toISOString(); dmOnceRefresh(m); }
+      return;
+    }
+    const path = r.data, s = await client.storage.from("chat-media").createSignedUrl(path, 60);
+    if (s.error || !s.data || !s.data.signedUrl) throw new Error("url");
+    const blob = await (await fetch(s.data.signedUrl)).blob(), url = URL.createObjectURL(blob);
+    client.storage.from("chat-media").remove([path]).catch(() => {});
+    m.viewed_at = new Date().toISOString(); dmOnceRefresh(m);
+    closePix(); DMM.onceUrl = url;
+    const box = $("#modal"); box.className = "modal";
+    box.innerHTML = `<section class="modal-box dmo-view" role="dialog" aria-modal="true" aria-label="Foto de visualização única"><p class="dmo-note">👁 Visualização única: ao fechar, ela some.</p><img class="dmm-preview" src="${url}" alt="Foto de visualização única"><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;
+    box.hidden = false;
+  } catch (e) { flash("Não consegui abrir agora. Confira a internet."); }
+  finally { DMM.onceBusy = false; }
+}
+function dmmShow(p){if(!dmmCurrent(p))return;if(p.kind==='audio'){dmmInline(p);return;}const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box dmm-editor" role="dialog" aria-modal="true" aria-labelledby="dmm-title"><h2 id="dmm-title">${p.kind==='photo'?'Enviar foto':'Mensagem de áudio'}</h2>${p.phase==='recording'?'<p class="dmm-recording" role="status">● Gravando <b id="dmm-seconds">00:00</b></p><button class="btn primary" data-a="dmm-stop">Parar gravação</button>':p.phase==='permission'?'<p role="status">Permita o microfone para começar.</p>':p.phase==='processing'?'<p role="status">Preparando sua foto…</p>':p.blob?`${p.kind==='photo'?`<img class="dmm-preview" src="${esc(p.url)}" alt="Foto escolhida para enviar"><label>Legenda opcional<textarea id="dmm-caption" ${p.busy?'disabled':''} maxlength="2000" rows="2" placeholder="Escreva uma legenda…">${esc(p.caption||'')}</textarea></label>${DMX.ok?`<label class="dmm-once"><input type="checkbox" id="dmm-once" ${p.once?'checked':''} ${p.busy?'disabled':''}> 👁 Visualização única (some depois que abrir)</label>`:''}`:`<audio class="dmm-preview-audio" src="${esc(p.url)}" controls preload="metadata"></audio><p class="muted">${p.seconds} segundos · ouça antes de enviar.</p>`}<div class="actions"><button class="btn primary" data-a="dmm-send" ${p.busy?'disabled':''}>${p.busy?'Enviando…':p.kind==='photo'?'Enviar foto':'Enviar áudio'}</button>${p.kind==='audio'?'<button class="btn ghost" data-a="dmm-again" '+(p.busy?'disabled':'')+'>Gravar novamente</button>':''}</div>`:p.kind==='photo'?'<p>Escolha uma foto da sua galeria.</p><button class="btn" data-a="dmm-pick">Escolher foto</button>':'<p>Grave até 2 minutos. Você poderá ouvir antes de enviar.</p><button class="btn primary" data-a="dmm-record">Começar gravação</button>'}${p.error?`<p class="confirm" role="alert">${esc(p.error)}</p>`:''}<button class="btn ghost" data-a="pix-close" ${p.busy?'disabled':''}>Cancelar</button><p class="muted" style="font-size:12px">Só as duas pessoas desta conversa têm acesso ao arquivo.</p></section>`;box.hidden=false;}
 function dmmPick(p){if(!dmmCurrent(p))return;const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=()=>{const f=input.files?.[0];if(f)dmmPhoto(p,f);};input.click();}
 async function dmmPreparePhoto(file,maxEdge=1920){if(!file.type.startsWith('image/')||file.size>25*1024*1024)throw Error('size');const url=URL.createObjectURL(file);try{const img=new Image();img.src=url;await img.decode();if(!img.naturalWidth||img.naturalWidth*img.naturalHeight>60000000)throw Error('size');const ratio=Math.min(1,maxEdge/Math.max(img.naturalWidth,img.naturalHeight)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(img.naturalHeight*ratio));const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.84));if(!blob||blob.size>10485760)throw Error('size');return blob;}finally{URL.revokeObjectURL(url);}}
 async function dmmPhoto(p,file){if(!dmmCurrent(p))return;p.phase='processing';p.error='';dmmShow(p);try{const blob=await dmmPreparePhoto(file);if(!dmmCurrent(p))return;if(p.url)URL.revokeObjectURL(p.url);Object.assign(p,{blob,mime:'image/jpeg',ext:'jpg',url:URL.createObjectURL(blob),phase:'preview'});}catch(e){if(dmmCurrent(p)){p.phase='pick';p.error='Não consegui abrir essa foto. Escolha uma imagem JPG ou PNG de até 25 MB.';}}finally{dmmShow(p);}}
 
 async function dmmRecord(p){if(!dmmCurrent(p)||p.phase==='permission'||p.phase==='recording')return;document.querySelectorAll('audio[data-dmm-audio],audio.dmm-preview-audio').forEach(a=>a.pause());if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){p.error='Este navegador não grava áudio. Abra o Blessed no Safari ou Chrome atualizado.';dmmShow(p);return;}if(p.url)URL.revokeObjectURL(p.url);Object.assign(p,{url:null,blob:null,phase:'permission',error:''});dmmShow(p);let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});if(!dmmCurrent(p)){stream.getTracks().forEach(t=>t.stop());return;}const type=(ntfIOS()?['audio/mp4','audio/webm;codecs=opus','audio/ogg;codecs=opus']:['audio/webm;codecs=opus','audio/mp4','audio/ogg;codecs=opus']).find(t=>MediaRecorder.isTypeSupported(t));if(!type)throw Error('format');const recorder=new MediaRecorder(stream,{mimeType:type,audioBitsPerSecond:96000});Object.assign(p,{stream,recorder,chunks:[],bytes:0,tooLarge:false,recordError:false,stopAt:null,start:Date.now(),phase:'recording',mime:type.split(';')[0],ext:type.startsWith('audio/mp4')?'m4a':type.startsWith('audio/ogg')?'ogg':'webm'});recorder.ondataavailable=e=>{if(e.data.size){p.bytes+=e.data.size;p.chunks.push(e.data);if(p.bytes>10485760){p.tooLarge=true;dmmStop(p);}}};recorder.onerror=()=>{p.recordError=true;dmmStop(p);};recorder.onstop=()=>{dmmWaveStop(p);clearInterval(p.timer);clearTimeout(p.limit);stream.getTracks().forEach(t=>t.stop());if(!dmmCurrent(p))return;const blob=new Blob(p.chunks,{type:p.mime});p.chunks=[];if(p.tooLarge||p.recordError||!blob.size){p.phase='pick';p.error='Não consegui concluir o áudio. Tente gravar novamente.';}else Object.assign(p,{blob,url:URL.createObjectURL(blob),seconds:Math.max(1,Math.min(120,Math.ceil(((p.stopAt||Date.now())-p.start)/1000))),phase:'preview'});dmmShow(p);};recorder.start(1000);dmmWaveStart(p);p.timer=setInterval(()=>{const el=$('#dmm-seconds');if(el)el.textContent=prClock(Math.min(120000,Date.now()-p.start)).slice(-5);},250);p.limit=setTimeout(()=>dmmStop(p),120000);stream.getTracks().forEach(t=>{t.onended=()=>dmmStop(p);});dmmShow(p);}catch(e){stream?.getTracks().forEach(t=>t.stop());if(dmmCurrent(p)){p.phase='pick';p.error=e.name==='NotAllowedError'?'O microfone não foi autorizado. Permita o acesso nas configurações do navegador e tente novamente.':e.name==='NotFoundError'?'Nenhum microfone foi encontrado.':'Não consegui iniciar a gravação. Confira o microfone e tente novamente.';dmmShow(p);}}}
 function dmmStop(p){if(p?.recorder?.state==='recording'){p.stopAt=Date.now();p.recorder.stop();p.stream?.getTracks().forEach(t=>t.stop());clearInterval(p.timer);clearTimeout(p.limit);}}
-async function dmmSend(p){if(!dmmCurrent(p)||!p.blob||p.busy||DM.busy)return;p.caption=($('#dmm-caption')?.value||'').trim().slice(0,2000);p.busy=true;p.error='';DM.busy=true;dmmShow(p);const path=p.owner+'/'+p.conv+'/'+crypto.randomUUID()+'.'+p.ext;let uploaded=false,committed=false;try{const up=await p.client.storage.from('chat-media').upload(path,p.blob,{contentType:p.mime,cacheControl:'0',upsert:false});if(up.error)throw up.error;uploaded=true;if(!dmmCurrent(p))return;const {data,error}=await p.client.from('messages').insert({conversation_id:p.conv,author:p.owner,text:p.caption||(p.kind==='photo'?'📷 Foto':'🎤 Áudio'),media_kind:p.kind,media_path:path,media_mime:p.mime,media_bytes:p.blob.size,media_seconds:p.kind==='audio'?p.seconds:null}).select(DMM_FIELDS).single();if(error)throw error;committed=true;if(dmmCurrent(p)){if(p.blob.size<=4*1024*1024)dmmCachePut(path,{url:URL.createObjectURL(p.blob),until:Date.now()+840000,local:true,bytes:p.blob.size});p.busy=false;DM.busy=false;closePix();dmIncoming(data);ntfSound('sent');}}catch(e){if(dmmCurrent(p)){p.busy=false;p.error=navigator.onLine?'Não foi possível enviar. Confira sua conexão e tente novamente.':'Sem internet. Sua prévia continua aqui para tentar novamente.';dmmShow(p);}}finally{if(uploaded&&!committed&&TEAM.user?.id===p.owner&&DM.generation===p.generation)await p.client.storage.from('chat-media').remove([path]).catch(()=>{});if(TEAM.user?.id===p.owner&&DM.generation===p.generation)DM.busy=false;}}
+async function dmmSend(p){if(!dmmCurrent(p)||!p.blob||p.busy||DM.busy)return;p.caption=($('#dmm-caption')?.value||'').trim().slice(0,2000);if(p.kind==='photo'&&DMX.ok&&$('#dmm-once'))p.once=$('#dmm-once').checked;p.busy=true;p.error='';DM.busy=true;dmmShow(p);const path=p.owner+'/'+p.conv+'/'+crypto.randomUUID()+'.'+p.ext;let uploaded=false,committed=false;try{const up=await p.client.storage.from('chat-media').upload(path,p.blob,{contentType:p.mime,cacheControl:'0',upsert:false});if(up.error)throw up.error;uploaded=true;if(!dmmCurrent(p))return;const {data,error}=await p.client.from('messages').insert({conversation_id:p.conv,author:p.owner,text:(p.kind==='photo'&&p.once&&DMX.ok)?'👁 Foto de visualização única':p.caption||(p.kind==='photo'?'📷 Foto':'🎤 Áudio'),media_kind:p.kind,media_path:path,media_mime:p.mime,media_bytes:p.blob.size,media_seconds:p.kind==='audio'?p.seconds:null,...(p.kind==='photo'&&p.once&&DMX.ok?{view_once:true}:{}),...(DMX.ok&&DM.reply&&DM.reply.conv===p.conv?{reply_to:DM.reply.id}:{})}).select(dmFields()).single();if(error)throw error;committed=true;if(dmmCurrent(p)){if(p.blob.size<=4*1024*1024)dmmCachePut(path,{url:URL.createObjectURL(p.blob),until:Date.now()+840000,local:true,bytes:p.blob.size});p.busy=false;DM.busy=false;DM.reply=null;closePix();dmIncoming(data);ntfSound('sent');}}catch(e){if(dmmCurrent(p)){p.busy=false;p.error=navigator.onLine?'Não foi possível enviar. Confira sua conexão e tente novamente.':'Sem internet. Sua prévia continua aqui para tentar novamente.';dmmShow(p);}}finally{if(uploaded&&!committed&&TEAM.user?.id===p.owner&&DM.generation===p.generation)await p.client.storage.from('chat-media').remove([path]).catch(()=>{});if(TEAM.user?.id===p.owner&&DM.generation===p.generation)DM.busy=false;}}
 function dmmCacheDrop(path){const old=DMM.urls.get(path);if(old?.local)URL.revokeObjectURL(old.url);DMM.urls.delete(path);}
 function dmmCachePut(path,item){const old=DMM.urls.get(path);if(old?.url!==item.url)dmmCacheDrop(path);DMM.urls.set(path,item);const playing=new Set([...document.querySelectorAll('audio[data-dmm-audio]')].filter(a=>!a.paused).map(a=>a.src));const localBytes=()=>[...DMM.urls.values()].reduce((sum,x)=>sum+(x.bytes||0),0);while(DMM.urls.size>350||localBytes()>8*1024*1024){const key=[...DMM.urls].find(([key,x])=>!playing.has(x.url)&&(DMM.urls.size>350||x.local))?.[0];if(!key)break;dmmCacheDrop(key);}}
 function dmmCacheClear(){for(const el of document.querySelectorAll('audio[data-dmm-audio]')){el.pause();el.removeAttribute('src');el.load();}for(const key of [...DMM.urls.keys()])dmmCacheDrop(key);}
@@ -4621,11 +4722,11 @@ async function dmmPlayerToggle(button){
 for(const event of ['play','pause','ended','timeupdate','loadedmetadata','durationchange','seeked'])document.addEventListener(event,e=>{if(e.target.matches?.('audio[data-dmm-audio]'))dmmPlayerPaint(e.target);},true);
 document.addEventListener('input',e=>{if(!e.target.matches?.('.dmm-seek'))return;const audio=e.target.closest('.dmm-player')?.querySelector('audio');if(audio&&Number.isFinite(audio.duration)&&audio.duration>0){audio.currentTime=audio.duration*Number(e.target.value)/100;dmmPlayerPaint(audio);}});
 
-function dmmMessage(m,mine){const url=dmmCached(m.media_path),label=m.media_kind==='photo'?'Foto':'Áudio';return `<div class="dm-msg${mine?' me':''}" data-dm-message="${esc(m.id)}"><div class="dm-b dmm-bubble${m.media_kind==='audio'?' dmm-audio-bubble':''}"><div class="dmm-file" data-dmm-file="${esc(m.id)}">${url?dmmFile(m,url):`<button class="btn ghost" data-a="dmm-fetch" data-id="${esc(m.id)}">Carregar ${label.toLowerCase()}</button>`}</div>${m.text&&m.text!=='📷 Foto'&&m.text!=='🎤 Áudio'?`<p>${esc(m.text).replace(/\n/g,'<br>')}</p>`:''}<div class="dmm-meta"><small>${dmTime(m.created_at)}${dmReceipt(m)}</small><button data-a="dm-msg" data-id="${esc(m.id)}" class="btn ghost" aria-label="Opções da ${label.toLowerCase()}">⋯</button></div></div></div>`;}
-async function dmmHydrate(target){if(!TEAM.user||state.view!=='chat')return;const owner=TEAM.user.id,generation=DM.generation,conv=DM.open,client=TEAM.client;const rows=(DM.msgs[conv]||[]).filter(m=>m.media_path&&(target?m.id===target:true)).slice(-30);const need=rows.filter(m=>!dmmCached(m.media_path)&&!DMM.signing.has(m.media_path));if(!need.length)return;const paths=need.map(m=>m.media_path);paths.forEach(p=>DMM.signing.add(p));try{const {data,error}=await client.storage.from('chat-media').createSignedUrls(paths,900);if(owner!==TEAM.user?.id||generation!==DM.generation)return;if(!error)for(const r of data||[])if(r.signedUrl&&paths.includes(r.path))dmmCachePut(r.path,{url:r.signedUrl,until:Date.now()+840000});if(state.view==='chat'&&DM.open===conv)for(const m of rows){const url=dmmCached(m.media_path),el=document.querySelector('[data-dmm-file="'+CSS.escape(m.id)+'"]');if(url&&el&&!el.querySelector('audio,img'))el.innerHTML=dmmFile(m,url);}}catch(e){}finally{if(generation===DM.generation)paths.forEach(p=>DMM.signing.delete(p));}}
+function dmmMessage(m,mine){if(m.view_once)return dmmOnce(m,mine);const url=dmmCached(m.media_path),label=m.media_kind==='photo'?'Foto':'Áudio';return `<div class="dm-msg${mine?' me':''}" data-dm-message="${esc(m.id)}"><div class="dm-b dmm-bubble${m.media_kind==='audio'?' dmm-audio-bubble':''}">${dmQuote(m)}<div class="dmm-file" data-dmm-file="${esc(m.id)}">${url?dmmFile(m,url):`<button class="btn ghost" data-a="dmm-fetch" data-id="${esc(m.id)}">Carregar ${label.toLowerCase()}</button>`}</div>${m.text&&m.text!=='📷 Foto'&&m.text!=='🎤 Áudio'?`<p>${esc(m.text).replace(/\n/g,'<br>')}</p>`:''}<div class="dmm-meta"><small>${dmTime(m.created_at)}${dmReceipt(m)}</small><button data-a="dm-msg" data-id="${esc(m.id)}" class="btn ghost" aria-label="Opções da ${label.toLowerCase()}">⋯</button></div></div></div>`;}
+async function dmmHydrate(target){if(!TEAM.user||state.view!=='chat')return;const owner=TEAM.user.id,generation=DM.generation,conv=DM.open,client=TEAM.client;const rows=(DM.msgs[conv]||[]).filter(m=>m.media_path&&!m.view_once&&(target?m.id===target:true)).slice(-30);const need=rows.filter(m=>!dmmCached(m.media_path)&&!DMM.signing.has(m.media_path));if(!need.length)return;const paths=need.map(m=>m.media_path);paths.forEach(p=>DMM.signing.add(p));try{const {data,error}=await client.storage.from('chat-media').createSignedUrls(paths,900);if(owner!==TEAM.user?.id||generation!==DM.generation)return;if(!error)for(const r of data||[])if(r.signedUrl&&paths.includes(r.path))dmmCachePut(r.path,{url:r.signedUrl,until:Date.now()+840000});if(state.view==='chat'&&DM.open===conv)for(const m of rows){const url=dmmCached(m.media_path),el=document.querySelector('[data-dmm-file="'+CSS.escape(m.id)+'"]');if(url&&el&&!el.querySelector('audio,img'))el.innerHTML=dmmFile(m,url);}}catch(e){}finally{if(generation===DM.generation)paths.forEach(p=>DMM.signing.delete(p));}}
 function dmmRememberAudio(){return [...document.querySelectorAll('audio[data-dmm-audio]')].map(el=>({el,id:el.dataset.dmmAudio,time:el.currentTime,paused:el.paused,rate:el.playbackRate}));}
 function dmmRestoreAudio(list){for(const old of list){const el=document.querySelector('audio[data-dmm-audio="'+CSS.escape(old.id)+'"]');if(!el||el===old.el)continue;const resume=()=>{el.currentTime=old.time;el.playbackRate=old.rate;if(!old.paused)el.play().catch(()=>{});};if(el.readyState>=1)resume();else el.addEventListener('loadedmetadata',resume,{once:true});}}
-function dmmClick(a,b){if(a==='dmm-play'){dmmPlayerToggle(b);}else if(a==='dmm-cancel'){if(!DMM.panel?.busy)dmmClose();}else if(a==='dmm-photo'){const p=dmmPanel('photo');if(p){dmmShow(p);dmmPick(p);}}else if(a==='dmm-audio'){const p=dmmPanel('audio');if(p)dmmRecord(p);}else if(a==='dmm-pick')dmmPick(DMM.panel);else if(a==='dmm-record'||a==='dmm-again')dmmRecord(DMM.panel);else if(a==='dmm-stop')dmmStop(DMM.panel);else if(a==='dmm-send')dmmSend(DMM.panel);else if(a==='dmm-fetch')dmmHydrate(b.dataset.id);else if(a==='dmm-view'){const m=(DM.msgs[DM.open]||[]).find(m=>m.id===b.dataset.id),url=m&&dmmCached(m.media_path);if(url){closePix();const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true" aria-label="Foto da conversa"><img class="dmm-preview" src="${esc(url)}" alt="Foto da conversa"><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;box.hidden=false;}}}
+function dmmClick(a,b){if(a==='dmm-play'){dmmPlayerToggle(b);}else if(a==='dmm-cancel'){if(!DMM.panel?.busy)dmmClose();}else if(a==='dmm-photo'){const p=dmmPanel('photo');if(p){dmmShow(p);dmmPick(p);}}else if(a==='dmm-audio'){const p=dmmPanel('audio');if(p)dmmRecord(p);}else if(a==='dmm-pick')dmmPick(DMM.panel);else if(a==='dmm-record'||a==='dmm-again')dmmRecord(DMM.panel);else if(a==='dmm-stop')dmmStop(DMM.panel);else if(a==='dmm-send')dmmSend(DMM.panel);else if(a==='dmm-fetch')dmmHydrate(b.dataset.id);else if(a==='dmm-once')dmmOnceOpen(b.dataset.id);else if(a==='dmm-view'){const m=(DM.msgs[DM.open]||[]).find(m=>m.id===b.dataset.id),url=m&&dmmCached(m.media_path);if(url){closePix();const box=$('#modal');box.className='modal';box.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true" aria-label="Foto da conversa"><img class="dmm-preview" src="${esc(url)}" alt="Foto da conversa"><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;box.hidden=false;}}}
 document.addEventListener('play',e=>{if(!e.target.matches?.('audio[data-dmm-audio],audio.dmm-preview-audio'))return;document.querySelectorAll('audio[data-dmm-audio],audio.dmm-preview-audio').forEach(a=>{if(a!==e.target)a.pause();});},true);
 for(const event of ['waiting','playing','canplay','pause','ended'])document.addEventListener(event,e=>{const audio=e.target;if(!audio.matches?.('audio[data-dmm-audio]'))return;const el=audio.closest('.dmm-file')?.querySelector('.dmm-play-status');if(el)el.textContent=event==='waiting'?'Carregando áudio…':'';},true);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&DMM.panel?.phase==='recording')dmmStop(DMM.panel);});
@@ -4679,7 +4780,7 @@ function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
 function dmUnread(c){ return dmConvVisible(c) && !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
 function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
 function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
-function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,profileAttentionBusy:null,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;DMX.ok=false;DM.reply=null;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,profileAttentionBusy:null,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
 async function dmLoad(incoming=null){
   const generation=DM.generation, client=TEAM.client, owner=TEAM.user?.id;
   if(!owner)return;
@@ -4697,6 +4798,7 @@ async function dmLoad(incoming=null){
   if (need.length) { const {data} = await client.from("community_profiles").select(PF_PROF).in("id", need); if(!current())return; commKeep(data); }
   if(!current())return;
   try{const media=await client.rpc("dm_media_ready");if(!current())return;DMM.ready=media.data===true&&!media.error;}catch(e){}
+  try{const x=await client.from('messages').select('reply_to,view_once,viewed_at').limit(1);if(!current())return;DMX.ok=!x.error;}catch(e){}
   dmSubscribe(); void dmReceiptsRefresh(true); dmRerender();
   if(state.deepConversation){const target=state.deepConversation;state.deepConversation=null;if(DM.convs.some(c=>c.id===target))dmOpen(target);}
   try{
@@ -4769,7 +4871,7 @@ function dmOpen(id){
 }
 async function dmLoadMsgs(id){
   const owner=TEAM.user?.id,generation=DM.generation;
-  const {data} = await TEAM.client.from("messages").select(DMM.ready?DMM_FIELDS:"id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
+  const {data} = await TEAM.client.from("messages").select(DMM.ready?dmFields():"id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
   if(TEAM.user?.id!==owner||DM.generation!==generation)return;
   DM.msgs[id] = (data || []).reverse();
   if (state.view === "chat" && DM.open === id) {dmRerender();dmMarkRead(id);}
@@ -4785,11 +4887,12 @@ async function dmSend(){
   const el = $("#dm-in"), text = ((el && el.value) || "").trim().slice(0, 2000), id = DM.open;
   if (!text || DM.busy) return;
   DM.busy = true;
-  const {data, error} = await TEAM.client.from("messages").insert({conversation_id: id, author: TEAM.user.id, text}).select("id,conversation_id,author,text,created_at").single();
+  const row = {conversation_id: id, author: TEAM.user.id, text}; if (DMX.ok && DM.reply && DM.reply.conv === id) row.reply_to = DM.reply.id;
+  const {data, error} = await TEAM.client.from("messages").insert(row).select("id,conversation_id,author,text,created_at" + (DMX.ok ? ",reply_to" : "")).single();
   DM.busy = false;
   if (error) { flash(navigator.onLine ? "Não foi possível enviar esta mensagem." : "Sem internet. Tente de novo."); return; }
   if (el) el.value = "";
-  dmIncoming(data);ntfSound('sent');
+  DM.reply = null; dmIncoming(data);ntfSound('sent');
   const n = $("#dm-in"); if (n) { n.value = ""; n.focus(); }
 }
 // Comprovantes privados: só a sessão do destinatário confirma entrega/leitura.
@@ -4897,19 +5000,20 @@ function viewChat(){
   let last = "", html = "";
   (list || []).filter(dmVisible).forEach(m => { const day = dmDay(m.created_at); if (day !== last) { html += `<p class="dm-day">${day}</p>`; last = day; }
     const mine = m.author === TEAM.user.id;
-    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></button></div>`; });
+    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${dmQuote(m)}${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></button></div>`; });
   setTimeout(()=>{dmmHydrate();dwpLoad();});
   return `<section class="dm-shell" aria-label="Conversa"><div class="dm-head"><button class="btn ghost" data-a="dm-back" aria-label="Voltar">‹</button>
       <button class="dm-who" data-a="cm-profile" data-id="${esc(o)}">${commAvatar(p, 40)}<span><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><small class="muted">@${esc(p.handle || "")}</small></span></button>
       <button class="btn ghost" data-a="dm-menu" data-id="${esc(o)}" aria-label="Opções da conversa">⋯</button></div>
     <div class="dm-list" id="dm-list" data-conversation="${esc(c.id)}" data-owner="${esc(TEAM.user.id)}">${list === undefined ? '<p class="muted">Carregando…</p>' : html || `<p class="dm-lock">🔒 Só você e ${esc((p.display_name || "a outra pessoa").split(" ")[0])} leem esta conversa. Diga oi! 👋</p>`}</div>
     ${blocked ? `<div class="dm-form"><p style="margin:0;flex:1">Você bloqueou esta pessoa.</p><button class="btn" data-a="dm-block" data-id="${esc(o)}">Desbloquear</button></div>`
-      : `<form class="dm-form" id="dm-form"><div class="dm-tools">${DMM.ready?`<button type="button" class="dmm-tool" data-a="dmm-photo" aria-label="Enviar foto da galeria">${DMM_PHOTO_ICON}<span>Foto</span></button><button type="button" class="dmm-tool" data-a="dmm-audio" aria-label="Gravar mensagem de áudio">${DMM_MIC_ICON}<span>Áudio</span></button>`:''}${DM.attentionReady?`<button class="dm-nudge-button" type="button" data-a="dm-attention-send" aria-label="Chamar atenção: balançar a tela da outra pessoa" title="Chamar atenção" ${DM.attentionBusy?"disabled":""}>${DM_ATTENTION_ICON}<small>Chamar</small></button>`:""}</div><textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}</section>`;
+      : `<form class="dm-form" id="dm-form"><div class="dm-tools">${dmReplyBar()}${DMM.ready?`<button type="button" class="dmm-tool" data-a="dmm-photo" aria-label="Enviar foto da galeria">${DMM_PHOTO_ICON}<span>Foto</span></button><button type="button" class="dmm-tool" data-a="dmm-audio" aria-label="Gravar mensagem de áudio">${DMM_MIC_ICON}<span>Áudio</span></button>`:''}${DM.attentionReady?`<button class="dm-nudge-button" type="button" data-a="dm-attention-send" aria-label="Chamar atenção: balançar a tela da outra pessoa" title="Chamar atenção" ${DM.attentionBusy?"disabled":""}>${DM_ATTENTION_ICON}<small>Chamar</small></button>`:""}</div><textarea id="dm-in" rows="1" maxlength="2000" placeholder="Mensagem…" aria-label="Escreva uma mensagem"></textarea><button class="btn primary" type="submit" aria-label="Enviar">Enviar</button></form>`}</section>`;
 }
 function dmMsgMenu(id){
   const m = Object.values(DM.msgs).flat().find(x => x.id === id); if (!m) return;
   const mine = m.author === TEAM.user.id, box = $("#modal"); box.className = "modal";
   box.innerHTML = `<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="dmm-t"><h2 id="dmm-t">Mensagem</h2><div style="display:grid;gap:8px">
+    ${DMX.ok ? `<button class="btn" data-a="dm-reply" data-id="${esc(id)}">Responder</button>` : ""}
     <button class="btn" data-a="dm-copy" data-id="${esc(id)}">Copiar</button>
     ${mine ? `<button class="btn danger" data-a="dm-del" data-id="${esc(id)}">Apagar para os dois</button>` : `<button class="btn" data-a="dm-report" data-id="${esc(id)}">Denunciar</button>`}</div>
     <button class="btn ghost" data-a="pix-close">Cancelar</button></div>`;
@@ -4973,6 +5077,9 @@ function dmClick(a, b){
   else if (a === "dm-with") dmWith(b.dataset.id);
   else if (a === "dm-back") { DM.open = null; state.view = state.dmBack === "profile" ? "profile" : "chats"; render(); scrollTo(0, 0); }
   else if (a === "dm-msg") dmMsgMenu(b.dataset.id);
+  else if (a === "dm-reply") dmReplyStart(b.dataset.id);
+  else if (a === "dm-reply-x") { DM.reply = null; dmRerender(); }
+  else if (a === "dm-jump") dmJump(b.dataset.id);
   else if (a === "dm-menu") dmConvMenu(b.dataset.id);
   else if (a === "dm-clear") dmClearMenu(b.dataset.id);
   else if (a === "dm-clear-confirm") dmClear(b.dataset.id);
@@ -5793,7 +5900,7 @@ function openPix(){
   m.hidden = false;
   const btn = m.querySelector("[data-a=pix-cc]"); if (btn) btn.focus();
 }
-function closePix(){ if(LM.busy||DMM.panel?.busy||DWP.edit?.busy){flash("Aguarde o envio terminar.");return;}lmClose();dwpCloseEditor();dmmClose();stClose(); BS.pick = null; PF.bcOpen = null; const m = $("#modal"); const wasAsk = BIBLE_ASK.open; BIBLE_ASK.open = false; m.hidden = true; m.innerHTML = ""; if (wasAsk && BIBLE_ASK.focus && BIBLE_ASK.focus.isConnected) BIBLE_ASK.focus.focus();if(state.view==='setlist')queueMicrotask(plRefreshLocal); }
+function closePix(){ if(LM.busy||DMM.panel?.busy||DWP.edit?.busy){flash("Aguarde o envio terminar.");return;} if(DMM.onceUrl){try{URL.revokeObjectURL(DMM.onceUrl);}catch(e){}DMM.onceUrl=null;}lmClose();dwpCloseEditor();dmmClose();stClose(); BS.pick = null; PF.bcOpen = null; const m = $("#modal"); const wasAsk = BIBLE_ASK.open; BIBLE_ASK.open = false; m.hidden = true; m.innerHTML = ""; if (wasAsk && BIBLE_ASK.focus && BIBLE_ASK.focus.isConnected) BIBLE_ASK.focus.focus();if(state.view==='setlist')queueMicrotask(plRefreshLocal); }
 function copyPix(full){
   const text = full ? pixPayload() : PIX_KEY;
   const msg = $("#pix-msg"), show = t => { msg.textContent = t; msg.hidden = false; };
