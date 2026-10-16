@@ -1017,6 +1017,41 @@ html[data-appearance=light] .dm-shell :is(.dm-form textarea,.dmm-tool){color:#f4
 html[data-appearance=light] .dm-shell .dm-form textarea::placeholder{color:#d1c0db}
 html[data-appearance=light] :is(.st-viewer,.st-camera) .btn{color:#fff}
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){html[data-appearance=light] :is(.glass-top,.tabbar){background:linear-gradient(120deg,#d4afea99,#ead6f6bd 60%,#d8baeaa3)}}
+/* Início em painéis: fotografias livres, nomes abaixo e movimento contínuo. */
+.nf-head.home-dashboard-head{position:relative;inset:auto;min-height:94px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 18px;background:transparent;color:var(--ink);align-items:center}
+.home-dashboard-head .wordmark{color:var(--cream)}.home-dashboard-head .credit{color:var(--muted);text-shadow:none}.home-dashboard-head .icon{background:var(--glass-control);border:1px solid var(--glass-edge);color:var(--ink)}
+html[data-appearance=light] .nf-head.home-dashboard-head{--cream:#372440;--ink:#302637;color:#302637}
+.home-dashboard-head+.nf-search{padding-top:12px}
+.home-panel{margin:4px 12px 24px;border:1px solid var(--glass-edge);border-radius:24px;overflow:hidden;background:var(--glass-surface);box-shadow:var(--glass-highlight),0 12px 35px #28113212;isolation:isolate}
+.home-panel-stage{height:clamp(300px,86vw,430px);position:relative;overflow:hidden;background:radial-gradient(ellipse at 25% 0,#a357cc20,transparent 70%),var(--surface)}
+.home-panel-stage::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#2410301a,transparent 15%,transparent 85%,#24103022);pointer-events:none}
+.home-panel-grid{position:absolute;inset:-85px -30px auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;transform:rotate(-6deg)}
+.home-panel-run{min-width:0;display:flex;flex-direction:column;animation:homePanelScroll 65s linear infinite;will-change:transform}.home-panel-run.down{animation-direction:reverse;animation-duration:72s}
+.home-panel-group{flex:none;display:flex;flex-direction:column;gap:13px;padding-bottom:13px}
+.home-panel .home-panel-tile{position:relative;display:flex;flex-direction:column;flex:none;gap:0;width:100%;height:auto;aspect-ratio:auto;padding:0;border:1px solid var(--glass-edge);border-radius:16px;overflow:hidden;text-align:center;background:var(--surface2);color:var(--ink);box-shadow:0 5px 14px #170b2226;cursor:pointer}
+.home-panel .home-panel-tile>span{position:relative;inset:auto;display:block;width:100%;padding:0;background:none}
+.home-panel .home-panel-photo{aspect-ratio:3/4;overflow:hidden;background:linear-gradient(135deg,#b07cd34d,#603f7c44)}
+.home-panel-photo img{display:block;width:100%;height:100%;object-fit:cover}.home-panel-photo i{display:grid;place-items:center;width:100%;height:100%;font:650 32px var(--f-display);font-style:normal;color:var(--ink)}
+.home-panel .home-panel-name{padding:8px 7px;font:550 12px/1.25 var(--f-body);text-align:center;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:var(--ink)}
+.home-panel-caption{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 16px}.home-panel-caption h2{font:650 23px/1.2 var(--f-display);letter-spacing:-.5px;margin:0;color:var(--cream)}.home-panel-caption p{font-size:12px;line-height:1.4;margin:5px 0 0;color:var(--muted)}.home-panel-caption>.btn{flex:none;font-size:12px;gap:8px;padding:10px 12px}
+.home-panel-empty{display:grid;place-content:center;justify-items:center;gap:18px;height:100%;color:var(--muted);padding:30px;text-align:center}.home-panel-empty svg{width:72px;height:72px}.home-panel-empty span{font-size:14px}
+@keyframes homePanelScroll{to{transform:translateY(-50%)}}
+.artist-page{padding-bottom:20px}.artist-cover{position:relative;min-height:300px;height:clamp(300px,55svh,500px);margin:-12px -16px 0;background:radial-gradient(ellipse at top,#b478da77,transparent 70%),#25182f;background-size:cover;background-position:center 30%;color:#fff;isolation:isolate}
+.artist-cover::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,#120b2099 65%,#120b20ef);z-index:-1}
+.artist-back{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:16px;width:44px;height:44px;display:grid;place-items:center;border:1px solid #ffffff55;background:#271c356b;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:50%;color:#fff;font-size:32px;line-height:1}
+.artist-cover-copy{position:absolute;bottom:25px;left:20px;right:20px;display:grid;gap:10px}.artist-cover-copy>span{font:600 10px var(--f-body);letter-spacing:2px;opacity:.88}.artist-cover-copy h1{font:750 clamp(33px,7vw,62px)/1.04 var(--f-display);letter-spacing:-1.5px;color:#fff;overflow-wrap:anywhere;text-shadow:0 3px 20px #0005}
+.artist-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0}.artist-summary p{font-size:13px;color:var(--muted);margin:0}.artist-summary .btn{font-size:12px;padding:7px 10px}
+.artist-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:27px 0 14px}.artist-section-title h2{font:650 24px var(--f-display);color:var(--cream)}.artist-section-title>span{font-size:11px;color:var(--muted)}
+.artist-tracks{display:grid;gap:3px}.artist-track{display:flex;align-items:center;gap:9px;min-width:0;padding:8px 0;border-bottom:1px solid var(--line)}.artist-track-number{flex:none;width:16px;text-align:center;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.artist-track-main{display:flex;align-items:center;gap:12px;flex:1;min-width:0;background:transparent;border:0;border-radius:10px;padding:4px 0;text-align:left;color:var(--ink);font:inherit}.artist-track-main:hover{background:var(--glass-control)}
+.artist-track-cover{width:56px;height:56px;flex:none;display:grid;place-items:center;overflow:hidden;border-radius:9px;background:var(--glass-selected);font-size:16px;color:var(--ink)}.artist-track-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.artist-track-copy{display:grid;gap:6px;min-width:0}.artist-track-copy b{font-size:15px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}.artist-track-copy small{font-size:11px;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+.artist-track-watch{flex:none;display:grid;place-items:center;width:40px;height:40px;background:var(--glass-control);border:1px solid var(--glass-edge);border-radius:50%;color:var(--felt)}.artist-track-watch[hidden]{display:none}.artist-track-watch svg{width:20px;height:20px}.artist-stats-note{display:block;margin:16px 0;color:var(--muted);font-size:11px}.artist-stats-note[hidden]{display:none}
+.artist-pending{margin-top:25px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--glass-surface)}.artist-pending summary{font-size:13px;color:var(--muted);cursor:pointer;padding:5px 0}.artist-pending[open] summary{margin-bottom:12px}
+@media(max-width:480px){.home-panel-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.home-panel-run:last-child{display:none}.home-panel-caption{padding:16px 12px}.home-panel-caption h2{font-size:21px}.home-panel-caption p{font-size:11px}.home-panel-caption>.btn{padding:9px 10px;font-size:11px}.home-panel .home-panel-name{font-size:11px}.artist-track{gap:7px}.artist-track-main{gap:9px}.artist-track-cover{width:48px;height:48px}.artist-track-watch{width:36px;height:36px}.artist-track-copy b{font-size:14px}}
+@media(hover:hover){.home-panel-stage:hover .home-panel-run{animation-play-state:paused}}
+.home-panel-stage:focus-within .home-panel-run{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.home-panel-run{animation:none;will-change:auto}}
 </style>
 
 <div id="app"></div>
@@ -1500,7 +1535,7 @@ const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const ICON_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
 function viewLibrary(){
-  const head = `<header class="nf-head"><div class="brand2"><h1 class="wordmark"><span class="wm-top">${BL_ICON}Blessed</span><small>Comunidade e louvor</small></h1>${creditLine()}</div>
+  const head = `<header class="nf-head home-dashboard-head"><div class="brand2"><h1 class="wordmark"><span class="wm-top">${BL_ICON}Blessed</span><small>Comunidade e louvor</small></h1>${creditLine()}</div>
     <button class="icon" data-a="search" aria-label="${state.searchOpen ? "Fechar busca" : "Buscar"}">${state.searchOpen ? ICON_CLOSE : ICON_SEARCH}</button>
     ${canEditTeam() && !isVisitor() ? `<button class="icon" data-a="new" aria-label="Nova música">${ICON_PLUS}</button>` : ""}</header>`;
   const songs = songsAll().slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
@@ -1531,8 +1566,8 @@ function viewLibrary(){
   ${installBanner()}
   ${pendingCount() ? `<button class="team-alert" data-a="tab" data-v="team">🔔 ${pendingCount()} pessoa${pendingCount() > 1 ? "s" : ""} pedindo para entrar na equipe · <b>Ver</b></button>` : ""}
   ${homeCommunity()}
-  ${pcHomePosts()}
   ${heroMosaic(setSongs)}
+  ${pcHomePosts()}
   ${isVisitor() ? vitrineRows() : `<div class="rows">
     ${setSongs.length ? `<section class="row"><h3>Escala do culto <small>${setSongs.length} música${setSongs.length>1?"s":""}</small><button class="lnk" data-a="setlist">Organizar ›</button></h3>
       <div class="rail">${setSongs.map((s,i) => `<button class="top10" data-a="open" data-id="${esc(s.id)}" data-from="set"><span class="num">${i+1}</span><span class="poster" style="${coverStyle(s.artist, s.name)}"><em>${esc(songKeyLabel(s))}</em><span>${esc(s.name)}</span></span></button>`).join("")}</div></section>`
@@ -1559,7 +1594,7 @@ function viewLibrary(){
     <p id="backup-msg" class="ok" ${state.backupMsg ? "" : "hidden"}>${esc(state.backupMsg||"")}</p>
   </section>`}
   ${siteFooter()}
-  <p class="foot">${store.mode === "team" ? `Repertório da equipe · você entrou como ${esc(TEAM.profile.name || TEAM.user.email)} (${ROLE_NAME[teamRole()]}). <button class="lnk2" data-a="team-out">Sair</button>` : store.mode==="db" ? "Tudo salvo na sua conta: aparece em qualquer aparelho em que você abrir este app logado." : isVisitor() ? "" : "Tudo salvo só neste aparelho."}</p>
+  <p class="foot">${store.mode === "team" ? `Repertório da comunidade · <button class="lnk2" data-a="team-out">Sair da conta</button>` : store.mode==="db" ? "Tudo salvo na sua conta: aparece em qualquer aparelho em que você abrir este app logado." : isVisitor() ? "" : "Tudo salvo só neste aparelho."}</p>
   ${tabbar("library")}`;
 }
 
@@ -3077,7 +3112,7 @@ async function commSign(paths){
   need.forEach(p => COMM_SIGNING.delete(p));
   (data || []).forEach(r => { if (r.signedUrl) COMM.urls[r.path] = r.signedUrl; else if (r.path) COMM_NOFILE.add(r.path); });
   need.forEach(p => { if (!COMM.urls[p]) COMM_NOFILE.add(p); });
-  commRerender("community", "profile", "post", "profile-edit", "team");
+  commRerender("library", "community", "profile", "post", "profile-edit", "team");
 }
 function commKeep(list){ queueMicrotask(()=>lmSchedule());(list || []).forEach(p => { COMM.profiles[p.id] = Object.assign(COMM.profiles[p.id] || {}, p); }); commSign((list || []).flatMap(p => [p.avatar_path, p.cover_path])); }
 function commProfileIntro(user,requested=false){
@@ -3105,7 +3140,7 @@ async function commLoadPeople(){
   const fields="id,handle,display_name,church,city,instruments,avatar_path,cover_path,theme,created_at,verified,official,kind,schedule,services";
   const {data,error}=await lmProfileQuery(fields,columns=>TEAM.client.from("community_profiles").select(columns).order("updated_at",{ascending:false}).limit(500));
   if (commMissing(error)) { COMM.missing = true; }
-  COMM.people = error ? [] : data; commKeep(COMM.people); commRerender("community");
+  COMM.people = error ? [] : data; commKeep(COMM.people); commRerender("library", "community");
 }
 async function commLoadPosts(which){
   let q = TEAM.client.from("posts").select("*").order("created_at", {ascending: false}).limit(which === "explore" ? (COMM.exploreLimit || 24) : 30);
@@ -3299,7 +3334,7 @@ function pcHomePosts(){
  return `<section class="row pc-home-posts"><h3>Acontecendo na comunidade<button class="lnk" data-a="tab" data-v="community">Ver tudo ›</button></h3><div class="rail">${page.posts.slice(0,6).map(p=>{const author=page.people.find(a=>a.id===p.author)||{},photo=page.urls[commThumb(p.image_path||'')]||page.urls[p.image_path];return `<button class="pc-home-post" data-a="pc-post" data-id="${esc(p.id)}">${photo?`<img src="${esc(photo)}" alt="" loading="lazy">`:`<span class="pc-home-text" style="${txStyle(p)}">${esc(p.caption||'')}</span>`}<b>${esc(author.display_name||'')}</b><small>${esc(p.caption||'Ver publicação')}</small></button>`;}).join('')}</div></section>`;
 }
 function pcSongList(){const rows=Array.isArray(state.vitrine)?state.vitrine:[];return rows.length?rows:(CATALOG.songs||[]).map(([artist,name])=>({artist,name}));}
-function pcArtist(name){const songs=pcSongList().filter(s=>norm(s.artist)===norm(name));return `<div class="top"><button class="btn ghost" data-a="home">‹ Início</button></div><section class="pc-artist"><span class="ph" style="${coverStyle(name)}"></span><h1>${esc(name)}</h1><p class="muted">Louvor e adoração</p></section><div class="rows">${songs.map(s=>`<button class="set-row" data-a="pc-track" data-n="${esc(s.name)}" data-artist="${esc(name)}"><span>${esc(s.name)}</span><span aria-hidden="true">›</span></button>`).join('')}</div>${tabbar('library')}`;}
+function pcArtist(name){return artistPage(name,pcSongList().filter(s=>norm(s.artist)===norm(name)),true);}
 function pcArtists(){const groups=[...new Set(pcSongList().map(s=>s.artist).filter(Boolean))];return `<div class="rows"><section class="row" id="artistas"><h3>Artistas e louvor <small>${groups.length}</small></h3><div class="rail">${groups.map(name=>`<button class="artist" data-a="pc-artist" data-n="${esc(name)}"><span class="ph" style="${coverStyle(name)}">${artistPhoto(name)?'':esc(initials(name))}</span><b>${esc(name)}</b></button>`).join('')}</div></section></div>`;}
 function pcClick(action,button){
  if(action==='pc-profile'){closePix();state.profileId=button.dataset.id;state.view='profile';render();scrollTo(0,0);}
@@ -3310,19 +3345,22 @@ function pcClick(action,button){
  else if(action==='pc-retry')pcLoad(pcPage(button.dataset.person||'',button.dataset.entry||''));
  else if(action==='pc-interact'){const modal=$('#modal');modal.className='modal';modal.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true"><h2>Faça parte da conversa</h2><p>Você pode explorar a comunidade à vontade. Para curtir, comentar, seguir ou mandar mensagens, ${TEAM.user?'crie seu perfil':'entre ou crie sua conta'}.</p>${pcJoin('Entrar na comunidade')}<button class="btn ghost" data-a="pix-close">Continuar explorando</button></section>`;modal.hidden=false;}
  else if(action==='pc-artist'){state.currentArtist=button.dataset.n;state.view='artist';render();scrollTo(0,0);}
- else if(action==='pc-track'){const modal=$('#modal');modal.className='modal';modal.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true"><h2>${esc(button.dataset.n)}</h2><p>${esc(button.dataset.artist)}</p><div class="actions"><a class="btn primary" href="https://www.youtube.com/results?search_query=${encodeURIComponent(button.dataset.artist+' '+button.dataset.n)}" target="_blank" rel="noopener">Encontrar o louvor ↗</a><a class="btn" href="https://www.cifraclub.com.br/?q=${encodeURIComponent(button.dataset.artist+' '+button.dataset.n)}" target="_blank" rel="noopener">Buscar cifra ↗</a></div><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;modal.hidden=false;}
+ else if(action==='pc-track'){const modal=$('#modal');modal.className='modal';modal.innerHTML=`<section class="modal-box" role="dialog" aria-modal="true"><h2>${esc(button.dataset.n)}</h2><p>${esc(button.dataset.artist)}</p><div class="actions"><a class="btn primary" href="${artistVideoId(button.dataset.video)?'https://www.youtube.com/watch?v='+artistVideoId(button.dataset.video):'https://www.youtube.com/results?search_query='+encodeURIComponent(button.dataset.artist+' '+button.dataset.n)}" target="_blank" rel="noopener">Encontrar o louvor ↗</a><a class="btn" href="https://www.cifraclub.com.br/?q=${encodeURIComponent(button.dataset.artist+' '+button.dataset.n)}" target="_blank" rel="noopener">Buscar cifra ↗</a></div><button class="btn ghost" data-a="pix-close">Fechar</button></section>`;modal.hidden=false;}
  else return false;return true;
 }
 /* PUBLIC-COMMUNITY-END */
 
 // Tela inicial: perfis da Comunidade subindo e descendo (mesma animação da capa). Perfil novo entra sozinho.
+function homePanelTiles(items,kind,publicPage){
+ if(!items.length)return '<div class="home-panel-empty">'+BL_ICON+'<span>A comunidade começa com você.</span></div>';
+ const count=4,per=4,tile=(item,duplicate)=>{const person=kind==='community',name=person?item.display_name:item.name,url=person?(commIn()&&COMM.me?commUrl(item.avatar_path)||commUrl(item.cover_path):publicPage?.urls[item.avatar_path]||publicPage?.urls[item.cover_path]):artistPhoto(name),action=person?(commIn()&&COMM.me?'cm-profile':'pc-profile'):'artist';return `<button class="home-panel-tile${person?' hct':''}" data-a="${action}" ${person?`data-id="${esc(item.id)}"`:`data-n="${esc(name)}"`} aria-label="${esc((person?'Perfil de ':'Artista ')+(name||'Perfil'))}" ${duplicate?'tabindex="-1"':''}><span class="home-panel-photo">${url?`<img src="${esc(url)}" alt="" loading="lazy" decoding="async">`:`<i>${initials(name)}</i>`}</span><span class="home-panel-name">${esc(name||'Perfil')}</span></button>`;};
+ return `<div class="home-panel-grid">${Array.from({length:count},(_,c)=>{const group=Array.from({length:per},(_,i)=>items[(c*per+i)%items.length]);return `<div class="home-panel-run ${c%2?'down':'up'}"><div class="home-panel-group">${group.map(x=>tile(x,false)).join('')}</div><div class="home-panel-group" aria-hidden="true">${group.map(x=>tile(x,true)).join('')}</div></div>`;}).join('')}</div>`;
+}
 function homeCommunity(){
-  if(!teamAvailable())return '';
-  const logged=commIn()&&COMM.me,publicPage=logged?null:pcPage();let people=[];
-  if(logged){if(COMM.people===null){COMM.people=[];commLoadPeople();}people=COMM.people||[];}else people=publicPage.people;
-  const tiles=people.length?Array.from({length:48},(_,i)=>people[i%people.length]):[];
-  const tile=p=>{const u=logged?commUrl(p.avatar_path):publicPage.urls[p.avatar_path];return `<button class="hct" data-a="${logged?'cm-profile':'pc-profile'}" data-id="${esc(p.id)}" tabindex="-1" style="--acc:${THEMES[p.theme]||THEMES.red}${u?`;background-image:url(&quot;${esc(u)}&quot;)`:''}">${u?'':`<i>${esc(initials(p.display_name||''))}</i>`}<span>${esc(p.display_name||'')}${commBadge(p)}</span></button>`;};
-  return `<section class="home-comm community-primary" aria-label="Comunidade Blessed"><div class="hc-mosaic" aria-hidden="true">${Array.from({length:8},(_,col)=>`<div class="mcol ${col%2?'up':'down'}">${tiles.filter((_,i)=>i%8===col).map(tile).join('')}</div>`).join('')}</div><div class="hc-over"><p class="hc-kicker">Seu lugar na comunidade</p><h2>Fé que conecta.<br>Gente de verdade.</h2><p>Músicos, igrejas e membros compartilhando louvor e vida com Deus.</p><div class="actions"><button class="btn light" data-a="tab" data-v="community">Explorar a comunidade</button>${!TEAM.user?pcJoin('Fazer parte'):!COMM.me?pcJoin():''}</div></div></section>`;
+ if(!teamAvailable())return '';const logged=commIn()&&COMM.me,publicPage=logged?null:pcPage();let people=[];
+ if(logged){if(COMM.people===null){COMM.people=[];commLoadPeople();}people=[COMM.me,...(COMM.people||[])];}else people=publicPage.people;
+ people=[...new Map(people.filter(Boolean).map(p=>[p.id,p])).values()].slice(0,24);
+ return `<section class="home-panel community-primary" aria-label="Comunidade Blessed"><div class="home-panel-stage">${homePanelTiles(people,'community',publicPage)}</div><div class="home-panel-caption"><div><h2>Comunidade</h2><p>Pessoas, fé e momentos.</p></div><button class="btn primary" data-a="tab" data-v="community" aria-label="Explorar a comunidade">Explorar <span aria-hidden="true">↗</span></button></div></section>`;
 }
 function commWhere(p){ return [p.church, p.city].filter(Boolean).map(esc).join(" · "); }
 function commFollowBtn(id){
@@ -5976,41 +6014,33 @@ function openSafe(){
   m.hidden = false;
 }
 function heroMosaic(setSongs){
-  const arts = catalogArtists().filter(a => artistPhoto(a.name)).concat(catalogArtists().filter(a => !artistPhoto(a.name)));
-  const base = arts.length ? arts : [{name: "Blessed"}];
-  const tiles = [];
-  for (let i = 0; tiles.length < 36; i++) tiles.push(base[i % base.length]);
-  const col = (k) => tiles.slice(k * 6, k * 6 + 6).concat(tiles.slice(k * 6, k * 6 + 6)) // repete para a rolagem infinita
-    .map(a => `<button class="mt" data-a="artist" data-n="${esc(a.name)}" tabindex="-1" aria-hidden="true" style="${coverStyle(a.name)}">${artistPhoto(a.name) ? "" : `<span>${initials(a.name)}</span>`}</button>`).join("");
-  const first = setSongs.find(x => !x.pending);
-  const logged = store.mode === "team";
-  return `<section class="hero mosaic-hero artists-secondary">
-    <div class="mosaic" aria-hidden="true">${[0,1,2,3,4,5].map(k => `<div class="mcol ${k % 2 ? "up" : "down"}">${col(k)}</div>`).join("")}</div>
-    <div class="hero-in">
-      <div class="kicker">${BL_ICON}${first ? "Escala do culto pronta" : `${catalogArtists().length} artistas · louvor e adoração`}</div>
-      <h2 class="artist-hero-title">Louvor que inspira</h2>
-      <div class="meta"><span>Cifras no tom do culto, graus, campo harmônico e a roda dos caminhos.</span></div>
-      <div class="acts">
-        ${first ? `<button class="btn light" data-a="set-start">▶ Começar culto</button>` : `<button class="btn light" data-a="scroll-artists">▶ Ver artistas</button>`}
-        <button class="btn" data-a="search">Buscar música</button>
-      </div>
-    </div>
-  </section>`;
+ const artists=catalogArtists().slice().sort((a,b)=>Number(!!artistPhoto(b.name))-Number(!!artistPhoto(a.name)));
+ return `<section class="home-panel artists-secondary" aria-label="Artistas e louvor"><div class="home-panel-stage">${homePanelTiles(artists,'artist')}</div><div class="home-panel-caption"><div><h2>Artistas e louvor</h2><p>Músicas para acompanhar sua fé.</p></div><button class="btn" data-a="scroll-artists">Ver artistas <span aria-hidden="true">↗</span></button></div></section>`;
 }
 function viewArtist(){
-  if(isVisitor())return pcArtist(state.currentArtist);
-  const name = state.currentArtist, f = folderFor(name);
-  const songs = songsAll().filter(s => norm(s.artist) === norm(name)).sort((a,b)=>(a.pending?1:0)-(b.pending?1:0) || a.name.localeCompare(b.name));
-  return `
-  <div class="banner" style="${f && f.photo ? `background-image:url('${f.photo}')` : coverStyle(name)}">
-    <button class="pill-btn back" data-a="home">‹ Início</button>
-    <button class="pill-btn edit" data-a="artist-edit">${f ? "Editar pasta" : "Criar pasta com foto"}</button>
-    <div><div class="eyebrow">Artista · ${songs.length} música${songs.length===1?"":"s"}</div><h2>${esc(name)}</h2></div>
-  </div>
-  <div class="actions" style="margin-bottom:14px"><button class="btn primary" data-a="new" data-n="${esc(name)}">+ Música de ${esc(name)}</button></div>
-  ${songs.length ? `<div class="grid">${songs.map(songCard).join("")}</div>` : `<div class="empty">Nenhuma música nesta pasta ainda. Toque em <b>+ Música</b> para cadastrar a primeira.</div>`}
-  ${artistBioPanel(name)}
-  ${siteFooter()}`;
+ if(isVisitor())return pcArtist(state.currentArtist);
+ const name=state.currentArtist,songs=songsAll().filter(s=>norm(s.artist)===norm(name)).sort((a,b)=>Number(!!a.pending)-Number(!!b.pending)||a.name.localeCompare(b.name));
+ return artistPage(name,songs,false);
+}
+const ART_YT={cache:new Map(),pending:new Set(),failed:new Map()};
+function artistVideoId(value){const raw=String(value||'');return /^[a-zA-Z0-9_-]{11}$/.test(raw)?raw:ytId(raw);}
+function artistTrackData(song){const cached=ART_YT.cache.get(song.id);return cached&&cached.until>Date.now()?{...song,...cached.data}:{...song};}
+function artistTrackMeta(song){const m=artistTrackData(song),video=artistVideoId(m.youtube),parts=[];if(m.origTonic&&!m.pending)parts.push('Tom '+keyLabel(m.origTonic,m.origMode||'major'));if(typeof m.views==='string'&&/^\d+$/.test(m.views)){parts.push(Number(m.views).toLocaleString('pt-BR')+' visualizações no YouTube');}else if(video)parts.push('Vídeo no YouTube');else parts.push(m.pending?'A cadastrar':m.id?'Cifra cadastrada':'Louvor e adoração');return parts.map(esc).join(' · ');}
+function artistTrackRow(song,index,visitor){const m=artistTrackData(song),video=artistVideoId(m.youtube),photo=video?'https://i.ytimg.com/vi/'+video+'/hqdefault.jpg':artistPhoto(song.artist);return `<article class="artist-track" data-artist-track="${esc(song.id||'catalog-'+index)}"><span class="artist-track-number">${index+1}</span><button class="artist-track-main" data-a="${visitor?'pc-track':'open'}" data-id="${esc(song.id||'')}" data-n="${esc(song.name)}" data-artist="${esc(song.artist||'')}" data-video="${esc(video)}"><span class="artist-track-cover">${photo?`<img data-artist-image data-fallback="${esc(artistPhoto(song.artist))}" ${video?'data-youtube-cover':''} src="${esc(photo)}" alt="" loading="lazy" decoding="async">`:initials(song.name)}</span><span class="artist-track-copy"><b>${esc(song.name||'Sem nome')}</b><small>${artistTrackMeta(song)}</small></span></button><a class="artist-track-watch" ${video?'':'hidden'} href="${video?'https://www.youtube.com/watch?v='+video:'#'}" target="_blank" rel="noopener" aria-label="Ver ${esc(song.name)} no YouTube">${DMM_PLAY_ICON}</a></article>`;}
+document.addEventListener('error',event=>{const img=event.target;if(!img.matches?.('img[data-artist-image]'))return;const fallback=img.dataset.fallback;delete img.dataset.fallback;if(fallback&&img.getAttribute('src')!==fallback)img.src=fallback;else{const cover=img.closest('.artist-track-cover');if(cover)cover.textContent='♫';}},true);
+function artistPage(name,songs,visitor){
+ const photo=artistPhoto(name),editable=!visitor&&canEditTeam(),listed=songs.filter(s=>!s.pending),pending=songs.filter(s=>s.pending),registered=listed.length;
+ setTimeout(()=>artistStatsLoad(name,songs),0);
+ return `<section class="artist-page"><header class="artist-cover" ${photo?`style="background-image:url(&quot;${esc(photo)}&quot;)"`:''}><button class="artist-back" data-a="home" aria-label="Voltar ao Início">‹</button><div class="artist-cover-copy"><span>ARTISTA · BLESSED</span><h1>${esc(name)}</h1></div></header><div class="artist-page-body"><div class="artist-summary"><p>${registered} música${registered===1?'':'s'}${songs.some(s=>s.pending)?' cadastradas':''}</p>${editable?'<button class="btn ghost" data-a="artist-edit">Editar artista</button>':''}</div>${editable?`<button class="btn primary" data-a="new" data-n="${esc(name)}">＋ Cadastrar música</button>`:''}<div class="artist-section-title"><h2>Músicas</h2><span>Louvor e adoração</span></div><div class="artist-tracks">${listed.map((song,i)=>artistTrackRow(song,i,visitor)).join('')||'<p class="muted">Ainda não há músicas cadastradas para este artista.</p>'}</div>${editable&&pending.length?`<details class="artist-pending"><summary>Outras músicas para cadastrar · ${pending.length}</summary><div class="artist-tracks">${pending.map((song,i)=>artistTrackRow(song,i,false)).join('')}</div></details>`:''}<small class="artist-stats-note" hidden>Visualizações do YouTube · atualização periódica.</small>${visitor?'':artistBioPanel(name)}</div></section>${tabbar('library')}`;
+}
+function artistStatsPaint(name,songs){if(state.view!=='artist'||norm(state.currentArtist)!==norm(name))return;for(const song of songs){const row=document.querySelector('[data-artist-track="'+CSS.escape(song.id||'')+'"]');if(!row)continue;const m=artistTrackData(song),video=artistVideoId(m.youtube),text=row.querySelector('.artist-track-copy small'),button=row.querySelector('.artist-track-main'),link=row.querySelector('.artist-track-watch');if(text)text.textContent=artistTrackMeta(song).replace(/&amp;/g,'&');if(button)button.dataset.video=video;if(link){link.hidden=!video;link.href=video?'https://www.youtube.com/watch?v='+video:'#';}if(video){const cover=row.querySelector('.artist-track-cover');if(cover&&!cover.querySelector('[data-youtube-cover]'))cover.innerHTML=`<img data-artist-image data-fallback="${esc(artistPhoto(song.artist))}" data-youtube-cover src="https://i.ytimg.com/vi/${video}/hqdefault.jpg" alt="" loading="lazy" decoding="async">`;}}const note=document.querySelector('.artist-stats-note');if(note)note.hidden=!songs.some(s=>typeof artistTrackData(s).views==='string');}
+async function artistStatsLoad(name,songs){
+ if(!window.CC_SUPABASE||state.view!=='artist'||norm(state.currentArtist)!==norm(name))return;
+ const wanted=songs.filter(s=>s.id&&!s.pending&&!s.catalog&&s.id!=='exemplo'&&!s.example).slice(0,150);
+ for(let i=0;i<wanted.length;i+=50){const group=wanted.slice(i,i+50).filter(s=>!(ART_YT.cache.get(s.id)?.until>Date.now())&&!ART_YT.pending.has(s.id)&&!(ART_YT.failed.get(s.id)>Date.now()));if(!group.length)continue;group.forEach(s=>ART_YT.pending.add(s.id));
+  try{const response=await fetch(window.CC_SUPABASE.url.replace(/\/$/,'')+'/functions/v1/youtube-stats',{method:'POST',headers:{'Content-Type':'application/json',apikey:window.CC_SUPABASE.key},body:JSON.stringify({ids:group.map(s=>s.id)})});if(!response.ok)throw Error('unavailable');const result=await response.json();if(!Array.isArray(result.tracks))throw Error('data');const allowed=new Set(group.map(s=>s.id));for(const row of result.tracks){if(!allowed.has(row.id))continue;const data={};const video=artistVideoId(row.youtube);if(video)data.youtube='https://www.youtube.com/watch?v='+video;if(/^[A-G](?:#|b)?$/.test(row.origTonic||''))data.origTonic=row.origTonic;if(['major','minor'].includes(row.origMode))data.origMode=row.origMode;if(typeof row.views==='string'&&/^\d{1,20}$/.test(row.views))data.views=row.views;if(ART_YT.cache.size>=400)ART_YT.cache.delete(ART_YT.cache.keys().next().value);ART_YT.cache.set(row.id,{data,until:Date.now()+(result.statsAvailable?21600000:600000)});}for(const song of group)if(!(ART_YT.cache.get(song.id)?.until>Date.now()))ART_YT.cache.set(song.id,{data:{},until:Date.now()+600000});artistStatsPaint(name,songs);
+  }catch(e){group.forEach(s=>ART_YT.failed.set(s.id,Date.now()+60000));}finally{group.forEach(s=>ART_YT.pending.delete(s.id));}
+ }
 }
 
 function viewArtistEdit(){
