@@ -1740,12 +1740,15 @@ render = function(){
     } else NAV.snaps[NAV.n] = Object.assign(navSnap(), {y: NAV.snaps[NAV.n] && NAV.snaps[NAV.n].y});
   } catch(e) {}
 };
+let navUser = false;
+["touchstart", "wheel", "keydown"].forEach(ev => addEventListener(ev, () => { navUser = true; }, {passive: true}));
+function navScroll(y){ navUser = false; const go = () => { if (!navUser && Math.abs(window.scrollY - y) > 2) scrollTo(0, y); }; go(); [60, 200, 500, 1000].forEach(t => setTimeout(go, t)); }
 addEventListener("popstate", e => {
   const n = e.state && typeof e.state.n === "number" ? e.state.n : 0, sn = NAV.snaps[n];
   NAV.n = n; NAV.skip = true;
   try { const m = document.getElementById("modal"); if (m && !m.hidden) closePix(); } catch(_) {}
   if (sn) { Object.assign(state, sn.s); DM.open = sn.dm; } else state.view = "community";
-  render(); scrollTo(0, sn && sn.y || 0);
+  render(); navScroll(sn && sn.y || 0);
 });
 
 /* ---------- capas ---------- */
@@ -4273,6 +4276,12 @@ function loadLib(src){
   if (LIBS[src]) return LIBS[src];
   return LIBS[src] = new Promise((res, rej) => { const el = document.createElement("script"); el.src = src; el.onload = res; el.onerror = () => { delete LIBS[src]; rej(new Error("lib")); }; document.head.appendChild(el); });
 }
+// ao trocar de aba, a barra das abas fica sempre no mesmo lugar (sem a página pular para cima ou para baixo)
+function cmAlignTab(prevY){
+  const seg = document.querySelector('.cm-seg[aria-label="O que ver"]'); if (!seg) return;
+  const want = Math.max(0, seg.getBoundingClientRect().top + window.scrollY - 76);
+  scrollTo(0, prevY > want ? want : prevY);
+}
 function exPostAuthor(p){ return COMM.profiles[p.author] || {}; }
 function exLouvor(p){ return !!p.song || /louvor|adora|cifra|música|musica|culto|cantar|banda|ensaio|worship/i.test(p.caption || ""); }
 function exImg(p, full){ if (!p.image_path) return ""; const t = commGridUrl(p); if (full && !COMM.urls[p.image_path]) commSign([p.image_path]); return full ? (commUrl(p.image_path) || t) : t; }
@@ -6358,10 +6367,10 @@ function commClick(a, b){
   else if (a === "cm-login") { closePix(); state.loginTab = b.dataset.v; state.afterLogin = state.view === "blessings" ? "blessings" : "community"; state.view = "login"; render(); scrollTo(0, 0); }
   else if (a === "cm-tstyle") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.style = b.dataset.v; rerenderKeepScroll(); }
   else if (a === "cm-pkind") { const d = state.cmPost || (state.cmPost = {}); d.caption = ($("#cm-caption") || {}).value || d.caption || ""; d.oracao = b.dataset.v === "oracao"; d.kind = d.oracao ? "texto" : b.dataset.v; COMM.msg = ""; render(); }
-  else if (a === "cm-tab") { state.cmTab = b.dataset.v; state.exTag = null; if (b.dataset.v === "feed") COMM.feed = null; if (b.dataset.v === "explore") COMM.explore = null; state.view = "community"; render(); }
+  else if (a === "cm-tab") { const v = b.dataset.v, y = window.scrollY; state.cmTab = v; state.exTag = null; state.view = "community"; render(); cmAlignTab(y); if (v === "feed" && COMM.feed !== null) commLoadPosts("feed"); if (v === "explore" && COMM.explore !== null) commLoadPosts("explore"); }
   else if (a === "cm-profile") { closePix(); state.cmBack = state.view; state.profileId = b.dataset.id; state.pfTab = "fotos"; delete PF.bl[b.dataset.id]; delete PF.tags[b.dataset.id]; delete PF.shares[b.dataset.id]; if (COMM.profiles[b.dataset.id]) Object.assign(COMM.profiles[b.dataset.id], {full: false, loading: false, gone: false}); state.view = "profile"; render(); scrollTo(0, 0); }
   else if (a === "cm-post") { state.cmBack = state.view; state.cmBackProfile = state.profileId; state.postId = b.dataset.id; state.view = "post"; render(); scrollTo(0, 0); }
-  else if (a === "cm-back") { state.view = state.cmBack && state.cmBack !== "post" && state.cmBack !== "post-new" ? state.cmBack : "community"; if (state.view === "profile") state.profileId = state.cmBackProfile || state.profileId; render(); scrollTo(0, 0); }
+  else if (a === "cm-back") { if (NAV.n > 0) { history.back(); return; } state.view = state.cmBack && state.cmBack !== "post" && state.cmBack !== "post-new" ? state.cmBack : "community"; if (state.view === "profile") state.profileId = state.cmBackProfile || state.profileId; render(); scrollTo(0, 0); }
   else if (a === "cm-follow") commToggleFollow(b.dataset.id);
   else if (a === "cm-like") commToggleLike(b.dataset.id);
   else if (a === "cm-pic-del") { const d = state.cmPost || {}; (d.datas || []).splice(+b.dataset.i, 1); d.data = (d.datas || [])[0] || null; rerenderKeepScroll(); }
