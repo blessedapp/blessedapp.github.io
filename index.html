@@ -1958,7 +1958,7 @@ const AUTH_ERR = {
 };
 function authErr(e){ const m = (e && e.message) || ""; return AUTH_ERR[m] || (/password/i.test(m) ? "A senha precisa ter pelo menos 8 caracteres." : /email/i.test(m) ? "Confira o e-mail digitado." : "Não deu certo agora. Confira a internet e tente de novo."); }
 /* ---------- Termos de Uso ---------- */
-const TERMS_V = 1;
+const TERMS_V = 2;
 const TERMS_HTML = `<h3>1. O que é o Blessed</h3>
 <p>O Blessed é uma comunidade cristã de louvor: cifras, estudo bíblico, agenda de cultos e uma rede para músicos, igrejas e membros compartilharem a fé.</p>
 <h3>2. Sua responsabilidade</h3>
@@ -1976,7 +1976,14 @@ const TERMS_HTML = `<h3>1. O que é o Blessed</h3>
 <p>Usamos seu e-mail só para login e recuperação de senha; ele não aparece para outras pessoas. A administração vê, só num painel interno, se a conta está ativa, para entender o uso do app; isso não mostra suas mensagens nem sua localização. Seu perfil, fotos e posts da comunidade podem ser vistos também por visitantes. Para interagir é preciso entrar com uma conta. As mensagens privadas são vistas apenas por você e por quem conversa com você. Você pode apagar seus posts e seu perfil quando quiser. Seus dados são tratados conforme a LGPD (Lei 13.709/2018).</p>
 <h3>6. Idade</h3>
 <p>Menores de 18 anos devem usar o Blessed com o conhecimento dos pais ou responsáveis.</p>
-<h3>7. Mudanças</h3>
+<h3>7. Monetização e programa de parcerias</h3>
+<p>Quem cresce no Blessed pode se tornar elegível ao <b>programa de parcerias</b>. Os critérios de monetização e de ganhos seguem as regras desse programa:</p>
+<ul><li><b>Níveis e metas:</b> a elegibilidade depende de atingir, juntas, as metas de seguidores, curtidas e visualizações de cada nível (Bronze, Prata, Ouro, Platina e Diamante).</li>
+<li><b>Visualizações e CPM:</b> os ganhos são calculados com base nas visualizações do seu conteúdo e no <b>CPM</b> (valor pago por mil visualizações), que varia conforme o local do público e os anunciantes do período.</li>
+<li><b>Diretrizes da comunidade:</b> só participa e recebe quem publica conteúdo que siga estes termos. Conteúdo ofensivo, apelativo, sexualizado, enganoso ou que desrespeite a fé e as pessoas não é aceito e pode ser removido, tirando o perfil ou a publicação do programa.</li>
+<li><b>Audiência real:</b> seguidores, curtidas ou visualizações artificiais (compradas, automáticas ou combinadas) não contam e podem excluir o perfil do programa.</li>
+<li><b>Condições:</b> as condições, datas e formas de pagamento são informadas no programa de parcerias e podem ser atualizadas, com aviso.</li></ul>
+<h3>8. Mudanças</h3>
 <p>Estes termos podem ser atualizados. Quando isso acontecer, vamos pedir que você aceite de novo.</p>
 <p class="muted" style="font-size:13px">Dúvidas: aba Contato. Versão ${TERMS_V} · outubro de 2026.</p>`;
 function termsOk(){ const m = TEAM.user && TEAM.user.user_metadata; return !!(m && Number(m.terms_v) >= TERMS_V); }
@@ -4482,8 +4489,8 @@ function monPage(){
    +'<section class="vp" data-set="mon" role="region" aria-label="Como crescer e ganhar no Blessed"></section>'
    +'<h3 class="mon-h">Os níveis</h3><div class="mon-lv">'+lv+'</div>'
    +'<p class="mon-note">Para subir de nível é preciso bater <b>as três metas juntas</b>: seguidores, curtidas e visualizações. A contagem de visualizações dos seus vídeos está chegando em breve.</p>'
-   +'<ul class="mon-rules"><li>Só conta gente de verdade. Perfil falso ou compra de seguidores tira você do programa.</li><li>A partir do nível Platina você fica elegível ao programa de parcerias com anunciantes.</li><li>Não prometemos valores: o que cada um recebe depende dos termos do programa.</li></ul>'
-   +(TEAM&&TEAM.user?'<button class="btn primary" data-a="cm-money">Ver meu progresso</button>':'')
+   +'<ul class="mon-rules"><li>Só conta gente de verdade. Perfil falso ou compra de seguidores tira você do programa.</li><li>A partir do nível Platina você fica elegível ao programa de parcerias com anunciantes.</li><li>Os critérios de monetização e ganhos seguem o programa de parcerias e o CPM (valor por mil visualizações), que varia com as visualizações e com o local do público.</li><li>Só conteúdo que siga as diretrizes da comunidade participa: conteúdo ofensivo ou apelativo não é aceito.</li></ul>'
+   +(TEAM&&TEAM.user?'<button class="btn primary" data-a="cm-money">Ver meu progresso</button>':'')+'<button class="lnk2" style="margin-top:10px" data-a="terms-read">Ler os termos de monetização</button>'
    +'</section>';
 }
 async function moneyOpen(){
@@ -4505,7 +4512,7 @@ async function moneyOpen(){
    +(ok?'<p>🎉 Você está <b>elegível ao programa de parcerias</b> do Blessed.</p>':'<p class="muted">Próximo nível: <b>'+nx.i+' '+nx.n+'</b></p>'
     +'<p style="margin:10px 0 4px">Seguidores: '+n(fo)+' / '+n(nx.f)+'</p>'+bar(fo,nx.f)
     +'<p style="margin:10px 0 4px">Curtidas: '+n(lk)+' / '+n(nx.l)+'</p>'+bar(lk,nx.l))
-   +'<h3 style="margin:16px 0 6px;font-size:15px">Como funciona</h3><ul class="muted" style="margin:0;padding-left:18px;line-height:1.6"><li>Os níveis sobem com seguidores e curtidas de verdade.</li><li>💠 Platina: 10 mil seguidores e 50 mil curtidas. 💎 Diamante é o nível máximo.</li><li>Quem chega lá fica elegível ao programa de parcerias com anunciantes.</li><li>Elegível não é garantia de ganho: não prometemos valores.</li><li>Perfis falsos, compra de seguidores ou conteúdo ofensivo tiram do programa.</li></ul>'
+   +'<h3 style="margin:16px 0 6px;font-size:15px">Como funciona</h3><ul class="muted" style="margin:0;padding-left:18px;line-height:1.6"><li>Os níveis sobem com seguidores e curtidas de verdade.</li><li>💠 Platina: 10 mil seguidores e 50 mil curtidas. 💎 Diamante é o nível máximo.</li><li>Quem chega lá fica elegível ao programa de parcerias com anunciantes.</li><li>Os ganhos seguem o programa de parcerias e o CPM (valor por mil visualizações), que depende das visualizações e do local do público.</li><li>Conteúdo ofensivo ou apelativo, perfis falsos e compra de seguidores não são aceitos e tiram do programa.</li></ul>'
    +'<button class="btn" style="margin-top:14px" data-a="pix-close">Fechar</button></div>';
 }
 let INV_TEXT="";
