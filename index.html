@@ -2166,7 +2166,7 @@ const TAB_ICONS = {
   team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg>',
   login:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7"/></svg>',
   library:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 7h8M8 11h3v3H8zM14 11h2M14 14h2M8 17h8"/></svg>',
-  study:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M7.5 5v8M12 5v8M16.5 5v8"/></svg>',
+  study:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4l1.9 5.1L17 11l-5.1 1.9L10 18l-1.9-5.1L3 11l5.1-1.9z" fill="currentColor" fill-opacity=".18"/><path d="M18.2 3l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/><path d="M18.5 14.5l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z"/></svg>',
   community:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>',
   blessings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4.5" y="2.5" width="15" height="19" rx="4"/><path d="M10.2 8.8v6.4l5.3-3.2z" fill="currentColor"/></svg>',
   contato:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg>',
@@ -2179,7 +2179,7 @@ function tabbar(active){
   const dmn = commOn() && TEAM.user ? dmUnreadCount() : 0;
   const comm = commOn() ? t("community", "Início" + (dmn ? ` <span class="badge" aria-label="${dmn} mensage${dmn > 1 ? "ns" : "m"} não lida${dmn > 1 ? "s" : ""}">${dmn}</span>` : "")) : "";
   const bl = blOn() || (commOn() && teamRole() === "admin") ? t("blessings", "Blessings") : "";
-  return `<nav class="tabbar" aria-label="Abas">${comm}${t("library",commOn()?"Monetizar":"Início")}${bl}${t("study","Estudo")}${t("setlist","Agenda")}${extra}</nav>`;
+  return `<nav class="tabbar" aria-label="Abas">${comm}${t("library",commOn()?"Monetizar":"Início")}${bl}${t("study","IA")}${t("setlist","Agenda")}${extra}</nav>`;
 }
 
 /* ---------- Estudo: Bíblia (Bíblia Livre, CC BY 4.0 BR) ----------
@@ -2240,7 +2240,7 @@ function selahName(){
 }
 function selahFact(){const d=new Date(),n=Math.floor(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/86400000);return SEL_FACTS[n%SEL_FACTS.length];}
 function viewSelah(){
-  const head='<div class="top"><h1 class="page-title">Estudo</h1></div>'+studyTabs();
+  const head='<div class="top"><h1 class="page-title">IA</h1></div>'+studyTabs();
   const nm=selahName(),ok=bibleAskAllowed();
   const hello='<section class="sel-hero"><div class="sel-orb" aria-hidden="true">✨</div><div><h2>IA Selah</h2><p>Paz'+(nm?', <b>'+esc(nm)+'</b>':'')+'! Sou a Selah, a assistente de fé do Blessed. Pergunte sobre a Bíblia, peça curiosidades ou tire uma dúvida.</p></div></section>';
   const chips='<div class="sel-chips">'+SEL_CHIPS.map(t=>'<button class="btn" data-a="sel-chip" data-t="'+esc(t)+'"'+(SEL.busy?' disabled':'')+'>'+esc(t)+'</button>').join("")+'</div>';
@@ -2293,7 +2293,7 @@ function studyTabs(){
 }
 function bibleNviUrl(){const codes='GEN EXO LEV NUM DEU JOS JDG RUT 1SA 2SA 1KI 2KI 1CH 2CH EZR NEH EST JOB PSA PRO ECC SNG ISA JER LAM EZK DAN HOS JOL AMO OBA JON MIC NAM HAB ZEP HAG ZEC MAL MAT MRK LUK JHN ACT ROM 1CO 2CO GAL EPH PHP COL 1TH 2TH 1TI 2TI TIT PHM HEB JAS 1PE 2PE 1JN 2JN 3JN JUD REV'.split(' '),index=BIBLE_BOOKS.findIndex(b=>b[0]===state.bible.b);if(index<0)return 'https://www.bible.com/pt/versions/129-nvi-nova-versao-internacional';const book=BIBLE_BOOKS[index],chapter=Math.max(1,Math.min(Number(state.bible.c)||1,book[3]));return 'https://www.bible.com/pt/bible/129/'+codes[index]+'.'+chapter+'.NVI';}
 function viewBible(){
-  const head = `<div class="top"><h1 class="page-title">Estudo</h1></div>${studyTabs()}${bsTabs()}`;
+  const head = `<div class="top"><h1 class="page-title">IA</h1></div>${studyTabs()}${bsTabs()}`;
   const wrap = inner => head + inner + tabbar("study");
   if (state.bibleArea === "studies") return wrap(bsView());
   if (window.claude) return wrap('<div class="panel"><p style="margin:0">A Bíblia abre no site do Blessed (blessedapp.github.io).</p></div>');
@@ -7297,7 +7297,7 @@ function viewStudy(){
   const sec = [2,4,5,7,9].map(t => `${esc(plain(spell(K.pc+t+7, K)))}7 → ${esc(nm(t))}`).join("&nbsp;&nbsp; ");
   const qz = st.quiz;
   return `
-  <div class="top"><h1 class="page-title">Estudo</h1></div>${studyTabs()}
+  <div class="top"><h1 class="page-title">IA</h1></div>${studyTabs()}
   <p class="muted" style="margin:-6px 0 10px">Do zero ao campo harmônico, com exemplos no tom que você escolher.</p>
   <div class="keys-scroll"><div class="keys" role="group" aria-label="Tom para estudar">
     ${TONICS.major.map(t => `<button data-a="st-key" data-t="${t}" aria-pressed="${t===st.key}">${esc(t)}</button>`).join("")}
