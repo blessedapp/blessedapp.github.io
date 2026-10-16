@@ -1352,6 +1352,24 @@ html[data-appearance=light] .sel-fact b{color:#8a5a0a}
 @keyframes vpCm{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
 
 .vp[data-set=mon] .vp-s.on .vp-cap h2{animation-delay:.05s}.vp[data-set=mon] .vp-s.on .vp-cap p{animation-delay:calc(.12s + var(--k)*.28s)}
+
+.pbl-sec{margin:4px 0 16px}.pbl-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 0 8px;-webkit-overflow-scrolling:touch}
+.pbl-row .bl-tile{flex:none;width:132px;scroll-snap-align:start}.bl-tile small{font-weight:600;opacity:.9;font-size:12px}
+.pbl-box{max-width:420px;padding:0;overflow:hidden}.pbl-vw{position:relative;background:#000;aspect-ratio:9/14;max-height:68vh}
+.pbl-vw video{width:100%;height:100%;object-fit:cover;display:block}
+.pbl-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:22px;line-height:1}
+.pbl-n{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:56px;border:0;background:rgba(0,0,0,.35);color:#fff;font-size:28px;border-radius:12px}.pbl-prev{left:8px}.pbl-next{right:8px}
+.pbl-info{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff}.pbl-info span{opacity:.75;font-size:13px}.pbl-info p{margin:4px 0 0;font-size:14px}
+.pbl-cta{margin:12px 16px 8px;text-align:center;color:var(--muted);font-size:14px}.pbl-box .actions{padding:0 16px 16px;display:grid;gap:8px}
+
+.ch-card{margin:0 0 14px;padding:14px;border-radius:18px;border:1px solid rgba(245,180,81,.4);background:linear-gradient(135deg,rgba(245,180,81,.14),rgba(124,92,255,.08))}
+.ch-h{display:flex;justify-content:space-between;align-items:center;font-size:16px}.ch-h span{font-weight:800;color:#F5B451}
+.ch-card p{margin:6px 0 10px;font-size:14px;line-height:1.45}.ch-ok{color:var(--ink)}
+.ch-dots{display:flex;gap:8px;margin:0 0 10px}.ch-dots i{flex:1;aspect-ratio:1;max-width:40px;border-radius:50%;border:2px dashed var(--line);display:grid;place-items:center;font:800 14px var(--f-body);font-style:normal;color:#1c1300}
+.ch-dots i.on{background:#F5B451;border:2px solid #F5B451}.ch-dots i.now{box-shadow:0 0 0 3px rgba(245,180,81,.35)}
+html[data-appearance=light] .ch-h span{color:#8a5a0a}
+.onb-list{display:grid;gap:8px;max-height:46vh;overflow-y:auto;margin-top:6px}.onb-row{display:flex;align-items:center;gap:10px}.onb-av{flex:none}.onb-t{flex:1;min-width:0;display:grid}.onb-t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.onb-t small{color:var(--muted);font-size:12px}
+.onb-row .btn{flex:none;min-height:36px;padding:6px 14px}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -3778,7 +3796,7 @@ function pcPost(p,page,detail=false){
 }
 function pcStatus(page){return page.loading&&!page.posts.length&&!page.people.length?'<p class="muted" role="status">Carregando a comunidade…</p>':page.error?`<div class="panel"><p role="status">${esc(page.error)}</p><button class="btn" data-a="pc-retry" data-person="${esc(page.person)}" data-entry="${esc(page.entry)}">Tentar novamente</button></div>`:'';}
 function pcCommunity(){
- const page=pcPage();return `${visitorPanel()}<section class="pc-welcome">${pcJoin('Fazer parte')}</section><div class="inst cm-seg"><button data-a="pc-tab" data-v="posts" aria-pressed="${PC.tab==='posts'}">Publicações</button><button data-a="pc-tab" data-v="people" aria-pressed="${PC.tab==='people'}">Pessoas</button></div>${pcStatus(page)}${PC.tab==='people'?`<div class="pc-people">${page.people.map(p=>pcPerson(p,page)).join('')}</div>`:page.posts.map(p=>pcPost(p,page)).join('')}${!page.loading&&!page.error&&!(PC.tab==='people'?page.people:page.posts).length?'<p class="muted">Ainda não há publicações por aqui.</p>':''}${page.more&&PC.tab==='posts'?'<button class="btn cm-more" data-a="pc-more">Ver mais publicações</button>':''}`;
+ const page=pcPage();return `${visitorPanel()}${pblRow()}<section class="pc-welcome">${pcJoin('Fazer parte')}</section><div class="inst cm-seg"><button data-a="pc-tab" data-v="posts" aria-pressed="${PC.tab==='posts'}">Publicações</button><button data-a="pc-tab" data-v="people" aria-pressed="${PC.tab==='people'}">Pessoas</button></div>${pcStatus(page)}${PC.tab==='people'?`<div class="pc-people">${page.people.map(p=>pcPerson(p,page)).join('')}</div>`:page.posts.map(p=>pcPost(p,page)).join('')}${!page.loading&&!page.error&&!(PC.tab==='people'?page.people:page.posts).length?'<p class="muted">Ainda não há publicações por aqui.</p>':''}${page.more&&PC.tab==='posts'?'<button class="btn cm-more" data-a="pc-more">Ver mais publicações</button>':''}`;
 }
 function pcProfile(){
  const page=pcPage(state.profileId),p=page.people.find(p=>p.id===state.profileId),back='<div class="top"><button class="btn ghost" data-a="pc-back">‹ Comunidade</button></div>';
@@ -4730,7 +4748,7 @@ function monPage(){
    +'<h3 class="mon-h">Os níveis</h3><div class="mon-lv">'+lv+'</div>'
    +'<p class="mon-note">Para subir de nível é preciso bater <b>as três metas juntas</b>: seguidores, curtidas e visualizações. A contagem de visualizações dos seus vídeos está chegando em breve.</p>'
    +'<ul class="mon-rules"><li>Só conta gente de verdade. Perfil falso ou compra de seguidores tira você do programa.</li><li>Ao chegar no nível Platina você fica elegível: recebe os termos oficiais do programa de parcerias e escolhe se quer participar.</li><li>Os critérios de monetização e ganhos seguem o programa de parcerias e o CPM (valor por mil visualizações), que varia com as visualizações e com o local do público.</li><li>Só conteúdo que siga as diretrizes da comunidade participa: conteúdo ofensivo ou apelativo não é aceito.</li></ul>'
-   +(TEAM&&TEAM.user?'<button class="btn primary" data-a="cm-money">Ver meu progresso</button>':'')+'<button class="lnk2" style="margin-top:10px" data-a="terms-read">Ler os termos de monetização</button>'
+   +(TEAM&&TEAM.user?chCard()+'<button class="btn primary" data-a="cm-money">Ver meu progresso</button>':'')+'<button class="lnk2" style="margin-top:10px" data-a="terms-read">Ler os termos de monetização</button>'
    +'</section>';
 }
 async function moneyOpen(){
@@ -4989,6 +5007,126 @@ async function blOpen(id){
 }
 
 // ---------- visualizações válidas, tempo assistido e estatísticas dos Blessings (supabase-blessings-algoritmo.sql) ----------
+// ---------- Blessings públicos: o visitante vê vídeos de verdade antes de criar a conta ----------
+// ---------- Retenção: desafio de 7 dias, resumo de visualizações e boas-vindas (supabase-retencao.sql) ----------
+const CH = {data: null, at: 0, loading: false, off: false};
+function chLoad(force){
+  if (CH.off || !TEAM.user || !TEAM.client || CH.loading || (!force && Date.now() - CH.at < 60000)) return;
+  CH.loading = true;
+  Promise.resolve(TEAM.client.rpc("challenge_status")).then(r => {
+    if (r && r.error) { if (/function|does not exist|schema cache|not found/i.test(r.error.message || "")) CH.off = true; return; }
+    CH.data = r.data; CH.at = Date.now();
+  }).catch(() => {}).finally(() => { CH.loading = false; if (CH.data && (state.view === "community" || state.view === "library")) rerenderKeepScroll(); });
+}
+function chCard(){
+  if (!TEAM.user || CH.off) return "";
+  chLoad(false);
+  const d = CH.data; if (!d) return "";
+  const dots = (d.days || []).map((on, i, a) => '<i class="' + (on ? "on" : "") + (i === a.length - 1 ? " now" : "") + '" aria-hidden="true">' + (on ? "✓" : "") + '</i>').join("");
+  const act = d.done ? '<p class="ch-ok">🏅 Desafio completo! Você tem mais chances no feed e de ser o destaque do dia. Continue postando todo dia para manter.</p>'
+    : d.today ? '<p class="ch-ok">✓ Hoje já está feito. Volte amanhã para manter a sequência.</p>'
+    : '<button class="btn primary" data-a="ch-post">Postar agora</button>';
+  return '<section class="ch-card" aria-label="Desafio de 7 dias"><div class="ch-h"><b>🔥 Desafio de 7 dias</b><span>' + Math.min(7, d.streak || 0) + '/7</span></div>'
+    + '<p>Poste <b>todos os dias por 7 dias</b> e ganhe mais chances de ser o <b>destaque do dia</b>.</p><div class="ch-dots" role="img" aria-label="' + Math.min(7, d.streak || 0) + ' de 7 dias">' + dots + '</div>' + act + '</section>';
+}
+function chPostOpen(){
+  const m = $("#modal"); m.className = "modal";
+  m.innerHTML = '<div class="modal-box" role="dialog" aria-modal="true"><h2>Postar agora</h2><p class="muted">Qualquer publicação de hoje conta para o desafio.</p><div class="actions" style="display:grid;gap:8px"><button class="btn primary" data-a="ch-bl">🎬 Postar um Blessing</button><button class="btn" data-a="ch-ph">📷 Postar uma foto ou texto</button><button class="btn ghost" data-a="pix-close">Agora não</button></div></div>';
+  m.hidden = false;
+}
+// Resumo diário: "seus vídeos foram vistos N vezes"
+let VS_DONE = false;
+function vsCheck(){
+  if (VS_DONE || !TEAM.user || !COMM.me || !TEAM.client || document.hidden) return;
+  VS_DONE = true;
+  const today = new Date().toISOString().slice(0, 10), key = "cc-vs-day:" + TEAM.user.id;
+  try { if (localStorage.getItem(key) === today) return; } catch (e) {}
+  Promise.resolve(TEAM.client.rpc("my_views_summary")).then(r => {
+    if (!r || r.error || !r.data) return;
+    const v = Number(r.data.views_24h) || 0, f = Number(r.data.new_followers) || 0;
+    if (!v && !f) return;
+    try { localStorage.setItem(key, today); } catch (e) {}
+    const old = $("#ag-banner"); if (old) old.remove();
+    const b = document.createElement("div"); b.id = "ag-banner"; b.className = "ag-banner"; b.setAttribute("role", "status");
+    const parts = []; if (v) parts.push("vistos " + fmtN(v) + (v === 1 ? " vez" : " vezes")); if (f) parts.push("+" + fmtN(f) + (f === 1 ? " seguidor" : " seguidores"));
+    b.innerHTML = '<button class="ag-bmain" data-a="vs-go"><span class="ag-bi">👀</span><span><b>Seus vídeos e fotos foram ' + (v ? "vistos" : "notados") + '</b><small>Últimas 24 horas · ' + parts.join(" · ") + '</small></span></button><button class="ag-bx" data-a="ag-x" aria-label="Fechar aviso">×</button>';
+    document.body.appendChild(b);
+    setTimeout(() => { if (b.isConnected) b.remove(); }, 9000);
+  }).catch(() => {});
+}
+setInterval(() => { vsCheck(); onbMaybe(); }, 2500);
+// Boas-vindas: depois do cadastro, seguir 5 e postar o primeiro vídeo
+const ONB = {tried: false, list: null, step: 0};
+function onbMaybe(){
+  if (ONB.tried || !TEAM.user || !COMM.me || !COMM.following || document.hidden || state.view !== "community") return;
+  if (!$("#modal").hidden) return;
+  let seen = false; try { seen = localStorage.getItem("cc-onb:" + TEAM.user.id) === "1"; } catch (e) {}
+  if (seen || COMM.following.size >= 3) return;
+  ONB.tried = true;
+  Promise.resolve(TEAM.client.rpc("suggested_follows", {p_limit: 12})).then(r => {
+    if (!r || r.error || !Array.isArray(r.data) || !r.data.length) return;
+    ONB.list = r.data; commKeep(ONB.list); ONB.step = 1; ONB.joined = 0;
+    try { localStorage.setItem("cc-onb:" + TEAM.user.id, "1"); } catch (e) {}
+    onbRender();
+  }).catch(() => {});
+}
+function onbRender(){
+  const m = $("#modal"); m.className = "modal";
+  const nm = selahName();
+  if (ONB.step === 1) {
+    const rows = ONB.list.map(p => { const on = COMM.following.has(p.id), q = COMM.profiles[p.id] || p;
+      return '<div class="onb-row"><span class="onb-av">' + commAvatar(q, 44) + '</span><span class="onb-t"><b>' + esc(p.display_name) + commBadge(q) + '</b><small>' + esc(p.kind === "igreja" ? "Igreja" + (p.city ? " · " + p.city : "") : p.church || "Criador") + '</small></span><button class="btn ' + (on ? "" : "primary") + '" data-a="onb-fol" data-id="' + esc(p.id) + '" aria-pressed="' + on + '">' + (on ? "Seguindo" : "Seguir") + '</button></div>'; }).join("");
+    const n = ONB.list.filter(p => COMM.following.has(p.id)).length;
+    m.innerHTML = '<div class="modal-box onb" role="dialog" aria-modal="true"><h2>Bem-vindo' + (nm ? ", " + esc(nm) : "") + '! 🙏</h2><p class="muted">Siga 5 igrejas ou criadores para montar o seu início.</p><div class="onb-list">' + rows + '</div><div class="actions" style="margin-top:12px"><button class="btn primary" data-a="onb-next">' + (n ? "Continuar · seguindo " + n : "Agora não") + '</button></div></div>';
+  } else {
+    m.innerHTML = '<div class="modal-box onb" role="dialog" aria-modal="true"><h2>Poste seu primeiro vídeo 🎬</h2><p class="muted">Seu vídeo será mostrado para um grupo de pessoas. Se elas gostarem, ele vai para mais gente. Quanto mais gente assiste até o fim, curte e comenta, mais ele é recomendado.</p><div class="actions" style="display:grid;gap:8px;margin-top:12px"><button class="btn primary" data-a="ch-bl">🎬 Postar um Blessing</button><button class="btn" data-a="ch-ph">📷 Postar uma foto ou texto</button><button class="btn ghost" data-a="pix-close">Depois</button></div></div>';
+  }
+  m.hidden = false;
+}
+function retClick(a, b){
+  if (a === "ch-post") chPostOpen();
+  else if (a === "ch-bl") { closePix(); blClick("bl-new", b); }
+  else if (a === "ch-ph") { closePix(); commClick("cm-new", b); }
+  else if (a === "vs-go") { const bn = $("#ag-banner"); if (bn) bn.remove(); state.view = "library"; render(); scrollTo(0, 0); }
+  else if (a === "onb-fol") { commToggleFollow(b.dataset.id); setTimeout(onbRender, 80); }
+  else if (a === "onb-next") { if (ONB.step === 1) { ONB.step = 2; onbRender(); } else closePix(); }
+  else return false;
+  return true;
+}
+const PBL = {list: null, loading: false, cur: 0};
+function pblLoad(){
+  if (PBL.list !== null || PBL.loading || !blOn() || !TEAM.client) return;
+  PBL.loading = true;
+  Promise.resolve(TEAM.client.rpc("public_blessings", {p_limit: 12})).then(r => {
+    PBL.list = (r && !r.error && Array.isArray(r.data)) ? r.data.filter(x => x && x.thumb_key && x.video_key && x.author) : [];
+  }).catch(() => { PBL.list = []; }).finally(() => { PBL.loading = false; if (!TEAM.user && (state.view === "blessings" || state.view === "community") && PBL.list && PBL.list.length) rerenderKeepScroll(); });
+}
+function pblTile(x){
+  return '<button class="bl-tile pbl-tile" data-a="pbl-open" data-id="' + esc(x.id) + '" style="background-image:url(\'' + esc(blUrl(x.thumb_key)) + '\')" aria-label="Assistir o Blessing de ' + esc(x.author.display_name) + '"><span class="bl-tile-play">' + BL_ICONS.play + '</span><b>' + esc(x.author.display_name) + (x.views ? '<small> · ▶ ' + fmtN(x.views) + '</small>' : '') + '</b></button>';
+}
+function pblRow(){
+  if (TEAM.user || !blOn()) return "";
+  pblLoad();
+  if (!PBL.list || !PBL.list.length) return "";
+  return '<section class="pbl-sec"><h3 class="ex-h2">🎬 Blessings da comunidade</h3><div class="pbl-row">' + PBL.list.map(pblTile).join("") + '</div></section>';
+}
+function pblOpen(i){
+  const x = PBL.list && PBL.list[i]; if (!x) return; PBL.cur = i;
+  const m = $("#modal"); m.className = "modal";
+  m.innerHTML = '<div class="modal-box pbl-box" role="dialog" aria-modal="true" aria-label="Blessing de ' + esc(x.author.display_name) + '"><div class="pbl-vw"><video id="pbl-v" playsinline loop poster="' + esc(blUrl(x.thumb_key)) + '" src="' + esc(blUrl(x.video_key)) + '"></video><button class="pbl-x" data-a="pix-close" aria-label="Fechar">×</button><button class="pbl-n pbl-prev" data-a="pbl-nav" data-d="-1" aria-label="Anterior">‹</button><button class="pbl-n pbl-next" data-a="pbl-nav" data-d="1" aria-label="Próximo">›</button><div class="pbl-info"><b>' + esc(x.author.display_name) + '</b> <span>@' + esc(x.author.handle || "") + '</span>' + (x.caption ? '<p>' + esc(x.caption) + '</p>' : '') + '</div></div><p class="pbl-cta">Crie sua conta para curtir, comentar e postar o seu.</p><div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></div>';
+  m.hidden = false;
+  const v = $("#pbl-v"); if (!v) return;
+  v.muted = false;
+  const p = v.play();
+  if (p && p.catch) p.catch(() => { v.muted = true; v.play().catch(() => {}); flash("🔊 Toque no vídeo para ligar o som"); });
+  v.addEventListener("click", () => { if (v.muted) v.muted = false; else if (v.paused) v.play().catch(() => {}); else v.pause(); });
+}
+function pblClick(a, b){
+  if (a === "pbl-open") { const i = (PBL.list || []).findIndex(x => x.id === b.dataset.id); if (i >= 0) pblOpen(i); }
+  else if (a === "pbl-nav") { const n = (PBL.list || []).length; if (n) pblOpen((PBL.cur + Number(b.dataset.d) + n) % n); }
+  else return false;
+  return true;
+}
 const BLW = {t: new Map(), off: false};
 BLS.views = {};
 function fmtN(n){ n = Number(n) || 0; return n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(".", ",") + " mi" : n >= 1e3 ? (n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(".", ",") + " mil" : String(n); }
@@ -5073,12 +5211,14 @@ function blItemHtml(id, i){
   </section>`;
 }
 function blTeaser(){
-  const tiles = DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
+  pblLoad();
+  const real = PBL.list && PBL.list.length ? PBL.list.map(pblTile).join("") : "";
+  const tiles = real || DEMO_POSTS.map(x => { const a = DEMO_PEOPLE[x.p];
     return `<button class="bl-tile" data-a="cm-demo" style="background-image:url('${esc(x.img)}')"><em class="cm-demo-tag">Exemplo</em><span class="bl-tile-play">${BL_ICONS.play}</span><b>${esc(a.n)}</b></button>`; }).join("");
   return `<section class="cm-hero"><p class="cm-kicker">Vídeos curtos de louvor</p><h2>Blessings</h2>
       <p>Trechos de ensaio, solos, momentos do culto e testemunhos em vídeos de até 1 minuto. Leves para o seu plano de dados: o app comprime antes de enviar.</p>
       <div class="actions"><button class="btn primary" data-a="cm-login" data-v="up">Criar minha conta</button><button class="btn" data-a="cm-login" data-v="in">Já tenho conta</button></div></section>
-    <p class="cm-demo-note">👀 Exemplos de como fica. Os vídeos de verdade aparecem quando você entra.</p>
+    ${real ? '<p class="cm-demo-note">🎬 Vídeos de verdade da comunidade. Toque para assistir.</p>' : '<p class="cm-demo-note">👀 Exemplos de como fica. Os vídeos de verdade aparecem quando você entra.</p>'}
     <div class="bl-tiles">${tiles}</div>`;
 }
 function viewBlessings(){
@@ -5343,7 +5483,7 @@ async function blSend(){
     await pfSaveTags("blessing", data.id); BLS.capDraft = ""; BLS.place=null; delete PF.bl[TEAM.user.id];
     BLS.list = [data.id].concat((BLS.list || []).filter(x => x !== data.id));
     blClearFile(); BLS.up = null; BLS.focus = data.id; state.view = "blessings"; render(); scrollTo(0, 0);
-    flash("Blessing publicado 🙌");
+    flash("Blessing publicado 🙌 Ele vai ser mostrado para um grupo de pessoas."); CH.at = 0; chLoad(true);
   } catch(e) {
     BLS.up = null; BLS.msg = e && e.message ? e.message : "Não deu certo. Tente de novo."; render();
   } finally { if (ac && ac.close) ac.close().catch(() => {}); }
@@ -6432,7 +6572,7 @@ function viewCommunity(){
   } else {
     body = exploreView();
   }
-  return wrap(`${tab === "people" || tab === "lojas" ? "" : vdCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
+  return wrap(`${tab === "people" || tab === "lojas" ? "" : vdCard()+chCard()+commStories()}<button class="btn primary cm-new" data-a="cm-new">＋ Postar</button>
     <div class="inst cm-seg" role="group" aria-label="O que ver">${seg("feed", "Seguindo")}${seg("explore", "Explorar")}${seg("lojas", "Lojas")}${seg("people", "Pessoas")}</div>${body}<div class="cm-invite-end">${communityInvite()}</div>`, false, (tab === "people" || tab === "lojas" ? "" : commStoryStrip() + exBlRow() + exStoreRow()));
 }
 function viewProfile(){
@@ -8245,6 +8385,8 @@ document.addEventListener("click", ev => {
   if (a.startsWith("pl-")) { plClick(a,b); return; }
   if (a.startsWith("ag-") && agClick(a, b)) return;
   if (a.startsWith("sel-") && selahClick(a, b)) return;
+  if (a.startsWith("pbl-") && pblClick(a, b)) return;
+  if (/^(ch|vs|onb)-/.test(a) && retClick(a, b)) return;
   if (a.startsWith("yt-mini") && miniClick(a, b)) return;
   if ((a === "study-tab" || a.startsWith("bb-")) && bibleClick(a, b)) return;
   if (a === "open" || a === "complete") {
