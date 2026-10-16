@@ -1312,6 +1312,21 @@ html[data-appearance=light] .nf-head.home-dashboard-head{--cream:#292440;--ink:#
 
 html:not([data-appearance=light]) body{min-height:100vh;min-height:100dvh;background-repeat:no-repeat}
 html:not([data-appearance=light]){background-color:var(--bg)}
+
+/* IA Selah */
+.sel-hero{display:flex;gap:14px;align-items:center;padding:16px;margin:4px 0 14px;border-radius:20px;border:1px solid var(--glass-edge,var(--line));background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(124,92,255,.06))}
+.sel-hero h2{font-size:22px;margin:0 0 2px}.sel-hero p{margin:0;font-size:14px;line-height:1.45;color:var(--muted)}.sel-hero b{color:var(--ink)}
+.sel-orb{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 35% 30%,#a99bff,#5b3fd0 70%);box-shadow:0 0 0 4px rgba(124,92,255,.18),0 8px 22px rgba(91,63,208,.45)}
+.sel-fact{padding:12px 14px;margin-bottom:12px;border-radius:16px;border:1px solid rgba(245,180,81,.35);background:rgba(245,180,81,.08)}.sel-fact b{font-size:13px;color:#F5B451}.sel-fact p{margin:4px 0 0;font-size:14px;line-height:1.5}
+html[data-appearance=light] .sel-fact b{color:#8a5a0a}
+.sel-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.sel-chips .btn{font-size:13px;min-height:36px;padding:6px 12px;border-radius:99px}
+.sel-thread{display:grid;gap:8px;margin:0 0 12px}.sel-q{justify-self:end;max-width:86%}.sel-q span{display:block;padding:9px 13px;border-radius:18px 18px 4px 18px;background:#5B3FD0;color:#fff;font-size:14px;line-height:1.4}
+.sel-a{justify-self:start;max-width:94%;padding:10px 14px;border-radius:18px 18px 18px 4px;border:1px solid var(--line);background:var(--surface)}.sel-a p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:15px}
+.sel-refs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sel-refs .btn{font-size:13px;min-height:34px;padding:5px 10px}
+.sel-form{display:flex;gap:8px;align-items:flex-end;margin:6px 0}.sel-form textarea{flex:1;min-height:46px;max-height:140px;resize:vertical;padding:11px 13px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.sel-err{color:#ff8fa3;font-size:14px;margin:6px 0}.sel-note{font-size:12px;margin:4px 0 0}
+
+.tabbar button{font-size:10.5px;letter-spacing:-.02em;padding-inline:0}.tabbar:has(button:nth-child(7)) button{font-size:9.5px;letter-spacing:-.03em}.tabbar button svg{width:22px;height:22px}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
@@ -1689,7 +1704,7 @@ const state = {
   wheelOpen: lsGet("cc-wheel", true), wheelSel:null, wheelAll:false, follow:null,
   infoOpen: lsGet("cc-info", true), recent: lsGet("cc-recent", []), infoDocs: lsGet("cc-info-cache", {}),
   confirmClear:false,
-  studyTab: lsGet("cc-studytab", "biblia"), bible: lsGet("cc-bible", {b:"PSA", c:23}), bibleSel: [], bibleFs: lsGet("cc-bfs", 19),
+  studyTab: lsGet("cc-studytab2", "selah"), bible: lsGet("cc-bible", {b:"PSA", c:23}), bibleSel: [], bibleFs: lsGet("cc-bfs", 19),
   view:teamAvailable()?"community":"library", currentId:null, editing:null, confirmDelete:false,
   q:"", simple: lsGet("cc-simple", false), asMajor: lsGet("cc-asmajor", true), fontSize: lsGet("cc-font", 17), fieldOpen: lsGet("cc-field", true), tipsOpen: lsGet("cc-tips", true),
   wake:null, sheet:null
@@ -2201,9 +2216,80 @@ function bibleGo(code, c, verse){
   render(); scrollTo(0, 0);
   if (verse) setTimeout(() => { const el = document.querySelector(`.bv[data-n="${verse}"]`); if (el) el.scrollIntoView({block: "center"}); }, 60);
 }
+// ---------- IA Selah: assistente de fé do Blessed (usa o mesmo estudo com IA, com os mesmos limites diários) ----------
+const SEL={q:"",busy:false,error:"",thread:[],request:0};
+const SEL_FACTS=[
+ "A palavra “Selah” aparece 71 vezes nos Salmos e 3 vezes em Habacuque. Muitos estudiosos entendem como um convite a pausar e refletir.",
+ "O Salmo 117 é o capítulo mais curto da Bíblia, com 2 versículos. O Salmo 119 é o mais longo, com 176.",
+ "A Bíblia foi escrita ao longo de cerca de 1.500 anos, por mais de 40 autores diferentes.",
+ "O livro de Ester é um dos poucos que não menciona o nome de Deus de forma direta.",
+ "A Bíblia protestante tem 66 livros: 39 no Antigo Testamento e 27 no Novo Testamento.",
+ "“Jesus chorou” (João 11:35) é o versículo mais curto em muitas traduções em português.",
+ "O Antigo Testamento foi escrito principalmente em hebraico, com partes em aramaico. O Novo Testamento foi escrito em grego.",
+ "“Aleluia” vem do hebraico e quer dizer “louvem ao Senhor”.",
+ "“Amém” é uma palavra hebraica que significa algo como “assim seja” ou “de fato”.",
+ "“Evangelho” significa “boa notícia”.",
+ "A palavra “Bíblia” vem do grego e quer dizer “os livros”.",
+ "Salmos é o livro mais longo da Bíblia, com 150 salmos.",
+ "O último livro da Bíblia, Apocalipse, diz ter sido escrito por João, que estava na ilha de Patmos."
+];
+const SEL_CHIPS=["Quais passagens falam sobre perdão?","O que a Bíblia diz sobre ansiedade?","Explique o Salmo 23","Quem foi o rei Davi?","Como orar quando estou cansado?"];
+function selahName(){
+  const raw=(COMM&&COMM.me&&COMM.me.display_name)||(TEAM.user&&TEAM.user.user_metadata&&TEAM.user.user_metadata.name)||"";
+  const n=String(raw).trim().split(/\s+/)[0];return n&&n.length<=24?n:"";
+}
+function selahFact(){const d=new Date(),n=Math.floor(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/86400000);return SEL_FACTS[n%SEL_FACTS.length];}
+function viewSelah(){
+  const head='<div class="top"><h1 class="page-title">Estudo</h1></div>'+studyTabs();
+  const nm=selahName(),ok=bibleAskAllowed();
+  const hello='<section class="sel-hero"><div class="sel-orb" aria-hidden="true">✨</div><div><h2>IA Selah</h2><p>Paz'+(nm?', <b>'+esc(nm)+'</b>':'')+'! Sou a Selah, a assistente de fé do Blessed. Pergunte sobre a Bíblia, peça curiosidades ou tire uma dúvida.</p></div></section>';
+  const chips='<div class="sel-chips">'+SEL_CHIPS.map(t=>'<button class="btn" data-a="sel-chip" data-t="'+esc(t)+'"'+(SEL.busy?' disabled':'')+'>'+esc(t)+'</button>').join("")+'</div>';
+  const fact='<section class="sel-fact"><b>💡 Curiosidade do dia</b><p>'+esc(selahFact())+'</p></section>';
+  const thread=SEL.thread.map(m=>'<div class="sel-q"><span>'+esc(m.q)+'</span></div><div class="sel-a"><p>'+esc(m.a)+'</p>'+(m.refs&&m.refs.length?'<div class="sel-refs">'+m.refs.map(r=>'<button class="btn" data-a="sel-ref" data-b="'+esc(r.book)+'" data-c="'+r.chapter+'" data-s="'+r.start+'" data-e="'+r.end+'">📖 '+esc(bibleRef(r.book,r.chapter,Array.from({length:r.end-r.start+1},(_,i)=>r.start+i)))+'</button>').join("")+'</div>':'')+'</div>').join("")
+    +(SEL.busy?'<div class="sel-a"><p class="muted">A Selah está pensando…</p></div>':"");
+  let box;
+  if(!TEAM.user)box='<div class="panel"><p style="margin:0 0 10px">Entre com a sua conta para conversar com a Selah.</p><button class="btn primary" data-a="bb-ask-login">Entrar</button></div>';
+  else if(!ok)box='<div class="panel"><p style="margin:0">'+(teamRole()==="blocked"?"Sua conta não tem acesso à IA.":"A conversa com a Selah ainda está sendo liberada para a sua conta. As curiosidades acima já estão abertas para você.")+'</p></div>';
+  else box='<form id="sel-form" class="sel-form"><textarea id="sel-q" maxlength="800" rows="2" placeholder="Pergunte à Selah…" aria-label="Pergunta para a Selah"'+(SEL.busy?' disabled':'')+'>'+esc(SEL.q)+'</textarea><button class="btn primary" type="submit"'+(SEL.busy?' disabled':'')+'>Enviar</button></form>'+(SEL.error?'<p class="sel-err" role="alert">'+esc(SEL.error)+'</p>':'')+'<p class="muted sel-note">Respostas geradas por IA. Confira sempre o texto na Bíblia.</p>';
+  return head+hello+fact+(ok?chips:"")+(thread?'<div class="sel-thread">'+thread+'</div>':"")+box+tabbar("study");
+}
+function selahCache(k){try{const c=JSON.parse(localStorage.getItem("cc-selah-cache")||"{}"),v=c[k];return v&&Date.now()-v.t<7*86400000?v:null;}catch(e){return null;}}
+function selahCacheSet(k,v){try{const c=JSON.parse(localStorage.getItem("cc-selah-cache")||"{}");c[k]={...v,t:Date.now()};const keys=Object.keys(c);if(keys.length>30)delete c[keys[0]];localStorage.setItem("cc-selah-cache",JSON.stringify(c));}catch(e){}}
+async function selahSend(text,fromChip){
+  if(SEL.busy||!TEAM.user||!bibleAskAllowed())return;
+  const q=String(text||"").trim();
+  if(q.length<5||q.length>700){SEL.error="Escreva uma pergunta de 5 a 700 caracteres.";render();return;}
+  SEL.error="";
+  const hit=fromChip?selahCache(q):null;
+  if(hit){SEL.thread.push({q,a:hit.a,refs:hit.refs});SEL.thread=SEL.thread.slice(-6);SEL.q="";render();return;}
+  if(!navigator.onLine){SEL.error="Conecte-se à internet para falar com a Selah.";render();return;}
+  const owner=TEAM.user.id,req=++SEL.request,nm=selahName();
+  SEL.busy=true;SEL.q="";render();
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),45000);
+  try{
+    const {data,error}=await TEAM.client.auth.getSession();
+    if(error||!data||!data.session||data.session.user.id!==owner)throw new Error("Sua sessão terminou. Entre novamente para perguntar.");
+    const body=(nm&&!fromChip?"Meu nome é "+nm+". ":"")+q;
+    const response=await fetch(window.CC_SUPABASE.url+"/functions/v1/bible-study",{method:"POST",headers:{"Content-Type":"application/json",apikey:window.CC_SUPABASE.key,Authorization:"Bearer "+data.session.access_token},body:JSON.stringify({question:body.slice(0,800),context:null}),signal:ctl.signal});
+    const result=await response.json().catch(()=>null);
+    if(!response.ok)throw new Error(result&&typeof result.error==="string"?result.error:response.status===404?"A Selah ainda não foi ativada.":"Não consegui responder agora. Tente de novo em instantes.");
+    if(!result||typeof result.answer!=="string"||!Array.isArray(result.references))throw new Error("Não consegui ler a resposta. Tente de novo.");
+    const refs=result.references.filter(r=>r&&bibleBook(r.book)&&Number.isInteger(r.chapter)&&r.chapter>0&&r.chapter<=bibleBook(r.book)[3]&&Number.isInteger(r.start)&&Number.isInteger(r.end)&&r.start>0&&r.end>=r.start&&r.end<=200).slice(0,5);
+    if(req===SEL.request&&TEAM.user&&TEAM.user.id===owner){const a=result.answer.slice(0,2400);SEL.thread.push({q,a,refs});SEL.thread=SEL.thread.slice(-6);if(fromChip)selahCacheSet(q,{a,refs});}
+  }catch(e){
+    if(req===SEL.request)SEL.error=e.name==="AbortError"?"A resposta demorou. Tente de novo em instantes.":e instanceof TypeError?"Não consegui conectar. Confira a internet.":e.message||"Não consegui responder agora.";
+  }finally{clearTimeout(timer);if(req===SEL.request){SEL.busy=false;if(state.view==="study"&&state.studyTab==="selah"){render();setTimeout(()=>{const l=document.querySelector(".sel-thread");if(l&&l.lastElementChild)l.lastElementChild.scrollIntoView({block:"nearest"});},50);}}}
+}
+function selahClick(a,b){
+  if(a==="sel-chip"){selahSend(b.dataset.t,true);}
+  else if(a==="sel-ref"){state.studyTab="biblia";lsSet("cc-studytab2","biblia");bibleGo(b.dataset.b,+b.dataset.c,+b.dataset.s);state.bibleSel=Array.from({length:+b.dataset.e-+b.dataset.s+1},(_,i)=>+b.dataset.s+i);render();}
+  else return false;
+  return true;
+}
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="sel-q")SEL.q=e.target.value;});
 function studyTabs(){
   const t = state.studyTab, b = (v, l) => `<button data-a="study-tab" data-v="${v}" aria-pressed="${t === v}">${l}</button>`;
-  return `<div class="inst study-tabs" role="group" aria-label="O que estudar">${b("biblia", "📖 Bíblia")}${b("teclado", "🎹 Teclado")}${b("violao", "🎸 Violão")}</div>`;
+  return `<div class="inst study-tabs" role="group" aria-label="O que estudar">${b("selah", "✨ Selah")}${b("biblia", "📖 Bíblia")}${b("teclado", "🎹 Teclado")}${b("violao", "🎸 Violão")}</div>`;
 }
 function bibleNviUrl(){const codes='GEN EXO LEV NUM DEU JOS JDG RUT 1SA 2SA 1KI 2KI 1CH 2CH EZR NEH EST JOB PSA PRO ECC SNG ISA JER LAM EZK DAN HOS JOL AMO OBA JON MIC NAM HAB ZEP HAG ZEC MAL MAT MRK LUK JHN ACT ROM 1CO 2CO GAL EPH PHP COL 1TH 2TH 1TI 2TI TIT PHM HEB JAS 1PE 2PE 1JN 2JN 3JN JUD REV'.split(' '),index=BIBLE_BOOKS.findIndex(b=>b[0]===state.bible.b);if(index<0)return 'https://www.bible.com/pt/versions/129-nvi-nova-versao-internacional';const book=BIBLE_BOOKS[index],chapter=Math.max(1,Math.min(Number(state.bible.c)||1,book[3]));return 'https://www.bible.com/pt/bible/129/'+codes[index]+'.'+chapter+'.NVI';}
 function viewBible(){
@@ -2442,7 +2528,7 @@ async function bibleOpenStory(themeKey,direct=false){
 }
 function bibleClick(a, b){
   if (a.startsWith("bb-ask") && bibleAskClick(a,b)) return true;
-  if (a === "study-tab") { state.studyTab = b.dataset.v; lsSet("cc-studytab", state.studyTab); if (b.dataset.v !== "biblia") { state.instrument = b.dataset.v; lsSet("cc-inst", state.instrument); } render(); scrollTo(0, 0); }
+  if (a === "study-tab") { state.studyTab = b.dataset.v; lsSet("cc-studytab2", state.studyTab); if (b.dataset.v !== "biblia" && b.dataset.v !== "selah") { state.instrument = b.dataset.v; lsSet("cc-inst", state.instrument); } render(); scrollTo(0, 0); }
   else if (a === "bb-pick") { state.biblePick = "books"; render(); scrollTo(0, 0); }
   else if (a === "bb-close") { state.biblePick = null; render(); }
   else if (a === "bb-book") { state.biblePickBook = b.dataset.v; state.biblePick = "chapters"; render(); scrollTo(0, 0); }
@@ -7175,6 +7261,7 @@ function wheelExplain(K){
 }
 
 function viewStudy(){
+  if (state.studyTab === "selah") return viewSelah();
   if (state.studyTab === "biblia") return viewBible();
   if (state.instrument !== state.studyTab) state.studyTab = state.instrument === "violao" ? "violao" : "teclado";
   const st = state.study;
@@ -8025,6 +8112,7 @@ document.addEventListener("click", ev => {
   if (a === "pr-refresh") { prRead(true); return; }
   if (a.startsWith("pl-")) { plClick(a,b); return; }
   if (a.startsWith("ag-") && agClick(a, b)) return;
+  if (a.startsWith("sel-") && selahClick(a, b)) return;
   if (a.startsWith("yt-mini") && miniClick(a, b)) return;
   if ((a === "study-tab" || a.startsWith("bb-")) && bibleClick(a, b)) return;
   if (a === "open" || a === "complete") {
@@ -8207,6 +8295,7 @@ document.addEventListener("paste", ev => {
 });
 document.addEventListener("submit", ev => {
   if (ev.target.id === "bb-ask-form") { ev.preventDefault(); bibleAskSend(); return; }
+  if (ev.target.id === "sel-form") { ev.preventDefault(); const t = $("#sel-q"); selahSend(t ? t.value : SEL.q, false); return; }
   if (ev.target.id === "cm-form") { ev.preventDefault(); commSaveProfile(); return; }
   if (ev.target.id === "pl-form") { ev.preventDefault(); plSubmit(); return; }
   if (ev.target.id === "ag-form") { ev.preventDefault(); agSaveForm(); return; }
