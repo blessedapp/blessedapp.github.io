@@ -4143,7 +4143,8 @@ async function callSubscribe(){
   if ((CALL.ch || CALL.starting) && CALL.owner === uid) return;
   callUnsub(); CALL.owner = uid; CALL.starting = true;
   // se o supabase-chamadas-seguras.sql foi rodado, os canais viram privados (só quem faz parte da conversa entra)
-  try { const r = await TEAM.client.rpc("call_private_ready"); CALL.priv = !!(r && !r.error && r.data === true); } catch (e) { CALL.priv = false; }
+  // canais privados desligados por enquanto: com eles o convite da ligação não chegava. Voltam quando forem testados com calma.
+  CALL.priv = false;
   CALL.starting = false; if (CALL.owner !== uid) return;
   CALL.ch = TEAM.client.channel("calls:" + uid, {config: {private: CALL.priv, broadcast: {self: false}}})
     .on("broadcast", {event: "invite"}, ({payload}) => callOnInvite(payload))
