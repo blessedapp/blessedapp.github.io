@@ -952,6 +952,14 @@ body.dm-screen-shake{animation:none}}
 .ex-pop{position:fixed;z-index:200;width:90px;height:90px;margin:-45px 0 0 -45px;color:#ff5d8f;pointer-events:none;animation:exPop .8s ease-out forwards}.ex-pop svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
 @keyframes exPop{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(1.4) translateY(-30px)}}
 html{overscroll-behavior-y:contain}
+.cm-bubs{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}.cm-bubs::-webkit-scrollbar{display:none}
+.cm-bub{flex:none;width:78px;display:grid;justify-items:center;gap:7px;border:0;background:none;padding:0;color:var(--ink);scroll-snap-align:start;font:inherit}
+.cm-bub-r{position:relative;display:block;width:76px;height:76px;border-radius:50%;padding:3px;background:var(--line)}
+.cm-bub.nw .cm-bub-r{background:conic-gradient(from 200deg,var(--acc),#c561ff,#ff7ac6,var(--acc))}
+.cm-bub-r .cm-av{width:70px!important;height:70px!important;font-size:24px!important;border:3px solid var(--bg)!important;border-radius:50%!important;box-sizing:border-box;overflow:hidden}
+.cm-bub-r .cm-av>img{border-radius:50%}
+.cm-bub-n{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#a46bff,#6a2aae);color:#fff;font:800 10px var(--f-body);font-style:normal;padding:2px 9px;border-radius:99px;border:2px solid var(--bg);white-space:nowrap}
+.cm-bub b{display:flex;align-items:center;justify-content:center;gap:3px;max-width:78px;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ex-h2{display:flex;align-items:center;justify-content:space-between;gap:10px}.ex-more{border:0;background:none;color:#a46bff;font:700 13px var(--f-body);padding:4px 2px}
 .ex-bl{position:relative;flex:none;width:124px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#1c1230;scroll-snap-align:start;cursor:pointer;box-shadow:0 8px 20px rgba(40,10,70,.25)}.ex-bl video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ex-bl-p{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(10,4,24,.6);color:#fff;display:grid;place-items:center}.ex-bl-p svg{width:14px;height:14px}.ex-bl-o{position:absolute;left:0;right:0;bottom:0;padding:26px 9px 8px;display:flex;justify-content:space-between;align-items:center;gap:6px;color:#fff;font:700 12px var(--f-body);background:linear-gradient(0deg,rgba(10,4,24,.85),rgba(10,4,24,0))}.ex-bl-o b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rp-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.rp-c{padding:12px;border-radius:16px;background:rgba(176,92,240,.12);border:1px solid rgba(176,92,240,.28)}.rp-c b{display:block;font-size:24px;line-height:1.1}.rp-c small{display:block;margin-top:2px;font-size:12px;opacity:.75}.rp h4{margin:16px 0 6px}.rp-l{margin:0;padding-left:22px;display:grid;gap:6px}.rp-l li span{float:right;opacity:.75;font-size:13px}.rp-l small{opacity:.65}
@@ -4161,14 +4169,11 @@ function commStories(){
   const all = (COMM.people || []).slice().sort((a, b) => commRank(b) - commRank(a) || String(b.created_at || "").localeCompare(String(a.created_at || "")));
   const others = all.filter(p => p.id !== TEAM.user.id).slice(0, 30);
   const week = Date.now() - 7 * 86400000, isNew = p => p.created_at && new Date(p.created_at).getTime() > week;
-  const fresh = others.filter(p => p.avatar_path || p.cover_path).slice(0, 12);
-  const cards = fresh.map(p => {
-    const u = commUrl(p.cover_path) || commUrl(p.avatar_path);
-    return `<button class="cm-card" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}${u ? `;background-image:url(&quot;${esc(u)}&quot;)` : ""}">
-      ${isNew(p) ? '<em class="cm-badge">Novo</em>' : ""}<span class="cm-card-tx">${commAvatar(p, 34)}<b>${esc(p.display_name)}${commBadge(p)}</b><small>${p.church ? "⛪ " + esc(p.church) : "@" + esc(p.handle)}</small></span></button>`;
-  }).join("");
+  // os que entraram há pouco, em bolinhas: cabem muitos na mesma linha
+  const fresh = (COMM.people || []).filter(p => p.id !== TEAM.user.id).slice().sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))).slice(0, 24);
+  const bubs = fresh.map(p => `<button class="cm-bub${isNew(p) ? " nw" : ""}" data-a="cm-profile" data-id="${esc(p.id)}" style="--acc:${THEMES[p.theme] || THEMES.red}" aria-label="Perfil de ${esc(p.display_name || "")}"><span class="cm-bub-r">${commAvatar(p, 68, false)}${isNew(p) ? '<em class="cm-bub-n">Novo</em>' : ""}</span><b>${esc((p.display_name || "").split(" ")[0])}${commBadge(p)}</b></button>`).join("");
   return stStrip(others)
-    + (cards ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-cards">${cards}</div>` : "");
+    + (bubs ? `<h3 class="cm-sec">Chegaram agora</h3><div class="cm-bubs">${bubs}</div>` : "");
 }
 // Comunidade para quem ainda não entrou: perfis e posts DE EXEMPLO (sem fotos de pessoas reais),
 // só para mostrar como funciona. Os dados de verdade dos membros continuam só para quem tem login.
