@@ -7047,7 +7047,7 @@ document.addEventListener("click", ev => {
   if(a.startsWith("ntf-")&&ntfClick(a))return;
   if(a.startsWith("nb-")&&nbClick(a,b))return;
   if(a.startsWith("lm-")&&lmClick(a,b))return;
-  if (a.startsWith("cm-") && commClick(a, b)) return;
+  if ((a.startsWith("cm-") || /^(ex|vd|inv|ch)-/.test(a)) && commClick(a, b)) return;
   if (a.startsWith("bl-") && blClick(a, b)) return;
   if (a.startsWith("pf-") && pfClick(a, b)) return;
   if ((a.startsWith("dm-") || a.startsWith("dmm-") || a.startsWith("dwp-")) && dmClick(a, b)) return;
