@@ -937,6 +937,7 @@ body.dm-screen-shake{animation:none}}
 .top.nb-community-head h1.page-title{font-size:clamp(20px,5.8vw,28px);white-space:nowrap;min-width:0}.nb-community-head .dm-top-tools{margin-left:0}
 html:has(body.dm-chat-open),body.dm-chat-open{overflow:hidden;overscroll-behavior:none}body.dm-chat-open #app{padding:0;min-height:0}.dm-shell{--dm-safe-top:env(safe-area-inset-top,0px);--dm-safe-bottom:env(safe-area-inset-bottom,0px);position:fixed;top:var(--dm-y,0px);left:0;right:0;width:100%;max-width:720px;height:var(--dm-vh,100vh);height:var(--dm-vh,100dvh);margin:0 auto;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;background:var(--bg);z-index:10}.dm-shell>.dm-head{position:relative;inset:auto;width:100%;max-width:none;flex:none;margin:0;padding:calc(8px + var(--dm-safe-top)) 8px 8px}.dm-shell>.dm-list{position:relative;inset:auto;width:100%;max-width:none;margin:0;flex:1 1 auto;min-height:0;border-radius:0;padding:14px 12px;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scroll-padding-bottom:12px}.dm-shell>.dm-form{position:relative;inset:auto;width:100%;max-width:none;flex:none;margin:0;border-radius:0;padding:8px 10px max(6px,var(--dm-safe-bottom));gap:8px}.dm-shell #dm-in{font-size:16px;line-height:1.35;min-height:44px}.dm-chat-open.dm-keyboard-open .dm-form{padding-bottom:8px}body.dm-chat-open.dm-screen-shake{animation:none}.dm-chat-open.dm-screen-shake .dm-shell{animation:dm-screen-shake 2s linear}@media(prefers-reduced-motion:reduce){.dm-chat-open.dm-screen-shake .dm-shell{animation:none}}
 .bb-version-line{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 14px;font-size:12px;color:var(--muted)}.bb-version-line a{padding:7px 10px;border:1px solid #b977dc55;border-radius:12px;color:#dfbaf7;background:#7a3c9822;text-decoration:none}
+.dm-receipt{display:inline-flex;align-items:center;vertical-align:middle;margin-left:5px;color:#c7bfce;line-height:1}.dm-receipt svg{width:22px;height:15px}.dm-receipt.read{color:#dfa8ff;filter:drop-shadow(0 0 3px #cf8bff44)}
 </style>
 
 <link rel="stylesheet" href="tema-vidro.css?v=20261014-lilas">
@@ -1365,7 +1366,7 @@ function render(){
   else if (state.view === "song") app.innerHTML = viewSong();
   else if (state.view === "editor") { app.innerHTML = viewEditor(); updateDetect(); }
   renderSheet();
-  dmViewportSync();
+  dmViewportSync();dmReceiptsPaint();
   dmAttentionPaint();
   if (state.view === "blessings") blSetup(); else { document.body.classList.remove("bl-on"); if (blObs) { blObs.disconnect(); blObs = null; } }
 }
@@ -4030,7 +4031,7 @@ function dmmPatchChat(html){const list=$('#dm-list'),template=document.createEle
 
 function dmmCached(path){const item=DMM.urls.get(path);return item&&item.until>Date.now()?item.url:null;}
 function dmmFile(m,url){return m.media_kind==='photo'?`<button class="dmm-photo" data-a="dmm-view" data-id="${esc(m.id)}" aria-label="Abrir foto enviada"><img src="${esc(url)}" loading="lazy" alt="Foto enviada na conversa" data-dmm-id="${esc(m.id)}"></button>`:`<audio data-dmm-audio="${esc(m.id)}" data-dmm-id="${esc(m.id)}" src="${esc(url)}" controls preload="metadata" playsinline></audio><small class="dmm-play-status" role="status"></small>`;}
-function dmmMessage(m,mine){const url=dmmCached(m.media_path),label=m.media_kind==='photo'?'Foto':'Áudio';return `<div class="dm-msg${mine?' me':''}" data-dm-message="${esc(m.id)}"><div class="dm-b dmm-bubble${m.media_kind==='audio'?' dmm-audio-bubble':''}"><div class="dmm-file" data-dmm-file="${esc(m.id)}">${url?dmmFile(m,url):`<button class="btn ghost" data-a="dmm-fetch" data-id="${esc(m.id)}">Carregar ${label.toLowerCase()}</button>`}</div>${m.text&&m.text!=='📷 Foto'&&m.text!=='🎤 Áudio'?`<p>${esc(m.text).replace(/\n/g,'<br>')}</p>`:''}<div class="dmm-meta"><small>${m.media_kind==='audio'?(m.media_seconds||0)+'s · ':''}${dmTime(m.created_at)}</small><button data-a="dm-msg" data-id="${esc(m.id)}" class="btn ghost" aria-label="Opções da ${label.toLowerCase()}">⋯</button></div></div></div>`;}
+function dmmMessage(m,mine){const url=dmmCached(m.media_path),label=m.media_kind==='photo'?'Foto':'Áudio';return `<div class="dm-msg${mine?' me':''}" data-dm-message="${esc(m.id)}"><div class="dm-b dmm-bubble${m.media_kind==='audio'?' dmm-audio-bubble':''}"><div class="dmm-file" data-dmm-file="${esc(m.id)}">${url?dmmFile(m,url):`<button class="btn ghost" data-a="dmm-fetch" data-id="${esc(m.id)}">Carregar ${label.toLowerCase()}</button>`}</div>${m.text&&m.text!=='📷 Foto'&&m.text!=='🎤 Áudio'?`<p>${esc(m.text).replace(/\n/g,'<br>')}</p>`:''}<div class="dmm-meta"><small>${m.media_kind==='audio'?(m.media_seconds||0)+'s · ':''}${dmTime(m.created_at)}${dmReceipt(m)}</small><button data-a="dm-msg" data-id="${esc(m.id)}" class="btn ghost" aria-label="Opções da ${label.toLowerCase()}">⋯</button></div></div></div>`;}
 async function dmmHydrate(target){if(!TEAM.user||state.view!=='chat')return;const owner=TEAM.user.id,generation=DM.generation,conv=DM.open,client=TEAM.client;const rows=(DM.msgs[conv]||[]).filter(m=>m.media_path&&(target?m.id===target:true)).slice(-30);const need=rows.filter(m=>!dmmCached(m.media_path)&&!DMM.signing.has(m.media_path));if(!need.length)return;const paths=need.map(m=>m.media_path);paths.forEach(p=>DMM.signing.add(p));try{const {data,error}=await client.storage.from('chat-media').createSignedUrls(paths,900);if(owner!==TEAM.user?.id||generation!==DM.generation)return;if(!error)for(const r of data||[])if(r.signedUrl&&paths.includes(r.path))dmmCachePut(r.path,{url:r.signedUrl,until:Date.now()+840000});if(state.view==='chat'&&DM.open===conv)for(const m of rows){const url=dmmCached(m.media_path),el=document.querySelector('[data-dmm-file="'+CSS.escape(m.id)+'"]');if(url&&el&&!el.querySelector('audio,img'))el.innerHTML=dmmFile(m,url);}}catch(e){}finally{if(generation===DM.generation)paths.forEach(p=>DMM.signing.delete(p));}}
 function dmmRememberAudio(){return [...document.querySelectorAll('audio[data-dmm-audio]')].map(el=>({el,id:el.dataset.dmmAudio,time:el.currentTime,paused:el.paused,rate:el.playbackRate}));}
 function dmmRestoreAudio(list){for(const old of list){const el=document.querySelector('audio[data-dmm-audio="'+CSS.escape(old.id)+'"]');if(!el||el===old.el)continue;const resume=()=>{el.currentTime=old.time;el.playbackRate=old.rate;if(!old.paused)el.play().catch(()=>{});};if(el.readyState>=1)resume();else el.addEventListener('loadedmetadata',resume,{once:true});}}
@@ -4055,7 +4056,7 @@ function dwpShow(p){if(!dwpCurrent(p))return;const box=$('#modal');box.className
 function dwpPick(){const p=DWP.edit;if(!dwpCurrent(p)||p.busy)return;const input=document.createElement('input');input.type='file';input.accept='image/*';input.onchange=async()=>{const file=input.files?.[0];if(!file)return;p.busy=true;p.error='';dwpShow(p);try{const blob=await dmmPreparePhoto(file,1600);if(!dwpCurrent(p))return;if(p.url)URL.revokeObjectURL(p.url);p.blob=blob;p.url=URL.createObjectURL(blob);}catch(e){if(dwpCurrent(p))p.error='Não consegui abrir essa foto. Escolha uma imagem JPG ou PNG de até 25 MB.';}finally{if(dwpCurrent(p)){p.busy=false;dwpShow(p);}}};input.click();}
 async function dwpSave(clear=false){const p=DWP.edit;if(!dwpCurrent(p)||p.busy||(!clear&&!p.blob))return;p.busy=true;p.error='';dwpShow(p);try{await dwpStore(clear?'delete':'put',p.key,p.blob);if(!dwpCurrent(p))return;if(DWP.url)URL.revokeObjectURL(DWP.url);DWP.url=clear?null:URL.createObjectURL(p.blob);DWP.key=p.key;DWP.request++;p.busy=false;closePix();dwpPaint();flash(clear?'Fundo padrão restaurado.':'Papel de parede salvo neste aparelho ✓');}catch(e){if(dwpCurrent(p)){p.busy=false;p.error='Não consegui salvar neste aparelho. Verifique o espaço disponível e tente novamente.';dwpShow(p);}}}
 
-const DM = {generation:0, attentionReady:false, attention:null, attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(), attentionBusy:false, attentionSent:{}, shakeAt:0, convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
+const DM = {generation:0,receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false, attentionReady:false, attention:null, attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(), attentionBusy:false, attentionSent:{}, shakeAt:0, convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false, busy: false};
 // Limpeza pessoal neste aparelho, separada por conta e sem apagar mensagens do destinatário.
 function dmClearKey(id){return 'blessed-dm-clear:'+TEAM.user?.id+':'+id;}
 function dmClearAt(id){try{return localStorage.getItem(dmClearKey(id))||'';}catch(e){return '';}}
@@ -4074,7 +4075,7 @@ function dmOther(c){ return c.a === TEAM.user.id ? c.b : c.a; }
 function dmUnread(c){ return dmConvVisible(c) && !!c.last_author && c.last_author !== TEAM.user.id && (!DM.reads[c.id] || DM.reads[c.id] < c.last_at); }
 function dmUnreadCount(){ return (DM.convs || []).filter(dmUnread).length; }
 function dmEnsure(){ if (COMM.me && DM.convs === null && !DM.loading) { DM.loading = true; dmLoad().finally(() => { DM.loading = false; }); } }
-function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
+function dmReset(){ dmVibrationStop();dwpReset();dmmClose();DMM.ready=false;dmmCacheClear();DMM.signing.clear();DM.generation++; clearTimeout(DM.shakeTimer); document.body.classList.remove("dm-screen-shake"); $("#dm-attention-live")?.remove(); Object.assign(DM,{receiptsReady:false,receipts:{},receiptPending:new Set(),receiptsAt:0,receiptsLoading:false,attentionReady:false,attention:null,attentionSeen:new Set(),attentionAnimated:new Set(),attentionPush:new Set(),attentionBusy:false,attentionSent:{},shakeAt:0,busy:false}); if (DM.ch && TEAM.client) TEAM.client.removeChannel(DM.ch); Object.assign(DM, {convs: null, loading: false, msgs: {}, open: null, reads: {}, blocks: new Set(), ch: null, missing: false}); }
 async function dmLoad(incoming=null){
   const generation=DM.generation, client=TEAM.client, owner=TEAM.user?.id;
   if(!owner)return;
@@ -4092,7 +4093,7 @@ async function dmLoad(incoming=null){
   if (need.length) { const {data} = await client.from("community_profiles").select(PF_PROF).in("id", need); if(!current())return; commKeep(data); }
   if(!current())return;
   try{const media=await client.rpc("dm_media_ready");if(!current())return;DMM.ready=media.data===true&&!media.error;}catch(e){}
-  dmSubscribe(); dmRerender();
+  dmSubscribe(); void dmReceiptsRefresh(true); dmRerender();
   if(state.deepConversation){const target=state.deepConversation;state.deepConversation=null;if(DM.convs.some(c=>c.id===target))dmOpen(target);}
   try{
     const ready=await client.rpc('dm_attention_ready');if(!current())return;
@@ -4111,7 +4112,8 @@ function dmSubscribe(){
   DM.ch = TEAM.client.channel("dm-" + TEAM.user.id)
     .on("postgres_changes", {event: "INSERT", schema: "public", table: "messages"}, p => {if(TEAM.user?.id===owner&&DM.generation===generation)dmIncoming(p.new,true);})
     .on("postgres_changes", {event: "DELETE", schema: "public", table: "messages"}, p => { if(TEAM.user?.id!==owner||DM.generation!==generation)return; const id = p.old && p.old.id; if (!id) return; Object.keys(DM.msgs).forEach(k => DM.msgs[k] = DM.msgs[k].filter(m => m.id !== id)); dmRerender(); })
-    .subscribe();
+    .on("postgres_changes",{event:"*",schema:"public",table:"chat_reads"},p=>{if(TEAM.user?.id===owner&&DM.generation===generation&&p.new?.user_id){dmReceiptMerge(p.new);dmReceiptsPaint();}})
+    .subscribe(status=>{if(status==='SUBSCRIBED'&&TEAM.user?.id===owner&&DM.generation===generation)void dmReceiptsRefresh();});
 }
 function dmIncoming(m,fresh=false){
   if (!m || !DM.convs) return;
@@ -4119,7 +4121,7 @@ function dmIncoming(m,fresh=false){
   if (list && !list.some(x => x.id === m.id)) list.push(m);
   const c = DM.convs.find(x => x.id === m.conversation_id);
   if (!c) { const generation=DM.generation; dmLoad(m).then(()=>{if(DM.generation===generation&&DM.convs?.some(c=>c.id===m.conversation_id))dmIncoming(m,fresh);}); return; }
-  dmAttentionReceive(m,true,fresh);ntfMessage(m);
+  dmAttentionReceive(m,true,fresh);ntfMessage(m);if(m.author!==TEAM.user.id)void dmReceiptAck(m,state.view==="chat"&&DM.open===m.conversation_id);
   Object.assign(c, {last_at: m.created_at, last_author: m.author, last_text: String(m.text).slice(0, 120)});
   DM.convs.sort((x, y) => x.last_at < y.last_at ? 1 : -1);
   if (state.view === "chat" && DM.open === m.conversation_id && m.author !== TEAM.user.id) dmMarkRead(m.conversation_id);
@@ -4156,16 +4158,19 @@ function dmOpen(id){
   DM.open = id; state.view = "chat";
   if(DM.attention?.conversation_id===id){DM.attention=null;dmAttentionPaint();}
   if (!DM.msgs[id]) dmLoadMsgs(id);
-  dmMarkRead(id); render(); dmScroll(); dmSafeNotice(false);
+  render(); dmMarkRead(id); dmScroll(); dmSafeNotice(false);
 }
 async function dmLoadMsgs(id){
   const owner=TEAM.user?.id,generation=DM.generation;
   const {data} = await TEAM.client.from("messages").select(DMM.ready?DMM_FIELDS:"id,conversation_id,author,text,created_at").eq("conversation_id", id).order("created_at", {ascending: false}).limit(300);
   if(TEAM.user?.id!==owner||DM.generation!==generation)return;
   DM.msgs[id] = (data || []).reverse();
-  if (state.view === "chat" && DM.open === id) dmRerender();
+  if (state.view === "chat" && DM.open === id) {dmRerender();dmMarkRead(id);}
 }
 function dmMarkRead(id){
+  if(!TEAM.user||document.hidden||state.view!=="chat"||DM.open!==id)return;
+  const latest=(DM.msgs[id]||[]).filter(m=>m.author!==TEAM.user.id).at(-1);if(!latest||DM.receiptsLoading)return;
+  if(DM.receiptsReady){void dmReceiptAck(latest,true);return;}
   const now = new Date().toISOString(); DM.reads[id] = now;
   TEAM.client.from("chat_reads").upsert({conversation_id: id, user_id: TEAM.user.id, read_at: now}).then(() => {});
 }
@@ -4180,6 +4185,15 @@ async function dmSend(){
   dmIncoming(data);ntfSound('sent');
   const n = $("#dm-in"); if (n) { n.value = ""; n.focus(); }
 }
+// Comprovantes privados: só a sessão do destinatário confirma entrega/leitura.
+function dmReceiptMerge(row){if(!TEAM.user||!DM.convs?.some(c=>c.id===row.conversation_id&&[c.a,c.b].includes(row.user_id)))return;const key=row.conversation_id+':'+row.user_id,old=DM.receipts[key]||{};const later=(a,b)=>(Date.parse(a)||0)>(Date.parse(b)||0)?a:b;DM.receipts[key]={...row,read_at:later(old.read_at,row.read_at),delivered_at:later(old.delivered_at,row.delivered_at)};if(row.user_id===TEAM.user.id)DM.reads[row.conversation_id]=DM.receipts[key].read_at;}
+function dmReceiptState(m){const c=DM.convs?.find(c=>c.id===m.conversation_id),peer=c&&dmOther(c),r=DM.receipts[m.conversation_id+':'+peer],at=Date.parse(m.created_at);if(DM.receiptsReady&&at&&Date.parse(r?.read_at)>=at)return 'read';if(DM.receiptsReady&&at&&Date.parse(r?.delivered_at)>=at)return 'delivered';return 'sent';}
+function dmReceipt(m){if(m.author!==TEAM.user?.id)return '';const status=dmReceiptState(m),label={sent:'Enviado',delivered:'Entregue',read:'Visto'}[status];return `<span class="dm-receipt ${status}" data-dm-receipt="${esc(m.id)}" role="img" aria-label="${label}" title="${label}"><svg viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 8 4 4L16 2"/>${status!=='sent'?'<path d="m12 11 2 2 8-9"/>':''}</svg></span>`;}
+function dmReceiptsPaint(){for(const el of document.querySelectorAll('[data-dm-receipt]')){const m=DM.msgs[DM.open]?.find(m=>m.id===el.dataset.dmReceipt);if(m&&m.author===TEAM.user?.id){const html=dmReceipt(m);if(el.outerHTML!==html)el.outerHTML=html;}}}
+async function dmReceiptsRefresh(force=false){const owner=TEAM.user?.id,generation=DM.generation;if(!owner||!DM.convs||document.hidden||DM.receiptsLoading||(!force&&Date.now()-DM.receiptsAt<15000))return;DM.receiptsLoading=true;DM.receiptsAt=Date.now();try{const {data,error}=await TEAM.client.rpc('dm_receipts_sync');if(owner!==TEAM.user?.id||generation!==DM.generation)return;if(error)return;DM.receiptsReady=true;for(const row of data||[])dmReceiptMerge(row);dmReceiptsPaint();}catch(_){}finally{if(owner===TEAM.user?.id&&generation===DM.generation){DM.receiptsLoading=false;if(state.view==='chat'&&DM.open)dmMarkRead(DM.open);}}}
+async function dmReceiptAck(m,read=false){const owner=TEAM.user?.id,generation=DM.generation,c=DM.convs?.find(c=>c.id===m.conversation_id);if(!owner||!DM.receiptsReady||document.hidden||!c||m.author===owner||![c.a,c.b].includes(m.author)||DM.blocks.has(m.author))return;if(read&&(state.view!=='chat'||DM.open!==m.conversation_id))return;const own=DM.receipts[m.conversation_id+':'+owner],field=read?'read_at':'delivered_at';if(Date.parse(own?.[field])>=Date.parse(m.created_at))return;const key=m.id+':'+read;if(DM.receiptPending.has(key))return;DM.receiptPending.add(key);try{const {data,error}=await TEAM.client.rpc('dm_receipt_ack',{p_message:m.id,p_read:read});if(error||owner!==TEAM.user?.id||generation!==DM.generation)return;for(const row of data||[])dmReceiptMerge(row);dmReceiptsPaint();}catch(_){}finally{if(owner===TEAM.user?.id&&generation===DM.generation)DM.receiptPending.delete(key);}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){void dmReceiptsRefresh();if(state.view==='chat'&&DM.open)dmMarkRead(DM.open);}});
+
 function dmTime(iso){ const d = new Date(iso); return d.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"}); }
 function dmDay(iso){ const d = new Date(iso), t = new Date(); const y = new Date(t); y.setDate(t.getDate() - 1);
   return d.toDateString() === t.toDateString() ? "Hoje" : d.toDateString() === y.toDateString() ? "Ontem" : d.toLocaleDateString("pt-BR", {day: "2-digit", month: "short", year: d.getFullYear() === t.getFullYear() ? undefined : "numeric"}); }
@@ -4274,7 +4288,7 @@ function viewChat(){
   let last = "", html = "";
   (list || []).filter(dmVisible).forEach(m => { const day = dmDay(m.created_at); if (day !== last) { html += `<p class="dm-day">${day}</p>`; last = day; }
     const mine = m.author === TEAM.user.id;
-    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}</small></button></div>`; });
+    html += m.media_path&&["photo","audio"].includes(m.media_kind)?dmmMessage(m,mine):m.text===DM_ATTENTION_TEXT?`<div class="dm-nudge-message" data-dm-message="${esc(m.id)}">${DM_ATTENTION_ICON}<span>${mine?"Você chamou a atenção":"Chamou sua atenção"}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></span></div>`:`<div class="dm-msg${mine ? " me" : ""}" data-dm-message="${esc(m.id)}"><button class="dm-b" data-a="dm-msg" data-id="${esc(m.id)}">${esc(m.text).replace(/\n/g, "<br>")}<small>${dmTime(m.created_at)}${dmReceipt(m)}</small></button></div>`; });
   setTimeout(()=>{dmmHydrate();dwpLoad();});
   return `<section class="dm-shell" aria-label="Conversa"><div class="dm-head"><button class="btn ghost" data-a="dm-back" aria-label="Voltar">‹</button>
       <button class="dm-who" data-a="cm-profile" data-id="${esc(o)}">${commAvatar(p, 40)}<span><b>${esc(p.display_name || "Alguém")}${commBadge(p)}</b><small class="muted">@${esc(p.handle || "")}</small></span></button>
