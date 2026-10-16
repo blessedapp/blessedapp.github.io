@@ -49,7 +49,7 @@ try{document.documentElement.dataset.appearance=localStorage.getItem('blessed-ap
 :root{
   --cream:#F4E9D4;
   --bg:#0A0A0C; --surface:#16161A; --surface2:#222228; --ink:#F3F3F5; --muted:#A4A4AE; --line:#2D2D34;
-  --felt:#B70CFF; --felt-soft:#340947; --degree:#46D3C3; --degree-soft:#0F302C;
+  --felt:#7C5CFF; --felt-soft:#261a55; --gold:#F5B451; --degree:#46D3C3; --degree-soft:#0F302C;
   --warn:#F5B451; --warn-soft:#3A2B12; --borrow:#B99AF7; --borrow-soft:#2A2040;
   --key-w:#ECECF0; --key-b:#09090B; --key-edge:#3E3E46;
   --f-brand:"Bebas Neue", "Impact", "Arial Narrow", sans-serif;
@@ -1293,6 +1293,27 @@ html[data-appearance=light] .nf-head.home-dashboard-head{--cream:#372440;--ink:#
 .pf-tabs .pf-tab-label{display:block;max-width:100%;font-size:clamp(8px,2.2vw,12px);font-weight:600;letter-spacing:-.1px;white-space:nowrap}
 .community-invite{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 18px;padding:12px 14px;border:1px solid var(--line);border-radius:20px;background:var(--surface)}.community-invite>span{font-size:13px;color:var(--muted)}.community-invite .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px}.community-invite svg{width:18px;height:18px;flex:none}
 .news-page-heading{padding:0 16px 15px}.news-page-heading h2{font:650 24px var(--f-display);letter-spacing:-.5px;margin:0;color:var(--cream)}
+
+/* ===== Identidade: índigo + dourado, superfícies neutras (tema branco limpo) ===== */
+:root[data-appearance=light]{--bg:#f6f6f9;--surface:#fff;--surface2:#efeff4;--ink:#17171c;--cream:#17171c;--muted:#63636f;--line:rgba(20,20,40,.12);--felt:#5B3FD0;--felt-soft:#ece8fb;--borrow:#5B3FD0;--borrow-soft:#ece8fb;--gold:#B7791F;
+ --glass-surface:#fff;--glass-control:#f3f3f8;--glass-red:linear-gradient(135deg,#6a4ee0,#4f33bd);--glass-selected:rgba(91,63,208,.1);--glass-edge:rgba(20,20,40,.1);--glass-highlight:0 0 0 rgba(0,0,0,0);--light-shadow:0 2px 12px rgba(20,20,40,.07)}
+html[data-appearance=light] body{background-image:none;background-color:var(--bg)}
+html[data-appearance=light] :is(.search,.nf-search .search,.cm-search,.form input,.form select,.form textarea,.bb-search input,.bb-ask textarea,.cm-cmt-form textarea,.role-sel){background:#fff;color:var(--ink);border-color:var(--line)}
+html[data-appearance=light] :is(input,textarea)::placeholder{color:#8a8a96}
+html[data-appearance=light] :is(.glass-top,.tabbar){background:rgba(255,255,255,.94);border-color:rgba(20,20,40,.1);box-shadow:0 6px 24px rgba(20,20,40,.1);color:#33333f;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-appearance=light] .tabbar button{color:#6a6a78}html[data-appearance=light] .tabbar button[aria-current=page]{color:#5B3FD0;background:rgba(91,63,208,.1);box-shadow:none}
+html[data-appearance=light] :is(.glass-top .dm-icon,.glass-top .nb-icon){color:#33333f;background:#f1f1f6;border-color:rgba(20,20,40,.1)}
+html[data-appearance=light] :is(.bb-actions,.install,.bsheet,.setnav,.follow){background:#fff;color:var(--ink);border-color:var(--line);box-shadow:0 -4px 24px rgba(20,20,40,.1)}
+html[data-appearance=light] .modal{background:rgba(15,15,30,.5)}html[data-appearance=light] .modal-box{background:#fff;color:var(--ink);border-color:var(--line);box-shadow:0 20px 60px rgba(15,15,30,.25)}
+html[data-appearance=light] .toast{background:#25252e;color:#fff}
+html[data-appearance=light] :is(.cm-act.like[aria-pressed=true],.cm-act.save[aria-pressed=true],.yt-btn.ghost){color:#5B3FD0}
+html[data-appearance=light] :is(.cm-cmt-b,.cm-identity-summary .cm-counts,.dm-row,.nb-row.unread){background:rgba(91,63,208,.05);border-color:var(--line)}
+html[data-appearance=light] .cm-cover{background-color:#e7e7ee}html[data-appearance=light] .cm-post-img{background:#ececf2}
+html[data-appearance=light] .btn.danger{background:#d9344410;border-color:#d9344455;color:#b3262f}
+html[data-appearance=light] .btn.primary{background:#5B3FD0;border-color:#5B3FD0;color:#fff}
+.vp{background:radial-gradient(120% 80% at 50% 0,#3d2c9c 0,#1d1456 55%,#0e0a2c 100%)}
+.mon-row em{background:#F5B451;color:#3b2605}
+.lvb.lit small{color:#F5B451}
 </style>
 
 <div id="app"><div class="boot" role="status" aria-label="Abrindo o Blessed"><img src="img/icon-192.png?v=lilas" width="84" height="84" alt="" style="border-radius:22px"><b>Blessed</b></div></div>
