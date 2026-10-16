@@ -4440,6 +4440,29 @@ async function shareBlessedLink(text,url,invite=false){
   try{await navigator.clipboard.writeText(invite?text+"\n"+url:url);flash(invite?"Convite copiado ✓ É só colar e enviar.":"Link copiado ✓ Cole e compartilhe.");}
   catch(e){const m=$("#modal");m.className="modal";m.innerHTML=`<div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="share-link-title"><h2 id="share-link-title">${invite?"Convidar alguém":"Compartilhar publicação"}</h2><p>Selecione e copie:</p><textarea readonly aria-label="Texto para compartilhar" rows="5">${esc(invite?text+"\n"+url:url)}</textarea><button class="btn" data-a="pix-close">Fechar</button></div>`;m.hidden=false;}
 }
+const MON_LV=[{n:"Semente",i:"🌱",f:100,l:500},{n:"Broto",i:"🌿",f:1000,l:5000},{n:"Árvore",i:"🌳",f:5000,l:25000},{n:"Parceiro",i:"🍇",f:10000,l:50000}];
+async function moneyOpen(){
+  const id=TEAM.user.id,m=$("#modal");m.className="modal";
+  m.innerHTML='<div class="modal-box" role="dialog" aria-modal="true"><h2>💰 Monetizar</h2><p class="muted">Carregando seus números…</p></div>';m.hidden=false;
+  let fo=0,lk=0;
+  try{
+    const a=await TEAM.client.from("follows").select("*",{count:"exact",head:true}).eq("followee",id);fo=a.count||0;
+    const ps=await TEAM.client.from("posts").select("id").eq("author",id).limit(1000);
+    const ids=(ps.data||[]).map(x=>x.id);
+    if(ids.length){const b=await TEAM.client.from("post_likes").select("*",{count:"exact",head:true}).in("post_id",ids);lk=b.count||0;}
+  }catch(e){}
+  const n=x=>Number(x).toLocaleString("pt-BR"),bar=(v,t)=>'<div style="height:8px;border-radius:99px;background:var(--line);overflow:hidden"><i style="display:block;height:100%;width:'+Math.min(100,Math.round(v/t*100))+'%;background:var(--acc,#7c5cff)"></i></div>';
+  let k=-1;MON_LV.forEach((x,i)=>{if(fo>=x.f&&lk>=x.l)k=i;});
+  const nx=MON_LV[k+1],cur=MON_LV[k];
+  const ok=k===MON_LV.length-1;
+  m.innerHTML='<div class="modal-box" role="dialog" aria-modal="true"><h2>💰 Monetizar</h2>'
+   +'<p>Seu nível: <b>'+(cur?cur.i+' '+cur.n:'Ainda sem nível')+'</b></p>'
+   +(ok?'<p>🎉 Você está <b>elegível ao programa de parcerias</b> do Blessed.</p>':'<p class="muted">Próximo nível: <b>'+nx.i+' '+nx.n+'</b></p>'
+    +'<p style="margin:10px 0 4px">Seguidores: '+n(fo)+' / '+n(nx.f)+'</p>'+bar(fo,nx.f)
+    +'<p style="margin:10px 0 4px">Curtidas: '+n(lk)+' / '+n(nx.l)+'</p>'+bar(lk,nx.l))
+   +'<h3 style="margin:16px 0 6px;font-size:15px">Como funciona</h3><ul class="muted" style="margin:0;padding-left:18px;line-height:1.6"><li>Os níveis sobem com seguidores e curtidas de verdade.</li><li>🍇 Parceiro: 10 mil seguidores e 50 mil curtidas.</li><li>Quem chega lá fica elegível ao programa de parcerias com anunciantes.</li><li>Elegível não é garantia de ganho: não prometemos valores.</li><li>Perfis falsos, compra de seguidores ou conteúdo ofensivo tiram do programa.</li></ul>'
+   +'<button class="btn" style="margin-top:14px" data-a="pix-close">Fechar</button></div>';
+}
 let INV_TEXT="";
 function inviteSomeone(){
   const h=COMM&&COMM.me&&COMM.me.handle?" Me procura lá: @"+COMM.me.handle:"",url=location.origin+location.pathname;
@@ -6044,7 +6067,7 @@ function viewProfile(){
       <div class="cm-actions">${me ? `<button class="btn" data-a="cm-edit">Editar perfil</button><button class="btn" data-a="aj-open" aria-label="Ajustes">⚙️ Ajustes</button><button class="btn primary" data-a="cm-new">＋ Postar</button>` : ""}</div></div>
     <div class="cm-identity-summary"><div class="cm-identity-name"><h2 class="cm-name">${esc(p.display_name || "")}${commBadge(p, true)}</h2><p class="muted" style="margin:0">@${esc(p.handle || "")}</p></div>
       <div class="cm-counts" aria-label="Atividade do perfil"><button data-a="cm-profile-photos"><b>${c.photos??(posts?posts.filter(id=>COMM.posts[id]?.image_path).length:'–')}</b><span>Fotos</span></button><button data-a="cm-connections" data-v="followers" data-id="${esc(id)}"><b>${c.followers??'–'}</b><span>Seguidores</span></button><button data-a="cm-connections" data-v="following" data-id="${esc(id)}"><b>${c.following??'–'}</b><span>Seguindo</span></button></div></div>
-    ${!me?`<div class="cm-profile-actions" role="group" aria-label="Interagir com o perfil">${commFollowBtn(id)}${dmBtn(id)}${dmProfileNudgeBtn(id)}</div><button type="button" class="pf-invite" data-a="cm-invite">${CM_ICONS.share}<span>Convidar alguém</span></button>`:""}
+    ${!me?`<div class="cm-profile-actions" role="group" aria-label="Interagir com o perfil">${commFollowBtn(id)}${dmBtn(id)}${dmProfileNudgeBtn(id)}</div><button type="button" class="pf-invite" data-a="cm-invite">${CM_ICONS.share}<span>Convidar alguém</span></button>`:`<button type="button" class="pf-invite" data-a="cm-money">💰<span>Monetizar</span></button>`}
     ${lmCard(p.listening_now)}
     ${p.official ? '<p class="cm-official">Perfil oficial · Criador do Blessed</p>' : ""}
     ${isChurch(p) ? '<p class="cm-kindbar">⛪ Perfil de igreja</p>' : ""}
@@ -6387,6 +6410,7 @@ function commClick(a, b){
   })();
   else if (a === "cm-save") commToggleSave(b.dataset.id);
   else if (a === "cm-invite") inviteSomeone();
+  else if (a === "cm-money") moneyOpen();
   else if (a === "inv-copy") inviteCopy();
   else if (a === "vd-share") vdShare();
   else if (a === "ex-tile") exTap(b.dataset.id, b);
