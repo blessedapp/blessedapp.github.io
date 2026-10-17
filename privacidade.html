@@ -3,72 +3,91 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
 <title>Política de Privacidade · Blessed</title>
 <meta name="description" content="Como o Blessed cuida dos seus dados.">
 <style>
-:root{color-scheme:dark light}
-body{margin:0;background:#0e0a22;color:#ece9ff;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:720px;margin:0 auto;padding:28px 18px 60px}
-h1{font-size:28px;line-height:1.2;margin:0 0 6px}
-h2{font-size:19px;margin:28px 0 6px;color:#fff}
-p,li{color:#d6d1f5}
-a{color:#a99bff}
-small{color:#9a94c4}
-ul{padding-left:20px}
-.top{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-.top b{font-size:20px;letter-spacing:.04em}
-@media (prefers-color-scheme:light){body{background:#f6f4ff;color:#1c1640}h2{color:#120d33}p,li{color:#2d2760}a{color:#4b2fd1}small{color:#6a64a0}}
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html{background:#000}
+body{margin:0;min-height:100vh;color:#f3f0f8;background:#000 linear-gradient(180deg,#52205c 0,#2b1236 220px,#0a0410 520px,#000 760px) no-repeat;font:16px/1.65 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:26px 18px 70px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.top b{font-size:19px;letter-spacing:.24em;font-weight:800}
+.top a{color:#0b0910;background:#fff;text-decoration:none;font-weight:800;font-size:14px;padding:9px 16px;border-radius:99px}
+h1{font-size:32px;line-height:1.12;margin:0 0 6px;letter-spacing:-.03em;font-weight:800}
+h2{font-size:20px;margin:30px 0 8px;color:#fff;letter-spacing:-.02em;font-weight:800}
+p,li{color:#d9d3e6}
+ul{padding-left:20px}li{margin:4px 0}
+a{color:#c9b8ff}
+small{color:#9a92ad}
+.card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:16px 18px;margin:14px 0}
+.ok{border-color:rgba(94,234,160,.4)}.no{border-color:rgba(255,107,122,.45)}
+.card h3{margin:0 0 6px;font-size:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.grid div{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:14px}
+.grid b{display:block;margin-bottom:2px;color:#fff}
+@media (max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:28px}}
+.btn{display:inline-block;background:#fff;color:#0b0910!important;padding:12px 22px;border-radius:99px;font-weight:800;text-decoration:none}
 </style>
 </head>
 <body>
 <main>
-<div class="top"><b>BLESSED</b></div>
+<div class="top"><b>BLESSED</b><a href="/">Abrir o app</a></div>
 <h1>Política de Privacidade</h1>
 <small>Atualizada em outubro de 2026</small>
+<p>O Blessed é uma comunidade para amigos e criadores compartilharem posts, Momentos, vídeos curtos (Blessings), conversas, jogos e muito mais. Esta página explica, em linguagem simples, quais dados o app usa e por quê, de acordo com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).</p>
 
-<p>O Blessed é uma comunidade para compartilhar fé, música e momentos do dia a dia. Esta página explica, em linguagem simples, quais dados o app usa e por quê. Ela segue a Lei Geral de Proteção de Dados (LGPD).</p>
+<h2>1. Quem cuida dos seus dados</h2>
+<p>A <b>Equipe Blessed</b>. Para qualquer pedido sobre os seus dados, escreva para <a href="mailto:blessed@blessedcomunidade.com.br">blessed@blessedcomunidade.com.br</a>.</p>
 
-<h2>1. Quais dados usamos</h2>
+<h2>2. Quais dados usamos</h2>
 <ul>
-<li><b>Dados da conta:</b> nome, e-mail e senha (a senha fica protegida e nunca é vista por nós). Se você entrar com o Google, recebemos o seu nome e e-mail dessa conta.</li>
-<li><b>Dados do perfil:</b> nome de usuário, foto, capa, igreja, cidade, descrição e links que você escolher mostrar.</li>
-<li><b>O que você publica:</b> fotos, vídeos, textos, momentos, comentários, curtidas, marcações e mensagens.</li>
+<li><b>Conta:</b> nome, e-mail e senha (a senha fica protegida e nunca é vista por nós). Quando o login com o Google estiver disponível e você escolher usá-lo, recebemos o nome e o e-mail dessa conta.</li>
+<li><b>Perfil:</b> nome de usuário, foto, capa, cidade, descrição, igreja ou negócio (se você quiser informar) e links que você escolher mostrar.</li>
+<li><b>O que você publica:</b> fotos, vídeos, textos, Momentos, Blessings, comentários, curtidas, marcações, compartilhamentos e mensagens.</li>
+<li><b>Conversas e chamadas:</b> as mensagens privadas e as chamadas dentro do app ficam visíveis só para quem participa.</li>
+<li><b>Atividade:</b> quem você segue e quem segue você, pontos do ranking, resultados do Quiz e contagem de visualizações dos vídeos.</li>
+<li><b>Bless (IA):</b> as perguntas que você envia à Bless são processadas por um serviço de inteligência artificial para gerar a resposta. Não envie senhas, documentos ou dados sensíveis.</li>
 <li><b>Lugar:</b> só se você escolher marcar um lugar ou usar a sua posição. Nunca pegamos a sua posição sem você pedir.</li>
-<li><b>Dados no seu aparelho:</b> preferências, repertório, agenda e rascunhos ficam guardados no próprio celular.</li>
+<li><b>No seu aparelho:</b> preferências (como o tema claro ou escuro), rascunhos e agenda ficam guardados no próprio celular.</li>
 <li><b>Avisos no celular:</b> se você permitir, usamos um código do aparelho para enviar notificações.</li>
 </ul>
 
-<h2>2. Para que usamos</h2>
+<h2>3. Para que usamos</h2>
 <ul>
 <li>Criar e manter a sua conta e o seu perfil.</li>
 <li>Mostrar o que você publica para quem você escolher, de acordo com as regras de cada publicação.</li>
-<li>Enviar avisos de curtidas, comentários, marcações e mensagens.</li>
-<li>Proteger a comunidade: evitar spam, golpes e conteúdo ofensivo, e atender denúncias.</li>
+<li>Enviar avisos de curtidas, comentários, mensagens, desafios e convites.</li>
+<li>Calcular o ranking, o Quiz e a elegibilidade ao programa de parcerias.</li>
+<li>Proteger a comunidade: evitar spam, golpes, nudez, conteúdo abusivo e político, e atender denúncias.</li>
 <li>Melhorar o app, por exemplo corrigindo erros.</li>
 </ul>
 
-<h2>3. Quem pode ver</h2>
-<p>Publicações da comunidade podem ser vistas por outras pessoas e, em algumas áreas, por visitantes sem conta. Mensagens privadas só podem ser vistas por quem participa da conversa. Você escolhe se quer esconder o número de curtidas, desligar comentários e outras opções ao publicar.</p>
+<h2>4. Quem pode ver</h2>
+<p>Perfis, posts e Blessings da comunidade podem ser vistos por outras pessoas e, em algumas áreas, por visitantes sem conta. O que for postado em Momentos some depois de 24 horas. Mensagens privadas só podem ser vistas por quem participa da conversa. Ao publicar, você escolhe se quer esconder o número de curtidas, desligar comentários e outras opções.</p>
 
-<h2>4. Com quem compartilhamos</h2>
-<p>Não vendemos os seus dados. Usamos serviços de terceiros para o app funcionar: hospedagem do site (GitHub Pages), banco de dados, login e arquivos (Supabase), armazenamento de vídeos curtos (Cloudflare) e, se você escolher, o login com o Google. Esses serviços só tratam os dados para prestar o serviço ao Blessed.</p>
+<h2>5. O que não é permitido postar</h2>
+<p>Todo tipo de conteúdo é bem-vindo, desde que <b>não seja abusivo</b>. Não são permitidos nudez, violência, ódio, assédio e conteúdo político. Veja as regras completas nos <a href="termos.html">Termos de Uso</a>. Conteúdos que descumprirem podem ser removidos e as contas, bloqueadas.</p>
 
-<h2>5. Por quanto tempo guardamos</h2>
-<p>Guardamos os dados enquanto a sua conta existir. Momentos somem sozinhos depois de 24 horas. Se você apagar uma publicação ou a conta, o conteúdo deixa de aparecer e é removido dos nossos sistemas em prazo razoável, exceto o que a lei exigir guardar.</p>
+<h2>6. Com quem compartilhamos</h2>
+<p>Não vendemos os seus dados. Usamos serviços de terceiros para o app funcionar: hospedagem do site (GitHub Pages), banco de dados, login e arquivos (Supabase), armazenamento dos vídeos curtos (Cloudflare), e-mails de contato (Zoho Mail), o serviço de inteligência artificial da Bless e, se você escolher, o login com o Google. Esses serviços só tratam os dados para prestar o serviço ao Blessed.</p>
 
-<h2>6. Os seus direitos</h2>
-<p>Você pode, a qualquer momento: ver e corrigir os seus dados no perfil, apagar publicações, pedir a exclusão da conta e tirar a permissão de notificações ou de localização no seu aparelho. Para qualquer pedido sobre os seus dados, use a opção <b>Contato</b> nos Ajustes do app.</p>
+<h2>7. Por quanto tempo guardamos</h2>
+<p>Guardamos os dados enquanto a sua conta existir. Se você apagar uma publicação ou a conta, o conteúdo deixa de aparecer e é removido dos nossos sistemas em prazo razoável. Podemos manter cópias de segurança por tempo limitado e o que a lei exigir guardar.</p>
 
-<h2>7. Crianças e adolescentes</h2>
-<p>O Blessed não é feito para menores de 13 anos. Adolescentes devem usar o app com o conhecimento dos responsáveis.</p>
+<h2>8. Os seus direitos</h2>
+<p>Você pode, a qualquer momento: ver e corrigir os seus dados no perfil, apagar publicações, pedir a exclusão da conta, pedir uma cópia dos seus dados e retirar permissões de notificações ou de localização no seu aparelho. É só escrever para <a href="mailto:blessed@blessedcomunidade.com.br">blessed@blessedcomunidade.com.br</a>.</p>
 
-<h2>8. Segurança</h2>
-<p>Usamos conexão protegida e regras de acesso para que cada pessoa só veja o que pode. Nenhum sistema é perfeito, por isso recomendamos uma senha forte que você não use em outros sites.</p>
+<h2>9. Crianças e adolescentes</h2>
+<p>O Blessed não é feito para menores de 13 anos. Menores de 18 anos devem usar o app com o conhecimento dos responsáveis.</p>
 
-<h2>9. Mudanças nesta política</h2>
+<h2>10. Segurança</h2>
+<p>Usamos conexão protegida e regras de acesso para que cada pessoa só veja o que pode. Nenhum sistema é perfeito, por isso recomendamos uma senha forte que você não use em outros sites. Nunca pedimos senha ou código por mensagem.</p>
+
+<h2>11. Mudanças nesta política</h2>
 <p>Podemos atualizar esta página. Quando houver mudança importante, avisamos no app.</p>
-
-<p><a href="./">← Voltar para o Blessed</a></p>
+<p style="margin-top:34px"><a href="/">← Voltar para o Blessed</a> · <a href="sobre.html">Sobre</a> · <a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos de Uso</a></p>
 </main>
 </body>
 </html>

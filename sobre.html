@@ -3,63 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sobre o Blessed</title>
+<meta name="theme-color" content="#000000">
+<title>Sobre o Blessed · Blessed</title>
 <meta name="description" content="Quem faz o Blessed, o que ele oferece e como falar com a gente.">
 <style>
-:root{color-scheme:dark light}
-body{margin:0;background:#0e0a22;color:#ece9ff;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:720px;margin:0 auto;padding:28px 18px 60px}
-h1{font-size:30px;line-height:1.2;margin:0 0 6px}
-h2{font-size:20px;margin:30px 0 8px;color:#fff}
-p,li{color:#d6d1f5}
-a{color:#a99bff}
-small{color:#9a94c4}
-ul{padding-left:20px}
-.top{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-.top b{font-size:20px;letter-spacing:.04em}
-.card{background:rgba(122,77,255,.14);border:1px solid rgba(169,155,255,.35);border-radius:18px;padding:16px 18px;margin:14px 0}
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html{background:#000}
+body{margin:0;min-height:100vh;color:#f3f0f8;background:#000 linear-gradient(180deg,#52205c 0,#2b1236 220px,#0a0410 520px,#000 760px) no-repeat;font:16px/1.65 -apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:26px 18px 70px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.top b{font-size:19px;letter-spacing:.24em;font-weight:800}
+.top a{color:#0b0910;background:#fff;text-decoration:none;font-weight:800;font-size:14px;padding:9px 16px;border-radius:99px}
+h1{font-size:32px;line-height:1.12;margin:0 0 6px;letter-spacing:-.03em;font-weight:800}
+h2{font-size:20px;margin:30px 0 8px;color:#fff;letter-spacing:-.02em;font-weight:800}
+p,li{color:#d9d3e6}
+ul{padding-left:20px}li{margin:4px 0}
+a{color:#c9b8ff}
+small{color:#9a92ad}
+.card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:16px 18px;margin:14px 0}
+.ok{border-color:rgba(94,234,160,.4)}.no{border-color:rgba(255,107,122,.45)}
+.card h3{margin:0 0 6px;font-size:16px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
-.grid div{background:rgba(122,77,255,.12);border:1px solid rgba(169,155,255,.3);border-radius:16px;padding:14px}
-.grid b{display:block;margin-bottom:2px}
-@media (max-width:520px){.grid{grid-template-columns:1fr}}
-@media (prefers-color-scheme:light){body{background:#f6f4ff;color:#1c1640}h2{color:#120d33}p,li{color:#2d2760}a{color:#4b2fd1}small{color:#6a64a0}.card,.grid div{background:#fff;border-color:#d8d0ff}}
+.grid div{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:14px}
+.grid b{display:block;margin-bottom:2px;color:#fff}
+@media (max-width:520px){.grid{grid-template-columns:1fr}h1{font-size:28px}}
+.btn{display:inline-block;background:#fff;color:#0b0910!important;padding:12px 22px;border-radius:99px;font-weight:800;text-decoration:none}
 </style>
 </head>
 <body>
 <main>
-<div class="top"><b>BLESSED</b></div>
+<div class="top"><b>BLESSED</b><a href="/">Abrir o app</a></div>
 <h1>Sobre o Blessed</h1>
 <small>Atualizado em outubro de 2026</small>
-
-<p>O Blessed é uma comunidade para compartilhar fé, amizade e criatividade: um lugar para postar seus momentos, conversar com quem importa, se divertir e crescer como criador de conteúdo.</p>
+<p>O Blessed é uma comunidade para amigos e criadores: um lugar para postar o seu dia a dia, conversar com quem importa, se divertir com jogos e crescer como criador de conteúdo.</p>
 
 <h2>O que você encontra</h2>
 <div class="grid">
-<div><b>📸 Momentos e posts</b>Fotos, vídeos e textos com quem você segue.</div>
+<div><b>📸 Posts e Momentos</b>Fotos, vídeos e textos de quem você segue.</div>
 <div><b>🎬 Blessings</b>Vídeos curtos de até 1 minuto.</div>
 <div><b>💬 Conversas</b>Mensagens e chamadas dentro do app.</div>
-<div><b>🎮 Desafios e Quiz</b>Duelos ao vivo entre amigos.</div>
+<div><b>🎮 Quiz e Desafios</b>Duelos ao vivo entre amigos.</div>
+<div><b>🏆 Ranking</b>Pontos semanais e mensais, com destaque na Home.</div>
 <div><b>🤖 Bless, a IA</b>Para estudar, tirar dúvidas e pedir ideias.</div>
-<div><b>📳 Chame a atenção</b>Faça o celular do amigo vibrar.</div>
 </div>
+
+<h2>O que pode e o que não pode</h2>
+<div class="card ok"><h3>✅ Pode</h3><p style="margin:0">Todo tipo de conteúdo, desde que não seja abusivo.</p></div>
+<div class="card no"><h3>🚫 Não pode</h3><p style="margin:0">Nudez, conteúdo abusivo (violência, ódio, assédio) e política. Veja os <a href="termos.html">Termos de Uso</a>.</p></div>
 
 <h2>Quem faz o Blessed</h2>
-<div class="card">
-<p style="margin:0">O Blessed é um projeto independente, criado e mantido pela <b>Equipe Blessed</b>, responsável pela programação, pela segurança dos dados e pelas novidades do app.</p>
-</div>
+<div class="card"><p style="margin:0">O Blessed é um projeto independente, criado e mantido pela <b>Equipe Blessed</b>, responsável pela programação, pela segurança dos dados e pelas novidades do app.</p></div>
 
 <h2>Baixe o app para Android</h2>
-<div class="card">
-<p style="margin:0 0 10px">Prefere um aplicativo na tela do celular? Baixe o arquivo do Blessed para Android (leve, uns 1,6 MB).</p>
-<p style="margin:0 0 12px"><a href="https://github.com/blessedapp/blessedapp.github.io/releases/latest/download/Blessed.apk.apk" style="display:inline-block;background:#7a4dff;color:#fff;padding:12px 22px;border-radius:99px;font-weight:800;text-decoration:none">📱 Baixar para Android</a></p>
-<small>Ao abrir o arquivo, o Android pede para permitir instalar de fonte desconhecida: toque em permitir. Se aparecer um aviso do Google Play Protect, escolha “Instalar mesmo assim”. No iPhone, abra o site no Safari → Compartilhar → Adicionar à Tela de Início.</small>
-</div>
+<div class="card"><p style="margin:0 0 12px">Prefere um aplicativo na tela do celular? Baixe o arquivo do Blessed para Android (leve, uns 1,6 MB).</p><p style="margin:0 0 12px"><a class="btn" href="https://github.com/blessedapp/blessedapp.github.io/releases/latest/download/Blessed.apk.apk">📱 Baixar para Android</a></p><small>Ao abrir o arquivo, o Android pede para permitir instalar de fonte desconhecida: toque em permitir. Se aparecer um aviso do Google Play Protect, escolha “Instalar mesmo assim”. No iPhone, abra o site no Safari → Compartilhar → Adicionar à Tela de Início.</small></div>
 
 <h2>Programa de parcerias</h2>
 <p>Quem cresce na comunidade sobe de nível (Bronze, Prata, Ouro, Platina e Diamante) com seguidores, curtidas e visualizações de gente de verdade. Quem chega ao nível Platina fica <b>elegível</b> e recebe os termos oficiais do programa, para decidir se quer participar.</p>
 <ul>
 <li>Os ganhos seguem os termos do programa de parcerias e dependem das visualizações e do público de cada criador.</li>
-<li>Perfis falsos, compra de seguidores e conteúdo ofensivo ou apelativo não participam.</li>
+<li>Perfis falsos, compra de seguidores e conteúdo abusivo não participam.</li>
 <li>Nenhum valor é prometido antes de o criador receber e aceitar os termos oficiais.</li>
 </ul>
 
@@ -71,11 +74,8 @@ ul{padding-left:20px}
 </ul>
 
 <h2>Fale com a gente</h2>
-<div class="card">
-<p style="margin:0">Dúvidas, parcerias, denúncias ou ajuda com a conta:<br><b><a href="mailto:blessed@blessedcomunidade.com.br">blessed@blessedcomunidade.com.br</a></b></p>
-</div>
-
-<p style="margin-top:34px"><a href="/">← Voltar para o Blessed</a> · <a href="privacidade.html">Privacidade</a></p>
+<div class="card"><p style="margin:0">Dúvidas, parcerias, denúncias ou ajuda com a conta:<br><b><a href="mailto:blessed@blessedcomunidade.com.br">blessed@blessedcomunidade.com.br</a></b></p></div>
+<p style="margin-top:34px"><a href="/">← Voltar para o Blessed</a> · <a href="sobre.html">Sobre</a> · <a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos de Uso</a></p>
 </main>
 </body>
 </html>
