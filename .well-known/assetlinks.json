@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "br.com.blessedcomunidade.twa",
+        "sha256_cert_fingerprints": ["16:09:A4:C8:34:F7:0B:53:EF:ED:31:F7:04:1A:92:41:2E:D9:AC:36:0F:3B:8D:B2:5D:38:D6:10:38:00:69:76"]
+      }
+    }]
