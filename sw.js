@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610180036";
+const CACHE = "cifra-campo-202610180040";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const FILES = ["img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "img/fonts/anton.woff2", "img/fonts/bebas.woff2", "img/fonts/pacifico.woff2", "img/fonts/playfair.woff2", "img/fonts/marker.woff2", "img/fonts/montserrat.woff2", "img/fonts/lobster.woff2", "./", "index.html", "tema-vidro.css?v=20261016-indigo", "manifest.json", "info.json", "img/icon-192.png?v=roxo", "img/icon-512.png?v=roxo", "img/apple-touch-icon.png"];
@@ -50,12 +50,18 @@ self.addEventListener('push',e=>{
    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
    for(const client of windows)if(client.visibilityState==='visible'&&new URL(client.url).origin===self.location.origin)client.postMessage({type:'BLESSED_PUSH_ACTIVITY',account:owner,activity:'attention',actor:data.actor,target:data.target});
   }
+  // App aberto na tela: o aviso flutuante dentro do app já cuida disso, então não repete a notificação do celular.
+  const seen=known&&(await self.clients.matchAll({type:'window',includeUncontrolled:true})).some(c=>c.visibilityState==='visible'&&new URL(c.url).origin===self.location.origin);
+  const apple=/iPhone|iPad|iPod/.test(self.navigator.userAgent||'');
+  if(seen&&!apple)return;
+  const tag0=known?String(data.tag||data.id).slice(0,100):'blessed';
   await self.registration.showNotification(String(notification.title||'Blessed').slice(0,140),{
    body:String(notification.body||'Abra o Blessed para ver seus avisos.').slice(0,200),
    icon:'/img/icon-192.png',badge:'/img/icon-192.png',tag:known?String(data.tag||data.id).slice(0,100):'blessed',
    data:{url:known?pushSafeURL(data.url):'/',account:known?owner:null},
-   renotify:!!known,silent:!known,...(known?{vibrate:[180,90,180]}:{})
+   renotify:!!known&&!seen,silent:!known||seen,...(known&&!seen?{vibrate:[180,90,180]}:{})
   });
+  if(seen&&apple){const list=await self.registration.getNotifications({tag:tag0});list.forEach(n=>n.close());}
  })());
 });
 self.addEventListener('notificationclick',e=>{
