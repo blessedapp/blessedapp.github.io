@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blessedcomunidade.com.br/sitemap.xml
