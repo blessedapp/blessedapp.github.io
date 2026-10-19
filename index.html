@@ -5586,7 +5586,7 @@ async function hfAdd(kind) {
   const sel = document.getElementById("hf-sel-" + kind), id = sel && sel.value; if (!id) { flash("Escolha um perfil na lista."); return; }
   if (hfItems(kind).length >= 3) { flash("Já tem 3 neste painel. Tire um para adicionar outro."); return; }
   const r = await TEAM.client.from("home_features").insert({kind, profile_id: id, sort: hfItems(kind).length});
-  if (r.error) { flash("Não consegui adicionar agora."); return; }
+  if (r.error) { flash("Não consegui adicionar: " + String(r.error.message || r.error.code || "erro").slice(0, 120)); return; }
   flash("Adicionado ✓"); await hfLoad(true);
 }
 async function hfDel(id) {
