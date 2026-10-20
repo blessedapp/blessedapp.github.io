@@ -1,7 +1,7 @@
 {
   "name": "Blessed",
   "short_name": "Blessed",
-  "description": "Blessed: comunidade, amigos, rotinas, vlogs e criadores de conteúdo. Tudo aqui.",
+  "description": "Blessed: a rede social da comunidade, de amigos e criadores de conteúdo.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
