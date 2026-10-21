@@ -1,7 +1,7 @@
 {
   "name": "Blessed",
   "short_name": "Blessed",
-  "description": "Blessed: a rede social da comunidade, de amigos e criadores de conteúdo.",
+  "description": "Blessed, sua nova rede social.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
