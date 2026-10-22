@@ -1,8 +1,8 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610221528";
+const CACHE = "cifra-campo-202610221613";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
-const FILES = ["img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "img/fonts/anton.woff2", "img/fonts/bebas.woff2", "img/fonts/pacifico.woff2", "img/fonts/playfair.woff2", "img/fonts/marker.woff2", "img/fonts/montserrat.woff2", "img/fonts/lobster.woff2", "./", "index.html", "tema-vidro.css?v=20261016-indigo", "manifest.json", "info.json", "img/icon-192.png?v=azul-20261022", "img/icon-512.png?v=azul-20261022", "img/apple-touch-icon.png"];
+const FILES = ["img/vendor/jose-6.1.3.min.js", "img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "img/fonts/anton.woff2", "img/fonts/bebas.woff2", "img/fonts/pacifico.woff2", "img/fonts/playfair.woff2", "img/fonts/marker.woff2", "img/fonts/montserrat.woff2", "img/fonts/lobster.woff2", "./", "index.html", "tema-vidro.css?v=20261016-indigo", "manifest.json", "info.json", "img/icon-192.png?v=azul-20261022", "img/icon-512.png?v=azul-20261022", "img/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
   // a Bíblia fica num cache próprio que não é apagado a cada versão (o texto não muda)

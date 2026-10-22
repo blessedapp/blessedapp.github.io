@@ -2,3 +2,4 @@ Bibliotecas de terceiros usadas pelo Blessed (todas licenca MIT), servidas pelo 
 - supabase-js 2.45.4 (Supabase)
 - jsPDF 2.5.1 (James Hall e colaboradores)
 - qrcode-generator 1.4.4 (Kazuhiko Arase)
+- jose 6.1.3 (Filip Skokan), subconjunto JOSE para o Direct; licença completa em jose-LICENSE.txt
