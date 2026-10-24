@@ -3,6 +3,15 @@
   "short_name": "Blessed",
   "description": "Blessed, sua nova rede social.",
   "lang": "pt-BR",
+  "id": "./",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "./manifest.json",
+      "id": "./"
+    }
+  ],
+  "prefer_related_applications": false,
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
