@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610242036";
+const CACHE = "cifra-campo-202610242158";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const IMG_CACHE = "blessed-fotos-v1";
@@ -61,9 +61,10 @@ self.addEventListener('push',e=>{
  e.waitUntil((async()=>{
   let data;try{data=e.data?.json();}catch{}const owner=await pushOwner().catch(()=>null);
   const known=owner&&owner===data?.account,notification=known?data:{};
-  if(known&&data.activity==='attention'&&/^[a-f0-9-]{36}$/i.test(data.actor||'')&&/^[a-f0-9-]{36}$/i.test(data.target||'')){
+  if(known&&data.activity==='call'&&data.expiresAt&&Date.now()>Number(data.expiresAt))return;
+  if(known&&['attention','message','call','group_invite'].includes(data.activity)&&/^[a-f0-9-]{36}$/i.test(data.actor||'')&&/^[a-f0-9-]{36}$/i.test(data.target||'')){
    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-   for(const client of windows)if(client.visibilityState==='visible'&&new URL(client.url).origin===self.location.origin)client.postMessage({type:'BLESSED_PUSH_ACTIVITY',account:owner,activity:'attention',actor:data.actor,target:data.target});
+   for(const client of windows)if(client.visibilityState==='visible'&&new URL(client.url).origin===self.location.origin)client.postMessage({type:'BLESSED_PUSH_ACTIVITY',account:owner,activity:data.activity,actor:data.actor,target:data.target});
   }
   // App aberto na tela: o aviso flutuante dentro do app já cuida disso, então não repete a notificação do celular.
   const seen=known&&(await self.clients.matchAll({type:'window',includeUncontrolled:true})).some(c=>c.visibilityState==='visible'&&new URL(c.url).origin===self.location.origin);
@@ -73,7 +74,7 @@ self.addEventListener('push',e=>{
    body:String(notification.body||'Abra o Blessed para ver seus avisos.').slice(0,200),
    icon:'/img/icon-192.png',badge:'/img/icon-192.png',tag:known?String(data.tag||data.id).slice(0,100):'blessed',
    data:{url:known?pushSafeURL(data.url):'/',account:known?owner:null},
-   renotify:!!known&&!seen,silent:!known||seen,...(known&&!seen?{vibrate:[180,90,180]}:{})
+   requireInteraction:known&&data.activity==='call',renotify:!!known&&!seen,silent:!known||seen,...(known&&!seen?{vibrate:[180,90,180]}:{})
   });
  })());
 });
