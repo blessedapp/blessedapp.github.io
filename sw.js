@@ -1,15 +1,30 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610232356";
+const CACHE = "cifra-campo-202610240004";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
+const IMG_CACHE = "blessed-fotos-v1";
 const FILES = ["img/vendor/jose-6.1.3.min.js", "img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "img/fonts/anton.woff2", "img/fonts/bebas.woff2", "img/fonts/pacifico.woff2", "img/fonts/playfair.woff2", "img/fonts/marker.woff2", "img/fonts/montserrat.woff2", "img/fonts/lobster.woff2", "./", "index.html", "tema-vidro.css?v=20261016-indigo", "manifest.json", "info.json", "img/icon-192.png?v=azul-20261022", "img/icon-512.png?v=azul-20261022", "img/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
   // a Bíblia fica num cache próprio que não é apagado a cada versão (o texto não muda)
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== BIBLE_CACHE && k !== LUT_CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== BIBLE_CACHE && k !== LUT_CACHE && k !== IMG_CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
+  if (e.request.method === "GET" && /[.]supabase[.]co$/.test(url.hostname) && /^[/]storage[/]v1[/]object[/]sign[/](comunidade|stories)[/]/.test(url.pathname) && !e.request.headers.get("range")) {
+    // Fotos da Comunidade e dos Momentos: guarda no aparelho (mesma foto, sem recompressão) e não baixa de novo a cada link novo.
+    const key = new Request(url.origin + url.pathname);
+    e.respondWith(caches.open(IMG_CACHE).then(async c => {
+      const hit = await c.match(key); if (hit) return hit;
+      const r = await fetch(url.href, {mode: "cors"});
+      if (r.status === 200 && /^image[/]/.test(r.headers.get("content-type") || "")) {
+        await c.put(key, r.clone()).catch(() => {});
+        c.keys().then(ks => { if (ks.length > 400) ks.slice(0, ks.length - 400).forEach(k => c.delete(k)); });
+      }
+      return r;
+    }).catch(() => fetch(e.request)));
+    return;
+  }
   if (e.request.method !== "GET" || url.origin !== location.origin) return;
   if (url.pathname.startsWith("/img/apresentacao/")) return;
   if (url.pathname.includes("/img/luts/")) {
