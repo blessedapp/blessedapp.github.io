@@ -15,8 +15,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#04131d",
+  "theme_color": "#04131d",
   "icons": [
     {
       "src": "img/icon-192.png?v=b-vermelho-20261025",
