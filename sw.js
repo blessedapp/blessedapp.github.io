@@ -1,5 +1,5 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610300101";
+const CACHE = "cifra-campo-202610300102";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const IMG_CACHE = "blessed-fotos-v1";
