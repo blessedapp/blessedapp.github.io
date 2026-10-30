@@ -1,9 +1,9 @@
 // Guarda o app para abrir sem internet. Página e histórias: internet primeiro (pega atualizações).
-const CACHE = "cifra-campo-202610300102";
+const CACHE = "cifra-campo-202610300509";
 const BIBLE_CACHE = "blessed-biblia-blivre-2018";
 const LUT_CACHE = "blessed-story-luts-v1";
 const IMG_CACHE = "blessed-fotos-v1";
-const FILES = ["img/vendor/jose-6.1.3.min.js", "img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "img/fonts/anton.woff2", "img/fonts/bebas.woff2", "img/fonts/pacifico.woff2", "img/fonts/playfair.woff2", "img/fonts/marker.woff2", "img/fonts/montserrat.woff2", "img/fonts/lobster.woff2", "./", "index.html", "tema-vidro.css?v=20261016-indigo", "manifest.json", "info.json", "img/icon-192.png?v=b-vermelho-20261025", "img/icon-512.png?v=b-vermelho-20261025", "img/apple-touch-icon.png"];
+const FILES = ["img/vendor/jose-6.1.3.min.js", "img/vendor/supabase.js", "img/vendor/jspdf.umd.min.js", "img/vendor/qrcode.min.js", "img/fonts/caveat.ttf", "img/fonts/anton.woff2", "img/fonts/bebas.woff2", "img/fonts/pacifico.woff2", "img/fonts/playfair.woff2", "img/fonts/marker.woff2", "img/fonts/montserrat.woff2", "img/fonts/lobster.woff2", "./", "index.html", "tema-vidro.css?v=20261016-indigo", "manifest.json", "info.json", "img/icon-192.png?v=bless-ouro-20261030", "img/icon-512.png?v=bless-ouro-20261030", "img/apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
   // a Bíblia fica num cache próprio que não é apagado a cada versão (o texto não muda)
@@ -71,7 +71,7 @@ self.addEventListener('push',e=>{
   if(seen)return;
   const tag0=known?String(data.tag||data.id).slice(0,100):'blessed';
   await self.registration.showNotification(String(notification.title||'Blessed').slice(0,140),{
-   body:String(notification.body||'Abra o Blessed para ver seus avisos.').slice(0,200),
+   body:String(notification.body||'Abra o Bless para ver seus avisos.').slice(0,200),
    icon:'/img/icon-192.png',badge:'/img/icon-192.png',tag:known?String(data.tag||data.id).slice(0,100):'blessed',
    data:{url:known?pushSafeURL(data.url):'/',account:known?owner:null},
    requireInteraction:known&&data.activity==='call',renotify:!!known&&!seen,silent:!known||seen,...(known&&!seen?{vibrate:[180,90,180]}:{})
