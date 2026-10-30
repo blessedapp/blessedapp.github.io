@@ -46,7 +46,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202610300856";</script><script>
+<script>window.CC_VER="202610300902";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -2538,9 +2538,10 @@ html[data-appearance] :is(.modal-box,.bsheet) input,html[data-appearance] :is(.m
 html[data-appearance=light] :is(.modal-box,.bsheet) :is(input,textarea,select){background:#f1f2f3!important;color:#111113!important;border:1px solid rgba(22,29,36,.12)!important}
 html:not([data-appearance=light]) :is(.modal-box,.bsheet) :is(input,textarea,select){background:#1a1a1d!important;color:#f6f7f9!important;border:1px solid rgba(255,255,255,.14)!important}
 
-html[data-appearance]:not([data-appearance=light]):not(.x):not(.y){background:#000 linear-gradient(180deg,#273385 0,#22226a 8%,#1b114d 16%,#10042c 23%,#070216 31%,#000 39%) fixed no-repeat!important}
+html[data-appearance]:not([data-appearance=light]):not(.x):not(.y){background:#000!important}
+html[data-appearance]:not([data-appearance=light])::before{content:"";position:fixed;left:0;right:0;top:0;height:42vh;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#273385 0,#22226a 8%,#1b114d 16%,#10042c 23%,#070216 31%,#000 39%,#000 100%)}
 html[data-appearance]:not([data-appearance=light]):not(.x):not(.y) body{background:transparent!important}
-html .sg-dock{width:min(calc(100% - 64px),380px)!important;height:56px!important;bottom:calc(4px + env(safe-area-inset-bottom,0px))!important;padding:3px 6px!important;border-radius:40px!important}
+html .sg-dock{width:min(calc(100% - 64px),380px)!important;height:56px!important;bottom:max(6px,calc(env(safe-area-inset-bottom,0px) - 24px))!important;padding:3px 6px!important;border-radius:40px!important}
 html .sg-dock *{max-height:50px}
 </style>
 
