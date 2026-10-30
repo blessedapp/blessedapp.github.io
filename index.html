@@ -46,7 +46,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202610300852";</script><script>
+<script>window.CC_VER="202610300856";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -2540,6 +2540,8 @@ html:not([data-appearance=light]) :is(.modal-box,.bsheet) :is(input,textarea,sel
 
 html[data-appearance]:not([data-appearance=light]):not(.x):not(.y){background:#000 linear-gradient(180deg,#273385 0,#22226a 8%,#1b114d 16%,#10042c 23%,#070216 31%,#000 39%) fixed no-repeat!important}
 html[data-appearance]:not([data-appearance=light]):not(.x):not(.y) body{background:transparent!important}
+html .sg-dock{width:min(calc(100% - 64px),380px)!important;height:56px!important;bottom:calc(4px + env(safe-area-inset-bottom,0px))!important;padding:3px 6px!important;border-radius:40px!important}
+html .sg-dock *{max-height:50px}
 </style>
 
 
