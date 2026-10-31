@@ -46,7 +46,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202610300914";</script><script>
+<script>window.CC_VER="202610310219";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -4148,7 +4148,26 @@ html[data-appearance=streaming] .login .lg-mark{background:#4169fe;color:#fff}ht
 @media(prefers-reduced-motion:reduce){.bs-top-preview{transition:none}}
 </style>
 
-<style id="bless-mov-feedback">.bs-reel-format{margin:0 24px;padding:14px 18px;background:#101820d9;backdrop-filter:blur(14px);border:1px solid #ffffff25;border-radius:12px;color:#fff;font:500 14px/1.5 var(--f-body);text-align:center;}</style>
+<style id="bless-mov-feedback">.bs-reel-format{margin:0 24px;padding:14px 18px;background:#101820d9;backdrop-filter:blur(14px);border:1px solid #ffffff25;border-radius:12px;color:#fff;font:500 14px/1.5 var(--f-body);text-align:center;}
+/* Estilo Apple TV (Filmes) */
+html #app .cn-cinema .cn-hero-info{text-align:center;display:grid;justify-items:center;gap:10px;padding:0 22px 26px}
+html #app .cn-cinema .cn-hero{min-height:min(78svh,640px)}
+html #app .cn-cinema .cn-hero-shade{background:linear-gradient(180deg,rgba(0,0,0,.35) 0,rgba(0,0,0,0) 25%,rgba(0,0,0,.35) 55%,#000 100%)!important}
+html #app .cn-cinema .cn-original{display:inline-block;margin:0;padding:5px 12px;border-radius:99px;background:rgba(40,40,44,.72);border:1px solid #ffffff2e;backdrop-filter:blur(14px);color:#fff!important;font-size:12px;letter-spacing:0;font-weight:700;text-transform:none}
+html #app .cn-cinema .cn-movie-title{text-transform:none;font:800 34px/1.05 var(--f-body);letter-spacing:-.02em;text-align:center}
+html #app .cn-cinema .cn-title-logo{object-position:center;margin:0 auto}
+html #app .cn-cinema .cn-metadata{font-size:14px;font-weight:700;margin:0;color:#fff}
+html #app .cn-cinema .cn-hero-synopsis{font-size:15px;line-height:1.35;color:#ffffffd0;margin:0;max-width:520px}
+html #app .cn-cinema .cn-hero .actions{display:flex;gap:12px;align-items:center;justify-content:center;margin:6px 0 0}
+html #app .cn-cinema .cn-hero .btn.primary{background:#fff!important;color:#000!important;border:0;border-radius:99px;font:700 16px var(--f-body);min-height:50px;min-width:200px;padding:0 28px}
+html #app .cn-cinema .cn-hero .cn-share{width:50px;height:50px;min-height:50px;padding:0;border-radius:50%;font-size:26px;font-weight:300;line-height:1;background:rgba(60,60,64,.8)!important;border:0!important}
+html #app .cn-cinema .cn-section>h2{font:800 20px var(--f-body);letter-spacing:-.01em;margin:22px 0 12px}
+html #app .cn-cinema .cn-section>h2::after{content:"A";margin-left:7px;color:#8e8e93;font-weight:600}
+html #app .cn-cinema .cn-rail{gap:12px;scroll-snap-type:x mandatory}
+html #app .cn-cinema .cn-card{scroll-snap-align:start}
+html #app .cn-cinema .cn-card>img,html #app .cn-cinema .cn-card>.cn-cover-placeholder{border-radius:12px;box-shadow:0 6px 18px #0006}
+html #app .cn-cinema .cn-card b{font-size:15px;font-weight:700}
+</style>
 <script>
 (function(){
 "use strict";
@@ -12695,7 +12714,7 @@ function cnDate(t){return t.release_at?'Em breve · '+new Date(t.release_at).toL
 function cnCover(t,cls='',tall=false){if(tall&&t.poster_key)return '<img class="'+cls+' cn-tall" src="'+esc(blUrl(t.poster_key))+'" alt="Capa de '+esc(t.title)+'" loading="lazy" decoding="async">';return t.cover_key?'<img class="'+cls+'" src="'+esc(blUrl(t.cover_key))+'" alt="Capa de '+esc(t.title)+'" loading="lazy" decoding="async">':'<span class="cn-cover-placeholder">'+esc(t.title)+'</span>';}
 function cnCard(t){return '<button class="cn-card" data-a="cn-open" data-id="'+esc(t.id)+'">'+cnCover(t,'',true)+'<span><b>'+esc(t.title)+'</b><small>'+esc(CN_KINDS[t.kind]||'Produção original')+' · '+((t.has_film||cnEpisodes(t).some(e=>!e.is_trailer))?'Para assinantes':cnDate(t))+'</small></span></button>';}
 function cnRail(title,list){return list.length?'<section class="cn-section"><h2>'+title+'</h2><div class="cn-rail">'+list.map(cnCard).join('')+'</div></section>':'';}
-function cnHero(t,detail=false){const playable=cnReleased(t)&&(t.has_film||cnEpisodes(t).some(e=>!e.is_trailer));return '<section class="cn-hero">'+cnCover(t,'cn-hero-cover',true)+'<div class="cn-hero-shade"></div><div class="cn-hero-info"><span class="cn-original">BLESS · PRODUÇÃO ORIGINAL</span>'+(t.logo_key?'<img class="cn-title-logo" src="'+esc(blUrl(t.logo_key))+'" alt="'+esc(t.title)+'">':'<h2 class="cn-movie-title">'+esc(t.title)+'</h2>')+'<p class="cn-metadata">'+esc(CN_KINDS[t.kind]||'Produção original')+' · '+esc(t.aspect)+' · '+esc(t.rating==='L'?'Livre':t.rating+' anos')+'</p><p class="cn-hero-synopsis">'+esc(t.synopsis)+'</p><div class="actions">'+(detail?(playable?'<button class="btn primary" data-a="cn-play" data-id="'+esc(t.id)+'">&#9654;&#65038; Assistir filme</button>':'<span class="cn-coming">'+cnDate(t)+'</span>'):'<button class="btn primary" data-a="cn-open" data-id="'+esc(t.id)+'">Conhecer produção</button>')+''+(detail&&cnEpisodes(t).some(e=>e.is_trailer)?'<button class="btn" data-a="cn-trailer">&#9654;&#65038; Trailer gratuito</button>':'')+'<button class="btn cn-share" data-a="cn-share" data-id="'+esc(t.id)+'">Compartilhar</button></div></div></section>';}
+function cnHero(t,detail=false){const playable=cnReleased(t)&&(t.has_film||cnEpisodes(t).some(e=>!e.is_trailer));return '<section class="cn-hero">'+cnCover(t,'cn-hero-cover',true)+'<div class="cn-hero-shade"></div><div class="cn-hero-info"><span class="cn-original">Original Bless</span>'+(t.logo_key?'<img class="cn-title-logo" src="'+esc(blUrl(t.logo_key))+'" alt="'+esc(t.title)+'">':'<h2 class="cn-movie-title">'+esc(t.title)+'</h2>')+'<p class="cn-metadata">'+esc(CN_KINDS[t.kind]||'Produção original')+' · '+esc(t.aspect)+' · '+esc(t.rating==='L'?'Livre':t.rating+' anos')+'</p><p class="cn-hero-synopsis">'+esc(t.synopsis)+'</p><div class="actions">'+(detail?(playable?'<button class="btn primary" data-a="cn-play" data-id="'+esc(t.id)+'">&#9654;&#65038; Assistir filme</button>':'<span class="cn-coming">'+cnDate(t)+'</span>'):'<button class="btn primary" data-a="cn-open" data-id="'+esc(t.id)+'">Conhecer produção</button>')+''+(detail&&cnEpisodes(t).some(e=>e.is_trailer)?'<button class="btn" data-a="cn-trailer">&#9654;&#65038; Trailer gratuito</button>':'')+'<button class="btn cn-share" data-a="cn-share" data-id="'+esc(t.id)+'" aria-label="Compartilhar">+</button></div></div></section>';}
 function cnEmpty(){return '<section class="cn-empty"><span>🎬</span><h2>Novas histórias, em breve.</h2><p>Filmes, séries, curtas e documentários selecionados pela equipe Blessed.</p><p>Filmes e séries gratuitos.</p>'+(cnAdmin()?'<button class="btn primary" data-a="cn-studio">Administrar Cinema</button>':'')+'</section>';}
 
 function cnCatalog(){const rows=(CN.rows||[]).filter(t=>(CN.kind==='all'||t.kind===CN.kind)&&(!CN.query||(t.title+' '+t.synopsis+' '+(t.cine_channels?.name||'')).toLocaleLowerCase('pt-BR').includes(CN.query.toLocaleLowerCase('pt-BR'))));const feat=rows.find(cnReleased)||rows[0],soon=rows.filter(t=>!cnReleased(t)&&t!==feat),top=rows.length&&!CN.query&&CN.kind==='all'?cnHero(feat)+cnRail('Próximos a estrear',soon):'';return top+'<div class="cn-discovery"><label for="cn-search">Encontre sua próxima história</label><input id="cn-search" type="search" value="'+esc(CN.query)+'" placeholder="Produção ou canal"><div class="cn-genres" role="group" aria-label="Categorias">'+[['all','Todos'],...Object.entries(CN_KINDS)].map(([k,l])=>'<button data-a="cn-kind" data-v="'+k+'" aria-pressed="'+(CN.kind===k)+'">'+l+'</button>').join('')+'</div></div><div id="cn-results">'+(rows.length?(top?'':cnHero(rows[0]))+Object.entries(CN_KINDS).map(([k,l])=>cnRail(l,rows.filter(t=>t.kind===k))).join(''):(CN.loading?'<p class="muted" role="status">Carregando produções…</p>':cnEmpty()))+'</div>'+(CN.more?'<button class="btn" data-a="cn-more">Carregar mais produções</button>':'');}
