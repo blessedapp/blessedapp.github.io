@@ -46,7 +46,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202610310318";</script><script>
+<script>window.CC_VER="202610310344";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -4238,6 +4238,10 @@ html[data-appearance=streaming] .bs-clip{background-image:none!important;backgro
 html[data-appearance=streaming] .bs-clip-media{left:50%!important;right:auto!important;top:calc(env(safe-area-inset-top,0px) + 4px)!important;bottom:auto!important;height:calc(100% - env(safe-area-inset-top,0px) - 100px)!important;aspect-ratio:9/16;width:auto;max-width:100%;transform:translateX(-50%)}
 html[data-appearance=streaming],html[data-appearance=streaming] body{overscroll-behavior-y:none;background:#000}
 html[data-appearance=streaming] .sg-hero{margin-top:0}
+html[data-appearance=streaming] .bs-clips{position:fixed!important;inset:0!important;height:auto!important;width:100%;z-index:1}
+html[data-appearance=streaming] .bs-clip-feed{height:100%;scroll-snap-type:y mandatory}
+html[data-appearance=streaming] .bs-clip{height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always}
+html[data-appearance=streaming] .sg-dock{z-index:20!important}
 </style>
 <script>
 (function(){
