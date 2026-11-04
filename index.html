@@ -49,7 +49,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202611040957";</script><script>
+<script>window.CC_VER="202611041005";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -4522,7 +4522,10 @@ html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-btns{dis
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-cta{background:#fff!important;color:#000!important;border:0!important;border-radius:999px!important;min-height:48px;padding:0 28px!important;font:600 16.5px var(--bp-font)!important;box-shadow:0 6px 20px rgba(0,0,0,.25);gap:8px}
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-cta svg{width:17px;height:17px;fill:currentColor}
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-i,.bp-tv-plus{width:48px;height:48px;flex:none;border-radius:50%!important;display:grid;place-items:center;border:0!important;background:rgba(70,70,70,.5)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff!important;font:300 28px/1 var(--bp-font)!important;padding:0!important}
-html[data-appearance=streaming] #app .bp-home .bs-tags{display:none!important}
+html[data-appearance=streaming] #app .bp-home .sg-slide .bs-tags{display:flex!important;flex-wrap:wrap;justify-content:center!important;align-items:center;gap:6px!important;margin:4px 0 0!important;opacity:1!important;visibility:visible!important}
+#app .bp-tv-top .bp-tv-glass.bp-tv-av{width:40px;height:40px;min-height:0;padding:0!important;border-radius:50%;overflow:hidden;flex:none}
+#app .bp-tv-av .bs-avatar{display:block!important;width:100%!important;height:100%!important;max-width:none!important;aspect-ratio:auto!important;border-radius:50%!important;overflow:hidden;outline:0!important;box-shadow:none!important}
+#app .bp-tv-av .bs-art-avatar>i{animation:none!important;transform:none!important}
 html[data-appearance=streaming] #app .bp-home .sg-dots{position:relative;z-index:3;margin:-30px 0 26px!important;justify-content:center;gap:7px!important}
 html[data-appearance=streaming] #app .bp-home .sg-dots i{width:7px!important;height:7px!important;border-radius:999px;background:rgba(255,255,255,.38)!important;outline:0!important;transition:width .35s cubic-bezier(.2,.8,.2,1),background .35s}
 html[data-appearance=streaming] #app .bp-home .sg-dots i.on{width:22px!important;background:#fff!important}
