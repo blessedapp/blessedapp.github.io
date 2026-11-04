@@ -49,7 +49,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202611041005";</script><script>
+<script>window.CC_VER="202611041009";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -4561,6 +4561,11 @@ html[data-appearance=streaming] #app .bs-cast img,html[data-appearance=streaming
 html[data-appearance=streaming] #app .bp-home .sg-slide .sg-info{transition:opacity .4s,transform .4s}
 @media(prefers-reduced-motion:reduce){.bp-anim-push,.bp-anim-pop,.bp-anim-tab,.bp-anim-push .sg-dh .sg-info>*{animation:none}}
 @media(min-width:700px){.bp-tv-top{padding-left:30px;padding-right:30px}html[data-appearance=streaming] .bp-home .sg-hero{height:min(78vh,720px)!important}html[data-appearance=streaming] .bp-section-head,html[data-appearance=streaming] .sg-sec>h2{padding-inline:30px!important}}
+
+/* Barra de baixo: vidro translúcido neutro */
+html[data-appearance=streaming] #app .sg-dock{background:rgba(30,30,30,.38)!important;-webkit-backdrop-filter:blur(26px) saturate(1.8)!important;backdrop-filter:blur(26px) saturate(1.8)!important;border:1px solid rgba(255,255,255,.14)!important;box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)!important}
+html[data-appearance=streaming] #app .sg-dock::before{display:none!important}
+html[data-appearance=streaming] #app .sg-dock button[aria-current=page]{background:rgba(255,255,255,.14)!important;box-shadow:none!important}
 </style>
 
 <script>

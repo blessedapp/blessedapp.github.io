@@ -1,5 +1,5 @@
 // Bless Play: cache apenas do streaming, sem mídias da antiga rede social.
-const CACHE="bless-stream-202611041005";
+const CACHE="bless-stream-202611041009";
 const FILES=["./","index.html","manifest.json","img/vendor/supabase.js","img/icon-192.png?v=bless-play-approved-20261103","img/icon-512.png?v=bless-play-approved-20261103","img/apple-touch-icon.png","img/bless/avatares-20261030.png","img/bless/avatares-extra-20261030.png","img/bless-play/fonts/Inter.woff2","img/bless-play/fonts/Bodoni.woff2","img/bless-play/logo.png?v=approved-20261103"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&/^(cifra-campo-|bless-stream-|blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
