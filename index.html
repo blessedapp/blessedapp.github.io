@@ -24,21 +24,21 @@
 <meta name="twitter:image" content="https://blessedcomunidade.com.br/img/brand/cartao-b-vermelho.png">
 <meta name="twitter:image:alt" content="Bless Play. Histórias que ficam.">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com">
-<meta name="theme-color" content="#1e1e1e">
+<meta name="theme-color" content="#100a19">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bless Play">
 <link rel="manifest" href="manifest.json">
-<link rel="preload" as="image" href="img/bless-play/logo.png?v=approved-20261103">
+<link rel="preload" as="image" href="img/bless-play/logo-v.png?v=sunset-20261120">
 <link rel="preload" href="img/bless-play/fonts/Inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/bless-play/fonts/Bodoni.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" type="image/png" sizes="32x32" href="img/brand/favicon-32-azul.png?v=bless-play-approved-20261103">
-<link rel="icon" type="image/png" sizes="16x16" href="img/brand/favicon-16-azul.png?v=bless-play-approved-20261103">
-<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png?v=bless-play-approved-20261103">
-<link rel="shortcut icon" href="img/brand/favicon-32-azul.png?v=bless-play-approved-20261103">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=bless-play-approved-20261103">
-<link rel="apple-touch-icon-precomposed" sizes="180x180" href="apple-touch-icon.png?v=bless-play-approved-20261103">
+<link rel="icon" type="image/png" sizes="32x32" href="img/brand/favicon-32-azul.png?v=sunset-20261120">
+<link rel="icon" type="image/png" sizes="16x16" href="img/brand/favicon-16-azul.png?v=sunset-20261120">
+<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png?v=sunset-20261120">
+<link rel="shortcut icon" href="img/brand/favicon-32-azul.png?v=sunset-20261120">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=sunset-20261120">
+<link rel="apple-touch-icon-precomposed" sizes="180x180" href="apple-touch-icon.png?v=sunset-20261120">
 <style>
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:14px system-ui,-apple-system,sans-serif}
@@ -49,14 +49,14 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202611062125";</script><script>
+<script>window.CC_VER="202611201219";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
 if('serviceWorker' in navigator)navigator.serviceWorker.getRegistration().then(async reg=>{if(!reg||!localStorage.getItem('blessed-push-owner'))return;const old=await reg.pushManager?.getSubscription();if(old)await old.unsubscribe();localStorage.removeItem('blessed-push-owner');}).catch(()=>{});
 if('indexedDB' in window){try{indexedDB.deleteDatabase('blessed-chat-wallpaper');}catch{}}
 // Recupera a aparência antes de desenhar o app, inclusive na abertura offline.
-try{document.documentElement.dataset.appearance='streaming';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content='#000000';}catch(e){document.documentElement.dataset.appearance='streaming';}
+try{document.documentElement.dataset.appearance='streaming';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content='#100a19';}catch(e){document.documentElement.dataset.appearance='streaming';}
 </script>
 <title>Bless Play · Filmes, séries e documentários</title>
 <link rel="preconnect" href="https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev" crossorigin>
@@ -4090,14 +4090,14 @@ html #app .appearance-sample.msn-mobile>i:before{font-size:3px;left:2px;top:5px}
 
 
 <style id="bless-intro-cine">
-.bi{position:fixed;inset:0;z-index:100000;background:#000;overflow:hidden;display:grid;place-items:center;animation:bi-out .5s ease-in 3.05s both}
-.bi-glow{position:absolute;left:50%;top:50%;width:140vmax;height:140vmax;margin:-70vmax 0 0 -70vmax;background:radial-gradient(closest-side,#5bc5bf44,#5bc5bf10 45%,transparent 70%);opacity:0;animation:bi-glow 3.2s ease-out .5s both}
+.bi{position:fixed;inset:0;z-index:100000;background:radial-gradient(ellipse at 28% 23%,#3d1e69,transparent 58%),radial-gradient(ellipse at 80% 82%,#591b3e,transparent 57%),#100a19;overflow:hidden;display:grid;place-items:center;animation:bi-out .5s ease-in 3.05s both}
+.bi-glow{position:absolute;left:50%;top:50%;width:140vmax;height:140vmax;margin:-70vmax 0 0 -70vmax;background:radial-gradient(closest-side,#ff83c45e,#a16eff28 45%,transparent 70%);opacity:0;animation:bi-glow 3.2s ease-out .5s both}
 .bi-rays{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;gap:clamp(3px,.9vw,9px);opacity:0;animation:bi-rays 3.2s ease-out .45s both}
-.bi-rays i{display:block;width:clamp(2px,.5vw,5px);height:100%;background:linear-gradient(180deg,transparent,#2f817c 30%,#bff2ee 50%,#2f817c 70%,transparent);transform:scaleY(0);animation:bi-ray 1.5s cubic-bezier(.2,.8,.2,1) both}
-.bi-line{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:linear-gradient(180deg,transparent,#f4f4ef,transparent);transform:scaleY(0);animation:bi-line .7s ease-out .1s both}
+.bi-rays i{display:block;width:clamp(2px,.5vw,5px);height:100%;background:linear-gradient(180deg,transparent,#a575fe 25%,#ff8cca 51%,#ffc38e 72%,transparent);transform:scaleY(0);animation:bi-ray 1.5s cubic-bezier(.2,.8,.2,1) both}
+.bi-line{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:linear-gradient(180deg,transparent,#ffd3a5,transparent);transform:scaleY(0);animation:bi-line .7s ease-out .1s both}
 .bi-box{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;animation:bi-zoom .95s cubic-bezier(.7,0,.9,.4) 2.2s both}
 .bi-emb{position:relative;width:clamp(210px,58vw,360px);opacity:0;transform:scale(.8);animation:bi-emb 1.1s cubic-bezier(.2,.9,.2,1) .7s both}
-.bi-emb::before{content:"";position:absolute;inset:-30%;z-index:-1;background:radial-gradient(closest-side,#5bc5bf40,transparent 70%)}
+.bi-emb::before{content:"";position:absolute;inset:-30%;z-index:-1;background:radial-gradient(closest-side,#ff9a9b55,transparent 70%)}
 .bi-emb .bp-brand-art{width:100%;height:auto;display:block;background:none;filter:none}
 .bi-word{font:500 clamp(56px,17vw,110px)/.9 var(--bp-display,Georgia,serif);letter-spacing:-.04em;color:#f4f4ef;display:flex;flex-direction:column;align-items:center;opacity:0;filter:blur(10px);animation:bi-let 1s cubic-bezier(.2,.9,.2,1) 1.1s both}
 .bi-word small{font:400 clamp(12px,3.4vw,16px) var(--bp-display,Georgia,serif);letter-spacing:.55em;padding-left:.55em;color:#5bc5bf;margin-top:14px}
@@ -4277,7 +4277,7 @@ html[data-appearance=streaming],html[data-appearance=streaming] body{background:
 /* Bless Play: tokens compartilhados por todas as telas atuais e novos componentes. */
 @font-face{font-family:BP Sans;src:url('img/bless-play/fonts/Inter.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
 @font-face{font-family:BP Display;src:url('img/bless-play/fonts/Bodoni.woff2') format('woff2');font-style:normal;font-weight:400 900;font-display:swap}
-html[data-appearance=streaming]{--bp-bg:#1e1e1e;--bp-surface:#292929;--bp-row:#424242;--bp-ink:#f5f4f1;--bp-muted:#a3a3a3;--bp-accent:#5bc5bf;--bp-line:#ffffff18;--bp-radius:18px;--bp-font:'BP Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;--bp-display:'BP Display',Georgia,serif;--bg:var(--bp-bg);--surface:var(--bp-surface);--surface2:var(--bp-row);--ink:var(--bp-ink);--cream:var(--bp-ink);--muted:var(--bp-muted);--line:var(--bp-line);--felt:var(--bp-accent);--bless-accent:var(--bp-accent);--brand:linear-gradient(120deg,#5bc5bf,#459d98);--f-body:var(--bp-font);--f-display:var(--bp-font);--glass-surface:#333333e8;--glass-control:#424242;--glass-selected:#5bc5bf22;--glass-edge:#ffffff18;--glass-highlight:none;color-scheme:dark;padding-top:0!important;padding-bottom:0!important;background:var(--bp-bg)!important}
+html[data-appearance=streaming]{--bp-radius:18px;--bp-font:'BP Sans',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;--bp-display:'BP Display',Georgia,serif;--bg:var(--bp-bg);--surface:var(--bp-surface);--surface2:var(--bp-row);--ink:var(--bp-ink);--cream:var(--bp-ink);--muted:var(--bp-muted);--line:var(--bp-line);--felt:var(--bp-accent);--bless-accent:var(--bp-accent);--brand:linear-gradient(120deg,#5bc5bf,#459d98);--f-body:var(--bp-font);--f-display:var(--bp-font);--glass-surface:#333333e8;--glass-control:#424242;--glass-selected:#5bc5bf22;--glass-edge:#ffffff18;--glass-highlight:none;color-scheme:dark;padding-top:0!important;padding-bottom:0!important;background:var(--bp-bg)!important}
 html[data-appearance=streaming] body,html[data-appearance=streaming] #app,html[data-appearance=streaming] #app .sg-page{background:var(--bp-bg)!important;color:var(--bp-ink);font-family:var(--bp-font)!important}
 html[data-appearance=streaming]::before,html[data-appearance=streaming] body::before{display:none!important}
 html[data-appearance=streaming] :is(button,input,textarea,select,h1,h2,h3,h4){font-family:var(--bp-font)!important}
@@ -4496,8 +4496,6 @@ html[data-appearance=streaming] .sg-dh .sg-info .bp-online-only{margin:7px 0 0;t
 </style>
 <style id="bless-play-tv-layout">
 /* Layout estilo TV: capa em tela cheia, topo flutuante, botões em pílula e transições suaves. */
-html[data-appearance=streaming]{--bp-bg:#000}
-html[data-appearance=streaming],html[data-appearance=streaming] body,html[data-appearance=streaming] #app{background:#000!important}
 html[data-appearance=streaming] #app .bp-home{position:relative;padding-top:0!important}
 .bp-tv-top{position:absolute;z-index:8;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(env(safe-area-inset-top,0px) + 12px) 18px 0;pointer-events:none}
 .bp-tv-top>*{pointer-events:auto}
@@ -4543,7 +4541,7 @@ html[data-appearance=streaming] #app .sg-dh{min-height:min(90svh,800px)!importan
 html[data-appearance=streaming] #app .sg-dh .sg-back{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px)!important;left:16px;width:40px!important;height:40px!important;border-radius:50%!important;display:grid;place-items:center;border:0!important;background:rgba(60,60,60,.45)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff!important;font-size:26px;line-height:1;z-index:5}
 html[data-appearance=streaming] #app .sg-dh .bs-share-top{left:auto!important;right:16px}
 html[data-appearance=streaming] #app .sg-dh .bs-share-top svg{width:19px;height:19px}
-html[data-appearance=streaming] #app .sg-body{background:#000!important;padding-top:6px}
+html[data-appearance=streaming] #app .sg-body{padding-top:6px}
 html[data-appearance=streaming] #app .bs-syn summary{font:400 15px/1.45 var(--bp-font);color:rgba(255,255,255,.82);padding:0 18px}
 html[data-appearance=streaming] #app .bs-about{padding:0 18px}
 html[data-appearance=streaming] #app .bs-about p{color:rgba(255,255,255,.7);font-size:14px;line-height:1.5}
@@ -4562,10 +4560,58 @@ html[data-appearance=streaming] #app .bp-home .sg-slide .sg-info{transition:opac
 @media(prefers-reduced-motion:reduce){.bp-anim-push,.bp-anim-pop,.bp-anim-tab,.bp-anim-push .sg-dh .sg-info>*{animation:none}}
 @media(min-width:700px){.bp-tv-top{padding-left:30px;padding-right:30px}html[data-appearance=streaming] .bp-home .sg-hero{height:min(78vh,720px)!important}html[data-appearance=streaming] .bp-section-head,html[data-appearance=streaming] .sg-sec>h2{padding-inline:30px!important}}
 
-/* Barra de baixo: vidro translúcido neutro */
-html[data-appearance=streaming] #app .sg-dock{background:rgba(30,30,30,.38)!important;-webkit-backdrop-filter:blur(26px) saturate(1.8)!important;backdrop-filter:blur(26px) saturate(1.8)!important;border:1px solid rgba(255,255,255,.14)!important;box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)!important}
-html[data-appearance=streaming] #app .sg-dock::before{display:none!important}
-html[data-appearance=streaming] #app .sg-dock button[aria-current=page]{background:rgba(255,255,255,.14)!important;box-shadow:none!important}
+/* Identidade do Bless Play */
+html[data-appearance=streaming]{
+  --bp-bg:#100a19;
+  --bp-surface:#25152e;
+  --bp-row:#382143;
+  --bp-ink:#fff5f9;
+  --bp-muted:#cdbbcf;
+  --bp-accent:#ff9bcc;
+  --bp-line:#ffc2ed33;
+  --bp-button-ink:#261126;
+  --bp-sunset:linear-gradient(112deg,#d3b0ff 0%,#ff9bcc 46%,#ffbf93 100%);
+}
+html[data-appearance=streaming],
+html[data-appearance=streaming] body,
+html[data-appearance=streaming] #app,
+html[data-appearance=streaming] #app .sg-body{background:var(--bp-bg)!important}
+html[data-appearance=streaming] body{--surface:var(--bp-surface);--ink:var(--bp-ink);--line:var(--bp-line)}
+html[data-appearance=streaming] .bs-boot{
+  background:radial-gradient(ellipse at 45% 45%,#54265155,transparent 65%),var(--bp-bg);
+}
+html[data-appearance=streaming] #app .sg-dock{
+  background:linear-gradient(112deg,#331e56c9,#471638ce 52%,#4a222cd4)!important;
+  border:1px solid #ffbde84d!important;
+  -webkit-backdrop-filter:blur(26px) saturate(1.55)!important;
+  backdrop-filter:blur(26px) saturate(1.55)!important;
+  box-shadow:0 12px 32px #190b26a8,inset 0 1px 0 #fbd2ff35!important;
+}
+html[data-appearance=streaming] #app .sg-dock button[aria-current=page]{
+  background:linear-gradient(112deg,#cd9cff3b,#ff88bd32,#ffb38828)!important;
+  box-shadow:inset 0 0 0 1px #ffc2ed30!important;
+}
+html[data-appearance=streaming] #app .sg-dock button[aria-current=page]::before{display:none}
+html[data-appearance=streaming] #app .sg-dots i.on{background:var(--bp-sunset)!important}
+html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-shade{
+  background:linear-gradient(180deg,#160d229c,transparent 25%,transparent 42%,#190e25b8 74%,var(--bp-bg))!important;
+}
+html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-cta,
+html[data-appearance=streaming] #app :is(.bp-join-button,.login .btn.primary,.bs-install-inline button[data-a=sg-install]),
+html[data-appearance=streaming] #blessed-install .btn.primary{
+  background:var(--bp-sunset)!important;
+  color:var(--bp-button-ink)!important;
+}
+html[data-appearance=streaming] #app :is(.bp-guest-welcome,.bs-install-inline),
+html[data-appearance=streaming] #blessed-install .install-card{
+  background:linear-gradient(130deg,#301c45,#29162d 65%,#3a202d);
+  border-color:var(--bp-line);
+}
+html[data-appearance=streaming] .bs-install-mark{object-fit:cover;background:var(--bp-surface)}
+html[data-appearance=streaming] :is(.sg-page,.sg-dock,#blessed-install) :focus-visible{
+  outline:2px solid #ffbf93;
+  outline-offset:3px;
+}
 </style>
 
 <script>
@@ -5630,7 +5676,7 @@ async function sgCloudLoad(){if(!TEAM.user||!TEAM.client||SG.cloudLoading||SG.cl
 function sgSyncNote(){return SG.cloud==='ready'&&!SG.cloudError?'Sua lista, assistidos e progresso ficam salvos na sua conta.':SG.cloudError?'Salvo neste aparelho. A sincronização com sua conta está pendente.':'Sua lista e seu progresso estão salvos neste aparelho.';}
 window.addEventListener('online',()=>{if(!TEAM.user||!sgOn())return;if(SG.cloud==='ready'){SG.cloudError=false;void sgCloudFlush();}else{SG.cloudAttempt=0;void sgCloudLoad();}});
 window.addEventListener('pagehide',()=>{void sgCloudFlush();});
-function sgInstallCard(){if(isStandalone()||installRecorded())return '';return '<section class="bs-install-inline"><div><span class="bs-install-mark">B</span><h2>Seus filmes, a um toque.</h2><p>Instale o Bless Play e abra o catálogo direto pelo ícone do celular.</p></div><button class="sg-cta" data-a="sg-install">Instalar Bless Play</button><details><summary>Como instalar no iPhone e Android</summary><p><b>iPhone:</b> no Safari, toque em Compartilhar → Adicionar à Tela de Início → Adicionar.</p><p><b>Android:</b> no Chrome, abra o menu ⋮ → Instalar aplicativo ou Adicionar à tela inicial.</p></details></section>';}
+function sgInstallCard(){if(isStandalone()||installRecorded())return '';return '<section class="bs-install-inline"><div><img class="bs-install-mark" src="img/icon-192.png?v=sunset-20261120" width="48" height="48" alt=""><h2>Seus filmes, a um toque.</h2><p>Instale o Bless Play e abra o catálogo direto pelo ícone do celular.</p></div><button class="sg-cta" data-a="sg-install">Instalar Bless Play</button><details><summary>Como instalar no iPhone e Android</summary><p><b>iPhone:</b> no Safari, toque em Compartilhar → Adicionar à Tela de Início → Adicionar.</p><p><b>Android:</b> no Chrome, abra o menu ⋮ → Instalar aplicativo ou Adicionar à tela inicial.</p></details></section>';}
 function sgGuestLibrary(){return '<main class="sg-page sg-pad bs-guest-library"><h1>Meus filmes</h1><p>Entre para escolher seu perfil, guardar filmes e continuar de onde parou.</p><div class="sg-btns"><button class="sg-cta" data-a="cm-login" data-v="up">Criar conta grátis</button><button class="sg-adm" data-a="cm-login" data-v="in">Já tenho conta</button></div>'+sgInstallCard()+'<button class="sg-adm" data-a="sg-go" data-v="inicio">Voltar aos filmes</button><button class="sg-adm" data-a="aj-open">Ajustes e ajuda</button></main>';}
 
 function sgKey(kind){sgSession();return 'bless:'+SG.owner+':'+(SG.active||'principal')+':'+kind;}
@@ -5683,7 +5729,7 @@ async function bpMembersLoad(force=false){if(!cnAdmin()||BPM.loading||!force&&(B
 setInterval(()=>{if(!document.hidden&&state.view==='team'&&sgOn()&&cnAdmin())void bpMembersLoad();},30000);
 document.addEventListener('submit',e=>{if(e.target.id!=='bp-member-search')return;e.preventDefault();BPM.q=String(new FormData(e.target).get('q')||'').trim().slice(0,100);BPM.page=0;void bpMembersLoad(true);});
 document.addEventListener('click',e=>{const b=e.target.closest?.('[data-a^="bp-members-"]');if(!b||!cnAdmin())return;if(b.dataset.a==='bp-members-next')BPM.page++;else if(b.dataset.a==='bp-members-prev')BPM.page=Math.max(0,BPM.page-1);void bpMembersLoad(true);});
-function bpMark(v){return v?'<img class="bp-brand-art" src="img/bless-play/logo-v.png?v=t20261104b" width="914" height="980" alt="Bless Play" decoding="async">':'<img class="bp-brand-art" src="img/bless-play/logo-h.png?v=t20261104b" width="1194" height="416" alt="Bless Play" decoding="async">';}
+function bpMark(v){return v?'<img class="bp-brand-art" src="img/bless-play/logo-v.png?v=sunset-20261120" width="914" height="980" alt="Bless Play" decoding="async">':'<img class="bp-brand-art" src="img/bless-play/logo-h.png?v=sunset-20261120" width="1193" height="416" alt="Bless Play" decoding="async">';}
 function bpWordmark(){return '<span class="bp-wordmark">'+bpMark()+'</span>';}
 function bpSeasons(){const rows=sgRows(),sets={series:rows.filter(t=>t.kind==='serie'&&cnReleased(t)),filmes:rows.filter(t=>t.kind!=='serie'&&cnReleased(t)),originais:rows.filter(t=>t.original_commitment&&cnReleased(t)),trailers:rows.filter(cnReleased).filter(t=>sgEpisodes(t).some(e=>e.is_trailer&&Number(e.season)!==100)),breve:rows.filter(t=>!cnReleased(t))},active=SG.catalogSection||'todos';return '<main class="sg-page bp-catalog">'+sgHead()+'<div class="bp-page-heading"><h1>Catálogo</h1><p>Encontre sua próxima história.</p></div><div class="bp-catalog-tabs">'+[['todos','Tudo'],['series','Séries'],['filmes','Filmes'],['originais','Originais Bless'],['trailers','Trailers'],['breve','Chegando em breve']].map(([id,label])=>'<button data-a="bp-catalog" data-v="'+id+'" aria-pressed="'+(active===id)+'">'+label+'</button>').join('')+'</div>'+Object.entries(sets).filter(([key])=>active==='todos'||active===key).map(([key,list])=>{const label={series:'Séries',filmes:'Filmes',originais:'Originais Bless',trailers:'Trailers',breve:'Chegando em breve'}[key];if(!list.length)return '<section class="sg-sec"><div class="bp-section-head"><h2>'+label+'</h2></div><p class="bp-page-heading bp-small-note">Novos títulos chegam em breve.</p></section>';return key==='trailers'?'<section class="sg-sec"><div class="bp-section-head"><h2>Trailers</h2><button data-a="sg-go" data-v="trailers">TODOS '+sgIcon('chevron')+'</button></div><div class="sg-rail">'+list.flatMap(t=>sgEpisodes(t).filter(e=>e.is_trailer&&Number(e.season)!==100).map(e=>'<div class="bp-extra-card"><button class="sg-ep tr bs-trailer-card" data-a="sg-trailer" data-id="'+esc(t.id)+'" data-ep="'+esc(e.id)+'">'+sgEpArt(t,e)+'</button><b>'+esc(e.title)+'</b><small>'+esc(t.title)+'</small></div>')).join('')+'</div></section>':sgRail(label,list);}).join('')+'</main>';}
 function bpExtras(){const rows=sgRows().filter(cnReleased),cards=(type)=>rows.flatMap(t=>sgEpisodes(t).filter(e=>e.is_trailer&&(Number(e.season)===100)===(type==='reels')).map(e=>({t,e})));const rail=(name,type)=>{const list=cards(type);return list.length?'<section class="sg-sec"><div class="bp-section-head"><h2>'+name+'</h2><button data-a="sg-go" data-v="'+(type==='reels'?'clipes':'trailers')+'">TODOS '+sgIcon('chevron')+'</button></div><div class="sg-rail">'+list.map(({t,e})=>'<div class="bp-extra-card '+(type==='reels'?'bp-mini-reel':'')+'"><button class="sg-ep tr bs-trailer-card" data-a="'+(type==='reels'?'sg-open-reel':'sg-trailer')+'" data-id="'+esc(t.id)+'" data-ep="'+esc(e.id)+'">'+sgEpArt(t,e)+'<span class="bs-tr-preview" data-yt="'+esc(e.youtube_id||'')+'" data-video="'+esc(e.video_key||'')+'"></span><span class="bp-duration">'+(e.duration_seconds?Math.floor(e.duration_seconds/60)+':'+String(Math.round(e.duration_seconds)%60).padStart(2,'0'):'▶')+'</span></button><small>'+esc(t.title)+'</small><b>'+esc(e.title)+'</b></div>').join('')+'</div></section>':'';};return '<main class="sg-page bp-extras">'+sgHead()+'<div class="bp-page-heading"><h1>Extras</h1><p>Um pouco mais de cada história.</p><button class="sg-adm" data-a="sg-go" data-v="clipes">'+sgIcon('clips')+' Abrir Reels</button></div>'+rail('Clipes e Reels','reels')+rail('Todos os trailers','trailers')+(!cards('reels').length&&!cards('trailers').length?'<div class="bp-empty">'+sgIcon('clips')+'<h2>Mais histórias chegando</h2><p>Clipes e trailers publicados aparecem aqui.</p></div>':'')+(cnAdmin()?'<div class="bp-page-heading"><button class="sg-cta" data-a="sg-add-clip">Publicar Reel</button></div>':'')+'</main>';}
@@ -15718,7 +15764,7 @@ function installSchedule(delay=1800){if(sgOn())return;if(!INSTALL.ready||INSTALL
 function installDialog(){
  const ios=isIOS(),embedded=inAppBrowser(),native=!!INSTALL.evt&&!ios&&!embedded,guide=INSTALL.guide;
  let steps='';if(guide){steps=embedded?`<ol><li>Abra o menu deste navegador.</li><li>Escolha <b>Abrir no ${ios?'Safari':'Chrome'}</b>.</li><li>${ios?'Toque em <b>Compartilhar → Adicionar à Tela de Início → Adicionar</b>.':'No navegador, toque em <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.'}</li></ol>`:ios?'<ol><li>No Safari, toque em <b>Compartilhar</b>.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li><li>Confirme em <b>Adicionar</b> e abra pelo ícone do Bless.</li></ol>':'<ol><li>Abra o menu do navegador <b>⋮</b>.</li><li>Escolha <b>Instalar aplicativo</b> ou <b>Adicionar à tela inicial</b>.</li><li>Confirme e abra pelo ícone do Bless.</li></ol>';}
- return `<section class="install-card" role="dialog" aria-modal="true" aria-labelledby="install-title" aria-describedby="install-description"><button type="button" class="install-center-close" data-a="ntf-install-later" aria-label="Fechar aviso de instalação" ${INSTALL.busy?'disabled':''}>×</button><img class="install-center-logo" src="img/icon-192.png" alt="Ícone do Bless"><small class="install-center-eyebrow">BLESS NO SEU CELULAR</small><h2 id="install-title">${guide?'Como instalar o Bless':'Seus filmes, sempre por perto'}</h2><p id="install-description">${guide?'Siga os passos para colocar o app na tela inicial.':'Instale no celular para abrir seus filmes e séries favoritos direto pelo ícone.'}</p>${steps||'<div class="install-center-benefits"><span>Abra direto pelo ícone</span><span>Encontre seus filmes e séries</span></div>'}${INSTALL.error?`<p role="status" class="install-center-error">${esc(INSTALL.error)}</p>`:''}<div class="install-center-actions">${!guide||native?`<button type="button" class="btn primary" data-a="ntf-install" ${INSTALL.busy?'disabled':''}>${INSTALL.busy?'Aguardando confirmação…':ios?'Instalar no iPhone':'Instalar aplicativo'}</button>`:'<button type="button" class="btn primary" data-a="install-guide-close">Entendi, vou instalar</button>'}<button type="button" class="btn ghost" data-a="ntf-install-later" ${INSTALL.busy?'disabled':''}>Agora não</button><button type="button" class="install-already" data-a="install-already" ${INSTALL.busy?'disabled':''}>Já instalei</button></div><small class="install-center-note">${ios?'A instalação no iPhone é confirmada pelo Safari.':'A instalação precisa da sua confirmação no navegador.'}</small></section>`;
+ return `<section class="install-card" role="dialog" aria-modal="true" aria-labelledby="install-title" aria-describedby="install-description"><button type="button" class="install-center-close" data-a="ntf-install-later" aria-label="Fechar aviso de instalação" ${INSTALL.busy?'disabled':''}>×</button><img class="install-center-logo" src="img/icon-192.png?v=sunset-20261120" alt="Ícone do Bless Play"><small class="install-center-eyebrow">BLESS NO SEU CELULAR</small><h2 id="install-title">${guide?'Como instalar o Bless':'Seus filmes, sempre por perto'}</h2><p id="install-description">${guide?'Siga os passos para colocar o app na tela inicial.':'Instale no celular para abrir seus filmes e séries favoritos direto pelo ícone.'}</p>${steps||'<div class="install-center-benefits"><span>Abra direto pelo ícone</span><span>Encontre seus filmes e séries</span></div>'}${INSTALL.error?`<p role="status" class="install-center-error">${esc(INSTALL.error)}</p>`:''}<div class="install-center-actions">${!guide||native?`<button type="button" class="btn primary" data-a="ntf-install" ${INSTALL.busy?'disabled':''}>${INSTALL.busy?'Aguardando confirmação…':ios?'Instalar no iPhone':'Instalar aplicativo'}</button>`:'<button type="button" class="btn primary" data-a="install-guide-close">Entendi, vou instalar</button>'}<button type="button" class="btn ghost" data-a="ntf-install-later" ${INSTALL.busy?'disabled':''}>Agora não</button><button type="button" class="install-already" data-a="install-already" ${INSTALL.busy?'disabled':''}>Já instalei</button></div><small class="install-center-note">${ios?'A instalação no iPhone é confirmada pelo Safari.':'A instalação precisa da sua confirmação no navegador.'}</small></section>`;
 }
 function installPaint(){const box=$('#blessed-install');if(!box)return;box.innerHTML=installDialog();}
 async function installShow(force=false){
@@ -15825,7 +15871,7 @@ try { localStorage.removeItem("cc-tema"); } catch(e) {}
 function appearanceSet(mode){
  const before=document.documentElement.dataset.appearance;const next='streaming';document.documentElement.dataset.appearance=next;
  try{localStorage.setItem('blessed-aparencia-3',next);}catch(e){}
- const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==='light'?'#ffffff':next==='violet'?'#080910':next==='ocean'?'#04131d':['msn','msn-mobile'].includes(next)?'#deedf8':'#000000';
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==='light'?'#ffffff':next==='violet'?'#080910':next==='ocean'?'#04131d':['msn','msn-mobile'].includes(next)?'#deedf8':'#100a19';
  document.querySelectorAll('[data-a="appearance"]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.v===next)));
  if(before==='msn-mobile'||next==='msn-mobile'){MM.query='';if(next==='msn-mobile'&&before!==next){MM.page='contacts';state.view='community';}if(before==='msn-mobile'&&next!=='msn-mobile'&&state.view.startsWith('msn-'))state.view='community';HOME_DOM.key='';render();scrollTo(0,0);}
 }
