@@ -24,7 +24,7 @@
 <meta name="twitter:image" content="https://blessedcomunidade.com.br/img/brand/cartao-b-vermelho.png">
 <meta name="twitter:image:alt" content="Bless Play. Histórias que ficam.">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com">
-<meta name="theme-color" content="#100a19">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -49,14 +49,14 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202611201231";</script><script>
+<script>window.CC_VER="202611201324";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
 if('serviceWorker' in navigator)navigator.serviceWorker.getRegistration().then(async reg=>{if(!reg||!localStorage.getItem('blessed-push-owner'))return;const old=await reg.pushManager?.getSubscription();if(old)await old.unsubscribe();localStorage.removeItem('blessed-push-owner');}).catch(()=>{});
 if('indexedDB' in window){try{indexedDB.deleteDatabase('blessed-chat-wallpaper');}catch{}}
 // Recupera a aparência antes de desenhar o app, inclusive na abertura offline.
-try{document.documentElement.dataset.appearance='streaming';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content='#100a19';}catch(e){document.documentElement.dataset.appearance='streaming';}
+try{document.documentElement.dataset.appearance='streaming';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content='#000000';}catch(e){document.documentElement.dataset.appearance='streaming';}
 </script>
 <title>Bless Play · Filmes, séries e documentários</title>
 <link rel="preconnect" href="https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev" crossorigin>
@@ -4090,7 +4090,7 @@ html #app .appearance-sample.msn-mobile>i:before{font-size:3px;left:2px;top:5px}
 
 
 <style id="bless-intro-cine">
-.bi{position:fixed;inset:0;z-index:100000;background:radial-gradient(ellipse at 28% 23%,#3d1e69,transparent 58%),radial-gradient(ellipse at 80% 82%,#591b3e,transparent 57%),#100a19;overflow:hidden;display:grid;place-items:center;animation:bi-out .5s ease-in 3.05s both}
+.bi{position:fixed;inset:0;z-index:100000;background:#000;overflow:hidden;display:grid;place-items:center;animation:bi-out .5s ease-in 3.05s both}
 .bi-glow{position:absolute;left:50%;top:50%;width:140vmax;height:140vmax;margin:-70vmax 0 0 -70vmax;background:radial-gradient(closest-side,#ff83c45e,#a16eff28 45%,transparent 70%);opacity:0;animation:bi-glow 3.2s ease-out .5s both}
 .bi-rays{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;gap:clamp(3px,.9vw,9px);opacity:0;animation:bi-rays 3.2s ease-out .45s both}
 .bi-rays i{display:block;width:clamp(2px,.5vw,5px);height:100%;background:linear-gradient(180deg,transparent,#a575fe 25%,#ff8cca 51%,#ffc38e 72%,transparent);transform:scaleY(0);animation:bi-ray 1.5s cubic-bezier(.2,.8,.2,1) both}
@@ -4562,9 +4562,9 @@ html[data-appearance=streaming] #app .bp-home .sg-slide .sg-info{transition:opac
 
 /* Identidade do Bless Play */
 html[data-appearance=streaming]{
-  --bp-bg:#100a19;
-  --bp-surface:#25152e;
-  --bp-row:#382143;
+  --bp-bg:#000000;
+  --bp-surface:#0b0b0b;
+  --bp-row:#131313;
   --bp-ink:#fff5f9;
   --bp-muted:#cdbbcf;
   --bp-accent:#ff9bcc;
@@ -4578,14 +4578,14 @@ html[data-appearance=streaming] #app,
 html[data-appearance=streaming] #app .sg-body{background:var(--bp-bg)!important}
 html[data-appearance=streaming] body{--surface:var(--bp-surface);--ink:var(--bp-ink);--line:var(--bp-line)}
 html[data-appearance=streaming] .bs-boot{
-  background:radial-gradient(ellipse at 45% 45%,#54265155,transparent 65%),var(--bp-bg);
+  background:var(--bp-bg);
 }
 html[data-appearance=streaming] #app .sg-dock{
-  background:linear-gradient(112deg,#331e56c9,#471638ce 52%,#4a222cd4)!important;
+  background:rgba(0,0,0,.78)!important;
   border:1px solid #ffbde84d!important;
   -webkit-backdrop-filter:blur(26px) saturate(1.55)!important;
   backdrop-filter:blur(26px) saturate(1.55)!important;
-  box-shadow:0 12px 32px #190b26a8,inset 0 1px 0 #fbd2ff35!important;
+  box-shadow:0 12px 32px #000b,inset 0 1px 0 #fbd2ff35!important;
 }
 html[data-appearance=streaming] #app .sg-dock button[aria-current=page]{
   background:linear-gradient(112deg,#cd9cff3b,#ff88bd32,#ffb38828)!important;
@@ -4594,23 +4594,8 @@ html[data-appearance=streaming] #app .sg-dock button[aria-current=page]{
 html[data-appearance=streaming] #app .sg-dock button[aria-current=page]::before{display:none}
 html[data-appearance=streaming] #app .sg-dots i.on{background:var(--bp-sunset)!important}
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-shade{
-  background:linear-gradient(180deg,#160d229c,transparent 25%,transparent 42%,#190e25b8 74%,var(--bp-bg))!important;
+  background:linear-gradient(180deg,#0009,transparent 25%,transparent 42%,#000b 74%,var(--bp-bg))!important;
 }
-/* Fundo claro entre as fileiras da página inicial. */
-html[data-appearance=streaming] #app .bp-home{
-  --bp-home-top:#b990e1;
-  background:linear-gradient(180deg,var(--bp-home-top) min(84svh,760px),#db90c6 72%,#f3aa9b)!important;
-  color:#34203f;
-}
-html[data-appearance=streaming] #app .bp-home .sg-slide .sg-shade{
-  background:linear-gradient(180deg,#160d229c,transparent 25%,transparent 42%,#261430b8 72%,#261430ed 90%,var(--bp-home-top))!important;
-}
-html[data-appearance=streaming] #app .bp-home :is(.bp-section-head h2,.sg-sec>h2,.sg-pc>b){
-  color:#34203f!important;
-}
-html[data-appearance=streaming] #app .bp-home .bp-section-head button{color:#523260!important}
-html[data-appearance=streaming] #app .bp-home .bs-poster-wrap .bs-progress{background-color:#57336655}
-html[data-appearance=streaming] #app .bp-home :is(.bp-guest-welcome,.bs-install-inline){color:var(--bp-ink)}
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-cta,
 html[data-appearance=streaming] #app :is(.bp-join-button,.login .btn.primary,.bs-install-inline button[data-a=sg-install]),
 html[data-appearance=streaming] #blessed-install .btn.primary{
@@ -4619,7 +4604,7 @@ html[data-appearance=streaming] #blessed-install .btn.primary{
 }
 html[data-appearance=streaming] #app :is(.bp-guest-welcome,.bs-install-inline),
 html[data-appearance=streaming] #blessed-install .install-card{
-  background:linear-gradient(130deg,#301c45,#29162d 65%,#3a202d);
+  background:var(--bp-surface);
   border-color:var(--bp-line);
 }
 html[data-appearance=streaming] .bs-install-mark{object-fit:cover;background:var(--bp-surface)}
@@ -15886,7 +15871,7 @@ try { localStorage.removeItem("cc-tema"); } catch(e) {}
 function appearanceSet(mode){
  const before=document.documentElement.dataset.appearance;const next='streaming';document.documentElement.dataset.appearance=next;
  try{localStorage.setItem('blessed-aparencia-3',next);}catch(e){}
- const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==='light'?'#ffffff':next==='violet'?'#080910':next==='ocean'?'#04131d':['msn','msn-mobile'].includes(next)?'#deedf8':'#100a19';
+ const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==='light'?'#ffffff':next==='violet'?'#080910':next==='ocean'?'#04131d':['msn','msn-mobile'].includes(next)?'#deedf8':'#000000';
  document.querySelectorAll('[data-a="appearance"]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.v===next)));
  if(before==='msn-mobile'||next==='msn-mobile'){MM.query='';if(next==='msn-mobile'&&before!==next){MM.page='contacts';state.view='community';}if(before==='msn-mobile'&&next!=='msn-mobile'&&state.view.startsWith('msn-'))state.view='community';HOME_DOM.key='';render();scrollTo(0,0);}
 }

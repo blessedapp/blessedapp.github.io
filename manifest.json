@@ -15,8 +15,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#100a19",
-  "theme_color": "#100a19",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "img/icon-192.png?v=sunset-20261120",
