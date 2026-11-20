@@ -49,7 +49,7 @@ img{max-width:100%}
 <body>
 <script src="img/vendor/supabase.js"></script>
 <script>window.CC_SUPABASE = {"url":"https://plyjkyqxxygkvxbaiezf.supabase.co","key":"sb_publishable_OR3KldTUJGjanF0rgON06Q_IjODAyH1","blessings":"https://pub-bcabe431377e4029afa6e38308c1dace.r2.dev","google":false};</script>
-<script>window.CC_VER="202611201219";</script><script>
+<script>window.CC_VER="202611201225";</script><script>
 // Remove apenas caches locais do antigo repertório/rede social; preserva login e dados Bless.
 try{for(const key of ['cc-local-songs','cc-local-artists','cc-local-setlist','cc-people-cache','cc-draft','cc-info-cache'])localStorage.removeItem(key);}catch{}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^(blessed-biblia-|blessed-story-luts-|blessed-fotos-)/.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
@@ -4596,6 +4596,21 @@ html[data-appearance=streaming] #app .sg-dots i.on{background:var(--bp-sunset)!i
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-shade{
   background:linear-gradient(180deg,#160d229c,transparent 25%,transparent 42%,#190e25b8 74%,var(--bp-bg))!important;
 }
+/* Fundo claro entre as fileiras da página inicial. */
+html[data-appearance=streaming] #app .bp-home{
+  --bp-home-top:#f1e4ff;
+  background:linear-gradient(180deg,var(--bp-home-top) min(84svh,760px),#fbe6f0 72%,#ffede1)!important;
+  color:#34203f;
+}
+html[data-appearance=streaming] #app .bp-home .sg-slide .sg-shade{
+  background:linear-gradient(180deg,#160d229c,transparent 25%,transparent 42%,#261430b8 72%,#261430ed 90%,var(--bp-home-top))!important;
+}
+html[data-appearance=streaming] #app .bp-home :is(.bp-section-head h2,.sg-sec>h2,.sg-pc>b){
+  color:#34203f!important;
+}
+html[data-appearance=streaming] #app .bp-home .bp-section-head button{color:#664878!important}
+html[data-appearance=streaming] #app .bp-home .bs-poster-wrap .bs-progress{background-color:#d5bddc}
+html[data-appearance=streaming] #app .bp-home :is(.bp-guest-welcome,.bs-install-inline){color:var(--bp-ink)}
 html[data-appearance=streaming] #app :is(.bp-home .sg-slide,.sg-dh) .sg-cta,
 html[data-appearance=streaming] #app :is(.bp-join-button,.login .btn.primary,.bs-install-inline button[data-a=sg-install]),
 html[data-appearance=streaming] #blessed-install .btn.primary{
